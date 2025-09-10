@@ -61,10 +61,13 @@
       cursor: pointer;
       margin-top: 20px;
     }
-    #costDisplay {
+    #receipt {
+      background: #f4f4f4;
+      padding: 15px;
+      border: 1px solid #ccc;
       margin-top: 20px;
-      font-weight: bold;
-      color: #006400;
+      white-space: pre-wrap;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -151,7 +154,7 @@
     </div>
 
     <input type="hidden" id="estimatedCost" name="estimatedCost">
-    <p id="costDisplay"></p>
+    <div id="receipt"></div>
     <button type="submit">Submit Booking</button>
   </form>
 
@@ -198,4 +201,5 @@
       const extras = document.getElementById("extras").value;
 
       let weightPerBag = 20;
-      if (bagSize ===
+      if (bagSize === "Medium") weightPerBag = 50;
+      if
