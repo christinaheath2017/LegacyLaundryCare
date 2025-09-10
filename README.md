@@ -5,7 +5,7 @@ Legacy Laundry Care is a professional laundry pickup and delivery service based 
 ## 🔗 Live Site
 
 Visit the deployed site:  
-**[LegacyLaundryCare GitHub Pages](https://christinahheath2017.github.io/LegacyLaundryCare/)**
+**[LegacyLaundryCare GitHub Pages](https://christinaheath2017.github.io/LegacyLaundryCare/)**
 
 ## 📦 Repo Structure
 
@@ -28,5 +28,4 @@ Visit the deployed site:
 ## 📬 Contact
 For service inquiries:  
 **legacylaundrycare@gmail.com**
-For service inquiries:  
-**legacylaundrycare@gmail.com**
+
