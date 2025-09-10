@@ -2,244 +2,108 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Legacy Laundry Care</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 40px;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 1.2em;
-      margin: 0;
-    }
-
-    .button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 24px;
-      background-color: #3498db;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: bold;
-    }
-
-    .button:hover {
-      background-color: #2980b9;
-    }
-
-    section {
-      padding: 40px;
-      background-color: #ffffff;
-      text-align: center;
-    }
-
-    section h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
-    }
-
-    .tiers {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .tier-box {
-      flex: 1;
-      min-width: 250px;
-      max-width: 300px;
-      border: 1px solid #ccc;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: #fefefe;
-    }
-
-    .tier-box h3 {
-      margin-top: 0;
-      color: #2c3e50;
-    }
-
-    .tier-box p {
-      margin: 8px 0;
-    }
-
-    form {
-      max-width: 500px;
-      margin: auto;
-      text-align: left;
-    }
-
-    form label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    form input[type="text"],
-    form input[type="email"],
-    form select,
-    form textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    form input[type="checkbox"],
-    form input[type="radio"] {
-      margin-right: 8px;
-    }
-
-    form button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    form button:hover {
-      background-color: #2980b9;
-    }
-
-    footer {
-      background-color: #2c3e50;
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
-
-    footer a {
-      color: #ffffff;
-      text-decoration: underline;
-    }
-
-    footer p {
-      margin: 8px 0;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+    h1, h2 { color: #333; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    select, input[type="text"], input[type="number"] { width: 100%; padding: 8px; margin-top: 5px; }
+    .section { margin-bottom: 30px; }
+    .note { font-size: 0.9em; color: #555; }
+    .warning { color: #a00; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <header>
-    <h1>Legacy Laundry Care</h1>
-    <p>Professional Laundry Services for Hotel Guests and Local Clients</p>
-    <a class="button" href="#booking">Book Now</a>
-  </header>
+  <h1>Legacy Laundry Care</h1>
+  <p><strong>“You bag it, we stack it.”</strong></p>
+  <p>Professional laundry service for travelers and professionals. We offer convenient pick-up and drop-off directly to your hotel room.</p>
 
-  <!-- Service Tiers Section -->
-  <section>
-    <h2>Service Tiers</h2>
-    <div class="tiers">
+  <div class="section">
+    <h2>Choose Your Service Tier</h2>
+    <label for="tier">Service Tier:</label>
+    <select id="tier" name="tier">
+      <option value="standard">Standard (24–36 hrs) – $2.50/lb</option>
+      <option value="express">Express (6–12 hrs) – $3.50/lb</option>
+    </select>
 
-      <div class="tier-box">
-        <h3>Standard</h3>
-        <p><strong>Turnaround:</strong> 24 hours</p>
-        <p><strong>Rate:</strong> $2.50/lb</p>
-        <p><strong>Includes:</strong> Folding</p>
-        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
-        <p><strong>Available Add-ons:</strong> Hang dry, stain treatment, premium detergents, softeners, dryer sheets, bleach</p>
-      </div>
+    <label for="bagSize">Bag Size:</label>
+    <select id="bagSize" name="bagSize">
+      <option value="small">Small (13 gal – 20 lbs)</option>
+      <option value="medium">Medium (33 gal – 50 lbs)</option>
+      <option value="large">Large (55 gal – 75 lbs)</option>
+    </select>
 
-      <div class="tier-box">
-        <h3>Express</h3>
-        <p><strong>Turnaround:</strong> Same-day</p>
-        <p><strong>Rate:</strong> $3.50/lb</p>
-        <p><strong>Includes:</strong> Folding</p>
-        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
-        <p><strong>Available Add-ons:</strong> Premium detergents, softeners, dryer sheets, bleach</p>
-      </div>
+    <label for="bagCount">Number of Bags:</label>
+    <input type="number" id="bagCount" name="bagCount" min="1" placeholder="Enter number of bags">
 
-      <div class="tier-box">
-        <h3>Rapid Express</h3>
-        <p><strong>Turnaround:</strong> 4–6 hours</p>
-        <p><strong>Rate:</strong> $5.00/lb</p>
-        <p><strong>Includes:</strong> Folding</p>
-        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
-        <p><strong>Available Add-ons:</strong> Premium detergents, softeners, dryer sheets, bleach</p>
-      </div>
+    <p class="note">Minimum fees: $30 for Standard, $45 for Express</p>
+    <p class="warning">Express orders must be 60 lbs or less to qualify for same-day service. Orders over 60 lbs may be delayed, though we will do our best to accommodate timely delivery.</p>
+  </div>
 
-    </div>
-  </section>
+  <div class="section">
+    <h2>Premium Add-Ons</h2>
+    <label for="detergent">Detergent ($0.10/lb):</label>
+    <select id="detergent" name="detergent">
+      <option value="none">None</option>
+      <option value="tide">Tide Original</option>
+      <option value="gain">Gain Original</option>
+      <option value="persil">Persil Original</option>
+      <option value="all">All Free & Clear</option>
+      <option value="tideFree">Tide Free & Gentle</option>
+    </select>
 
-  <!-- Booking Form Section -->
-  <section id="booking" style="background-color: #f4f4f4;">
-    <h2>Book a Laundry Service</h2>
-    <form action="https://formspree.io/f/xeolnkna" method="POST">
+    <label for="softener">Fabric Softener ($0.10/lb):</label>
+    <select id="softener" name="softener">
+      <option value="none">None</option>
+      <option value="downy">Downy April Fresh</option>
+      <option value="gain">Gain Original</option>
+      <option value="tideFree">Tide Free & Gentle</option>
+      <option value="all">All Free & Clear</option>
+    </select>
 
-      <label for="name">Your Name</label>
-      <input type="text" name="name" id="name" required>
+    <label for="dryerSheets">Dryer Sheets ($1.00/load):</label>
+    <select id="dryerSheets" name="dryerSheets">
+      <option value="none">None</option>
+      <option value="bounce">Bounce Original</option>
+      <option value="bounceFree">Bounce Free & Gentle</option>
+      <option value="gain">Gain Original</option>
+      <option value="all">All Free & Clear</option>
+    </select>
 
-      <label for="email">Your Email</label>
-      <input type="email" name="_replyto" id="email" required>
+    <label for="scentBoosters">Scent Boosters ($0.10/lb):</label>
+    <select id="scentBoosters" name="scentBoosters">
+      <option value="none">None</option>
+      <option value="unstoppables">Downy UnStoppables</option>
+      <option value="gainFireworks">Gain Fireworks</option>
+      <option value="armHammer">Arm & Hammer Fresh Burst</option>
+    </select>
 
-      <label for="tier">Select Service Tier</label>
-      <select name="Service Tier" id="tier" required>
-        <option value="">-- Choose One --</option>
-        <option value="Standard (24hr)">Standard (24hr turnaround)</option>
-        <option value="Express (Same-day)">Express (Same-day)</option>
-        <option value="Rapid Express (4–6hr)">Rapid Express (4–6hr)</option>
-      </select>
+    <label for="extras">Other Add-Ons:</label>
+    <select id="extras" name="extras">
+      <option value="none">None</option>
+      <option value="ironOut">Iron Out ($1.00/load)</option>
+      <option value="bleach">Bleach ($0.50/load)</option>
+      <option value="colorSafe">Color-Safe Bleach ($0.50/load)</option>
+      <option value="oxyClean">Oxy Clean ($0.10/lb)</option>
+    </select>
+  </div>
 
-      <label>Premium Detergents (10¢/lb)</label>
-      <input type="checkbox" name="Premium Detergent" value="Gain"> Gain<br>
-      <input type="checkbox" name="Premium Detergent" value="Tide"> Tide<br>
-      <input type="checkbox" name="Premium Detergent" value="Persil"> Persil<br>
+  <div class="section">
+    <h2>Special Instructions</h2>
+    <p>For stain treatment or hang dry (Standard tier only), please bag and label items separately.</p>
+    <p>For items requiring hangers, provide hangers and label the bag “Return on Hanger.”</p>
+    <p>Delicates, bleach, or other specialty items must be bagged and labeled accordingly.</p>
+  </div>
 
-      <label>Softener & Dryer Add-ons</label>
-      <input type="checkbox" name="Add-ons" value="Liquid Softener (10¢/lb)"> Liquid Softener (10¢/lb)<br>
-      <input type="checkbox" name="Add-ons" value="Dryer Sheets ($1/load)"> Dryer Sheets ($1/load)<br>
-
-      <label>Bleach Options (10¢/lb)</label>
-      <input type="checkbox" name="Add-ons" value="Bleach"> Bleach<br>
-      <input type="checkbox" name="Add-ons" value="Color-Safe Bleach"> Color-Safe Bleach<br>
-      <input type="checkbox" name="Add-ons" value="Iron-Out"> Iron-Out<br>
-
-      <label>Standard Tier Only Add-ons</label>
-      <input type="checkbox" name="Standard Only" value="Hang Dry"> Hang Dry (Standard Tier only)<br>
-      <input type="checkbox" name="Standard Only" value="Stain Treatment ($1/item)"> Stain Treatment ($1/item)<br>
-
-      <label>Free Add-on (All Tiers)</label>
-      <input type="checkbox" name="Free Add-on" value="Return on Provided Hangers"> Return on Provided Hangers<br>
-
-      <label for="notes">Additional Notes</label>
-      <textarea name="Notes" id="notes" placeholder="Hotel name, pickup instructions, hanger availability, etc..." required></textarea>
-
-      <button type="submit">Submit Booking</button>
-    </form>
-  </section>
-
-  <!-- Contact + Footer Section -->
-  <footer>
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:christinaheath2017@gmail.com">christinaheath2017@gmail.com</a></p>
-    <p>Service Hours: Monday–Saturday, 8am–6pm</p>
-    <p style="margin-top: 20px; font-size: 0.9em;">© 2025 Legacy Laundry Care. All rights reserved.</p>
-  </footer>
+  <div class="section">
+    <h2>Scheduling & Payment</h2>
+    <p>Business Hours: Monday–Friday, 8 AM – 8 PM</p>
+    <p>Orders submitted before 12 PM qualify for same-day pickup.</p>
+    <p>Payment required in advance via PayPal, CashApp, Zelle, or Venmo.</p>
+    <p>Refunds or additional charges will be handled after laundry is weighed.</p>
+  </div>
 
 </body>
+</html>
 
