@@ -26,9 +26,7 @@ Visit the deployed site:
 - Mobile app (APK/IPA hosted externally)
 
 ## 📬 Contact
-
 For service inquiries:  
 **legacylaundrycare@gmail.com**
-
-
-
+For service inquiries:  
+**legacylaundrycare@gmail.com**
