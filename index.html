@@ -82,101 +82,36 @@
       margin: 8px 0;
     }
 
-    form input, form textarea {
+    form {
+      max-width: 500px;
+      margin: auto;
+      text-align: left;
+    }
+
+    form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form select,
+    form textarea {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin-top: 5px;
       border-radius: 4px;
       border: 1px solid #ccc;
     }
 
+    form input[type="checkbox"],
+    form input[type="radio"] {
+      margin-right: 8px;
+    }
+
     form button {
+      margin-top: 20px;
       padding: 12px 24px;
       background-color: #3498db;
       color: white;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    form button:hover {
-      background-color: #2980b9;
-    }
-
-    footer {
-      background-color: #2c3e50;
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
-
-    footer a {
-      color: #ffffff;
-      text-decoration: underline;
-    }
-
-    footer p {
-      margin: 8px 0;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Hero Section -->
-  <header>
-    <h1>Legacy Laundry Care</h1>
-    <p>Professional Laundry Services for Hotel Guests and Local Clients</p>
-    <a class="button" href="#booking">Book Now</a>
-  </header>
-
-  <!-- Service Tiers Section -->
-  <section>
-    <h2>Service Tiers</h2>
-    <div class="tiers">
-
-      <div class="tier-box">
-        <h3>Standard</h3>
-        <p><strong>Turnaround:</strong> 24 hours</p>
-        <p><strong>Rate:</strong> $2.50/lb</p>
-        <p><strong>Add-ons:</strong> Scent-free, hang dry, folding</p>
-      </div>
-
-      <div class="tier-box">
-        <h3>Express</h3>
-        <p><strong>Turnaround:</strong> Same-day</p>
-        <p><strong>Rate:</strong> $3.50/lb</p>
-        <p><strong>Add-ons:</strong> Priority processing, scent customization</p>
-      </div>
-
-      <div class="tier-box">
-        <h3>Rapid Express</h3>
-        <p><strong>Turnaround:</strong> 4–6 hours</p>
-        <p><strong>Rate:</strong> $5.00/lb</p>
-        <p><strong>Add-ons:</strong> Immediate pickup, solo-machine processing</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Booking Form Section -->
-  <section id="booking" style="background-color: #f4f4f4;">
-    <h2>Book a Laundry Service</h2>
-    <form action="https://formspree.io/f/xeolnkna" method="POST" style="max-width: 400px; margin: auto;">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <textarea name="message" placeholder="Service Tier, Hotel, Add-ons..." required></textarea>
-      <button type="submit">Submit</button>
-    </form>
-  </section>
-
-  <!-- Contact + Footer Section -->
-  <footer>
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:christinaheath2017@gmail.com">christinaheath2017@gmail.com</a></p>
-    <p>Service Hours: Monday–Saturday, 8am–6pm</p>
-    <p style="margin-top: 20px; font-size: 0.9em;">© 2025 Legacy Laundry Care. All rights reserved.</p>
-  </footer>
-
-</body>
-</html>
