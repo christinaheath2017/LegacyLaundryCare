@@ -160,21 +160,27 @@
         <h3>Standard</h3>
         <p><strong>Turnaround:</strong> 24 hours</p>
         <p><strong>Rate:</strong> $2.50/lb</p>
-        <p><strong>Add-ons:</strong> Scent-free, hang dry, folding</p>
+        <p><strong>Includes:</strong> Folding</p>
+        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
+        <p><strong>Available Add-ons:</strong> Hang dry, stain treatment, premium detergents, softeners, dryer sheets, bleach</p>
       </div>
 
       <div class="tier-box">
         <h3>Express</h3>
         <p><strong>Turnaround:</strong> Same-day</p>
         <p><strong>Rate:</strong> $3.50/lb</p>
-        <p><strong>Add-ons:</strong> Priority processing, scent customization</p>
+        <p><strong>Includes:</strong> Folding</p>
+        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
+        <p><strong>Available Add-ons:</strong> Premium detergents, softeners, dryer sheets, bleach</p>
       </div>
 
       <div class="tier-box">
         <h3>Rapid Express</h3>
         <p><strong>Turnaround:</strong> 4–6 hours</p>
         <p><strong>Rate:</strong> $5.00/lb</p>
-        <p><strong>Add-ons:</strong> Immediate pickup, solo-machine processing</p>
+        <p><strong>Includes:</strong> Folding</p>
+        <p><strong>Free Add-on:</strong> Return on hangers (if provided)</p>
+        <p><strong>Available Add-ons:</strong> Premium detergents, softeners, dryer sheets, bleach</p>
       </div>
 
     </div>
@@ -199,20 +205,29 @@
         <option value="Rapid Express (4–6hr)">Rapid Express (4–6hr)</option>
       </select>
 
-      <label>Add-ons</label>
-      <input type="checkbox" name="Add-ons" value="Scent-free"> Scent-free<br>
-      <input type="checkbox" name="Add-ons" value="Hang dry"> Hang dry<br>
-      <input type="checkbox" name="Add-ons" value="Folding"> Folding<br>
-      <input type="checkbox" name="Add-ons" value="Priority processing"> Priority processing<br>
-      <input type="checkbox" name="Add-ons" value="Solo-machine"> Solo-machine<br>
+      <label>Premium Detergents (10¢/lb)</label>
+      <input type="checkbox" name="Premium Detergent" value="Gain"> Gain<br>
+      <input type="checkbox" name="Premium Detergent" value="Tide"> Tide<br>
+      <input type="checkbox" name="Premium Detergent" value="Persil"> Persil<br>
 
-      <label>Detergent Preference</label>
-      <input type="radio" name="Detergent" value="Standard" required> Standard<br>
-      <input type="radio" name="Detergent" value="Scent-free"> Scent-free<br>
-      <input type="radio" name="Detergent" value="Client-provided"> Client-provided<br>
+      <label>Softener & Dryer Add-ons</label>
+      <input type="checkbox" name="Add-ons" value="Liquid Softener (10¢/lb)"> Liquid Softener (10¢/lb)<br>
+      <input type="checkbox" name="Add-ons" value="Dryer Sheets ($1/load)"> Dryer Sheets ($1/load)<br>
+
+      <label>Bleach Options (10¢/lb)</label>
+      <input type="checkbox" name="Add-ons" value="Bleach"> Bleach<br>
+      <input type="checkbox" name="Add-ons" value="Color-Safe Bleach"> Color-Safe Bleach<br>
+      <input type="checkbox" name="Add-ons" value="Iron-Out"> Iron-Out<br>
+
+      <label>Standard Tier Only Add-ons</label>
+      <input type="checkbox" name="Standard Only" value="Hang Dry"> Hang Dry (Standard Tier only)<br>
+      <input type="checkbox" name="Standard Only" value="Stain Treatment ($1/item)"> Stain Treatment ($1/item)<br>
+
+      <label>Free Add-on (All Tiers)</label>
+      <input type="checkbox" name="Free Add-on" value="Return on Provided Hangers"> Return on Provided Hangers<br>
 
       <label for="notes">Additional Notes</label>
-      <textarea name="Notes" id="notes" placeholder="Hotel name, pickup instructions, etc..." required></textarea>
+      <textarea name="Notes" id="notes" placeholder="Hotel name, pickup instructions, hanger availability, etc..." required></textarea>
 
       <button type="submit">Submit Booking</button>
     </form>
@@ -227,5 +242,4 @@
   </footer>
 
 </body>
-</html>
 
