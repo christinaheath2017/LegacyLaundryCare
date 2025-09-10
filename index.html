@@ -7,7 +7,6 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      line-height: 1.6;
       background-color: #fefefe;
     }
     h1, h2, h3 {
@@ -18,10 +17,11 @@
       display: block;
       margin-top: 10px;
     }
-    select, input[type="text"], input[type="number"], textarea {
+    select, input, textarea {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
+      font-size: 1em;
     }
     .section {
       margin-bottom: 40px;
@@ -39,18 +39,16 @@
       flex-wrap: wrap;
       gap: 30px;
       justify-content: center;
-      align-items: flex-start;
     }
     .qr-block {
       text-align: center;
       max-width: 220px;
     }
     img {
+      width: 200px;
       border: 1px solid #ccc;
       padding: 5px;
       background: #f9f9f9;
-      width: 200px;
-      height: auto;
     }
     button {
       padding: 10px 20px;
@@ -71,31 +69,30 @@
     }
   </style>
 </head>
-  <script>
-function calculateCost() {
-  const tier = document.getElementById("tier").value;
-  const bagSize = document.getElementById("bagSize").value;
-  const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
-
-  const detergent = document.getElementById("detergent").value;
-  const softener = document.getElementById("softener").value;
-  const dryerSheets = document.getElementById("dryerSheets").value;
-  const scentBoosters = document.getElementById("scentBoosters").value;
-  const extras = document.getElementById("extras").value;
-
-  let weightPerBag = 20;
-  if (bagSize === "Medium") weightPerBag = 50;
-  if (bagSize === "Large") weightPerBag = 75;
-
-  const totalWeight = weightPerBag * bagCount;
-  const baseRate = tier === "Express" ? 3.5 : 2.5;
-  const baseCost = totalWeight *  
 <body>
 
   <h1>Legacy Laundry Care</h1>
   <p><strong>“You bag it, we stack it.”</strong></p>
 
   <form id="bookingForm" action="https://formspree.io/f/xeolnkna" method="POST">
+    <div class="section">
+      <h2>Client Information</h2>
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" name="phone" required>
+
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="pickup">Pickup Location:</label>
+      <input type="text" id="pickup" name="pickup" required>
+
+      <label for="dropoff">Drop-Off Location:</label>
+      <input type="text" id="dropoff" name="dropoff" required>
+    </div>
+
     <div class="section">
       <h2>Choose Your Service Tier</h2>
       <label for="tier">Service Tier:</label>
@@ -175,7 +172,102 @@ function calculateCost() {
     <div id="receiptText"></div>
     <button type="submit">Submit Booking</button>
   </form>
+<script>
+function calculateCost() {
+  const tier = document.getElementById("tier").value;
+  const bagSize = document.getElementById("bagSize").value;
+  const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
 
+  const detergent = document.getElementById("detergent").value;
+  const softener = document.getElementById("softener").value;
+  const dryerSheets = document.getElementById("dryerSheets").value;
+  const scentBoosters = document.getElementById("scentBoosters").value;
+  const extras = document.getElementById("extras").value;
+
+  let weightPerBag = 20;
+  if (bagSize === "Medium") weightPerBag = 50;
+  if (bagSize === "Large") weightPerBag = 75;
+
+  const totalWeight = weightPerBag * bagCount;
+  const baseRate = tier === "Express" ? 3.5 : 2.5;
+  const baseCost = totalWeight * baseRate;
+
+  let receipt = `Estimated Receipt:\n--------------------------\n`;
+  receipt += `Base Service (${tier}): $${baseCost.toFixed(2)}\n`;
+
+  let addOnCost = 0;
+
+  if (detergent !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Detergent (${detergent}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (softener !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Fabric Softener (${softener}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (scentBoosters !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Scent Boosters (${scentBoosters}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (dryerSheets !== "None") {
+    const cost = bagCount * 1.00;
+    addOnCost += cost;
+    receipt += `Dryer Sheets (${dryerSheets}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (extras === "IronOut") {
+    const cost = bagCount * 1.00;
+    addOnCost += cost;
+    receipt += `Other Add-On (Iron Out): $${cost.toFixed(2)}\n`;
+  }
+
+  if (["Bleach", "ColorSafe"].includes(extras)) {
+    const cost = bagCount * 0.50;
+    addOnCost += cost;
+    receipt += `Other Add-On (${extras}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (extras === "OxyClean") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Other Add-On (Oxy Clean): $${cost.toFixed(2)}\n`;
+  }
+
+  const totalCost = baseCost + addOnCost;
+  const minimumFee = tier === "Express" ? 45 : 30;
+  const finalCost = Math.max(totalCost, minimumFee);
+
+  if (finalCost > totalCost) {
+    receipt += `Minimum Fee Applied: $${minimumFee.toFixed(2)}\n`;
+  }
+
+  receipt += `--------------------------\nEstimated Total: $${finalCost.toFixed(2)}`;
+
+  document.getElementById("receiptText").innerText = receipt;
+  document.getElementById("estimatedCost").value = `$${finalCost.toFixed(2)}`;
+}
+
+// Auto-refresh receipt on input change
+const fields = [
+  "tier", "bagSize", "bagCount",
+  "detergent", "softener", "dryerSheets",
+  "scentBoosters", "extras"
+];
+
+fields.forEach(id => {
+  document.getElementById(id).addEventListener("change", calculateCost);
+});
+document.getElementById("bagCount").addEventListener("input", calculateCost);
+
+// Trigger once on page load
+window.addEventListener("DOMContentLoaded", calculateCost);
+</script>
   <div class="section">
     <h2>Scan to Pay</h2>
     <div class="qr-grid">
@@ -205,3 +297,6 @@ function calculateCost() {
       </div>
     </div>
   </div>
+
+</body>
+</html>
