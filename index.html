@@ -18,7 +18,7 @@
       display: block;
       margin-top: 10px;
     }
-    select, input[type="text"], input[type="number"] {
+    select, input[type="text"], input[type="number"], textarea {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
@@ -74,131 +74,128 @@
   <p><strong>“You bag it, we stack it.”</strong></p>
   <p>Professional laundry service for travelers and professionals. We offer convenient pick-up and drop-off directly to your hotel room.</p>
 
-  <div class="section">
-    <h2>Choose Your Service Tier</h2>
-    <label for="tier">Service Tier:</label>
-    <select id="tier" name="tier">
-      <option value="standard">Standard (24–36 hrs) – $2.50/lb</option>
-      <option value="express">Express (6–12 hrs) – $3.50/lb</option>
-    </select>
+  <form id="bookingForm" action="https://formspree.io/f/xeolnkna" method="POST" onsubmit="return calculateCost()">
+    <div class="section">
+      <h2>Choose Your Service Tier</h2>
+      <label for="tier">Service Tier:</label>
+      <select id="tier" name="tier">
+        <option value="Standard">Standard (24–36 hrs) – $2.50/lb</option>
+        <option value="Express">Express (6–12 hrs) – $3.50/lb</option>
+      </select>
 
-    <label for="bagSize">Bag Size:</label>
-    <select id="bagSize" name="bagSize">
-      <option value="small">Small (13 gal – 20 lbs)</option>
-      <option value="medium">Medium (33 gal – 50 lbs)</option>
-      <option value="large">Large (55 gal – 75 lbs)</option>
-    </select>
+      <label for="bagSize">Bag Size:</label>
+      <select id="bagSize" name="bagSize">
+        <option value="Small">Small (13 gal – 20 lbs)</option>
+        <option value="Medium">Medium (33 gal – 50 lbs)</option>
+        <option value="Large">Large (55 gal – 75 lbs)</option>
+      </select>
 
-    <label for="bagCount">Number of Bags:</label>
-    <input type="number" id="bagCount" name="bagCount" min="1" placeholder="Enter number of bags">
+      <label for="bagCount">Number of Bags:</label>
+      <input type="number" id="bagCount" name="bagCount" min="1" required>
 
-    <p class="note">Minimum fees: $30 for Standard, $45 for Express</p>
-    <p class="warning">Express orders must be 60 lbs or less to qualify for same-day service. Orders over 60 lbs may be delayed, though we will do our best to accommodate timely delivery.</p>
-  </div>
+      <p class="note">Minimum fees: $30 for Standard, $45 for Express</p>
+      <p class="warning">Express orders must be 60 lbs or less to qualify for same-day service. Orders over 60 lbs may be delayed, though we will do our best to accommodate timely delivery.</p>
+    </div>
 
-  <div class="section">
-    <h2>Premium Add-Ons</h2>
-    <label for="detergent">Detergent ($0.10/lb):</label>
-    <select id="detergent" name="detergent">
-      <option value="none">None</option>
-      <option value="tide">Tide Original</option>
-      <option value="gain">Gain Original</option>
-      <option value="persil">Persil Original</option>
-      <option value="all">All Free & Clear</option>
-      <option value="tideFree">Tide Free & Gentle</option>
-    </select>
+    <div class="section">
+      <h2>Premium Add-Ons</h2>
+      <label for="detergent">Detergent:</label>
+      <select id="detergent" name="detergent">
+        <option value="None">None</option>
+        <option value="Tide">Tide Original</option>
+        <option value="Gain">Gain Original</option>
+        <option value="Persil">Persil Original</option>
+        <option value="All">All Free & Clear</option>
+        <option value="TideFree">Tide Free & Gentle</option>
+      </select>
 
-    <label for="softener">Fabric Softener ($0.10/lb):</label>
-    <select id="softener" name="softener">
-      <option value="none">None</option>
-      <option value="downy">Downy April Fresh</option>
-      <option value="gain">Gain Original</option>
-      <option value="tideFree">Tide Free & Gentle</option>
-      <option value="all">All Free & Clear</option>
-    </select>
+      <label for="softener">Fabric Softener:</label>
+      <select id="softener" name="softener">
+        <option value="None">None</option>
+        <option value="Downy">Downy April Fresh</option>
+        <option value="Gain">Gain Original</option>
+        <option value="TideFree">Tide Free & Gentle</option>
+        <option value="All">All Free & Clear</option>
+      </select>
 
-    <label for="dryerSheets">Dryer Sheets ($1.00/load):</label>
-    <select id="dryerSheets" name="dryerSheets">
-      <option value="none">None</option>
-      <option value="bounce">Bounce Original</option>
-      <option value="bounceFree">Bounce Free & Gentle</option>
-      <option value="gain">Gain Original</option>
-      <option value="all">All Free & Clear</option>
-    </select>
+      <label for="dryerSheets">Dryer Sheets:</label>
+      <select id="dryerSheets" name="dryerSheets">
+        <option value="None">None</option>
+        <option value="Bounce">Bounce Original</option>
+        <option value="BounceFree">Bounce Free & Gentle</option>
+        <option value="Gain">Gain Original</option>
+        <option value="All">All Free & Clear</option>
+      </select>
 
-    <label for="scentBoosters">Scent Boosters ($0.10/lb):</label>
-    <select id="scentBoosters" name="scentBoosters">
-      <option value="none">None</option>
-      <option value="unstoppables">Downy UnStoppables</option>
-      <option value="gainFireworks">Gain Fireworks</option>
-      <option value="armHammer">Arm & Hammer Fresh Burst</option>
-    </select>
+      <label for="scentBoosters">Scent Boosters:</label>
+      <select id="scentBoosters" name="scentBoosters">
+        <option value="None">None</option>
+        <option value="Unstoppables">Downy UnStoppables</option>
+        <option value="GainFireworks">Gain Fireworks</option>
+        <option value="ArmHammer">Arm & Hammer Fresh Burst</option>
+      </select>
 
-    <label for="extras">Other Add-Ons:</label>
-    <select id="extras" name="extras">
-      <option value="none">None</option>
-      <option value="ironOut">Iron Out ($1.00/load)</option>
-      <option value="bleach">Bleach ($0.50/load)</option>
-      <option value="colorSafe">Color-Safe Bleach ($0.50/load)</option>
-      <option value="oxyClean">Oxy Clean ($0.10/lb)</option>
-    </select>
-  </div>
+      <label for="extras">Other Add-Ons:</label>
+      <select id="extras" name="extras">
+        <option value="None">None</option>
+        <option value="IronOut">Iron Out</option>
+        <option value="Bleach">Bleach</option>
+        <option value="ColorSafe">Color-Safe Bleach</option>
+        <option value="OxyClean">Oxy Clean</option>
+      </select>
+    </div>
 
-  <div class="section">
-    <h2>Special Handling Instructions</h2>
-    <p>For stain treatment or hang dry (Standard tier only), please bag and label items separately.</p>
-    <p>For items requiring hangers, provide hangers and label the bag “Return on Hanger.”</p>
-    <p>Delicates, bleach, or other specialty items must be bagged and labeled accordingly.</p>
-  </div>
+    <div class="section">
+      <label for="notes">Special Instructions:</label>
+      <textarea id="notes" name="notes" rows="4" placeholder="Delicates, hang dry, stain treatment, etc."></textarea>
+    </div>
 
-  <div class="section">
-    <h2>Scheduling & Payment</h2>
-    <p><strong>Business Hours:</strong> Monday–Friday, 8 AM – 8 PM</p>
-    <p>Orders submitted before 12 PM qualify for same-day pickup.</p>
-    <p>Pickup & Drop-Off Windows: 8 AM – 12 PM or 6 PM – 8 PM</p>
-    <p>Payment is required in advance. Receipts and order confirmations will be handled after laundry is weighed.</p>
-  </div>
+    <input type="hidden" id="estimatedCost" name="estimatedCost">
+    <button type="submit">Submit Booking</button>
+    <p id="confirmation"></p>
+  </form>
 
   <div class="section">
     <h2>Scan to Pay</h2>
     <div class="qr-grid">
-
       <div class="qr-block">
         <h3>Zelle®</h3>
         <img src="./images/zelle.jpg" alt="Zelle QR Code">
         <p><strong>Christina Heath</strong></p>
         <p class="note">Scan with your smartphone to send payment via Zelle®</p>
       </div>
-
       <div class="qr-block">
         <h3>Cash App</h3>
         <img src="./images/cashapp.jpg" alt="Cash App QR Code">
         <p><strong>$tinalynn1983</strong></p>
         <p class="note">Scan with Cash App or send directly to $tinalynn1983</p>
       </div>
-
       <div class="qr-block">
         <h3>Venmo</h3>
         <img src="./images/venmo.jpg" alt="Venmo QR Code">
         <p><strong>@Christina-Heath-77588</strong></p>
         <p class="note">Scan with Venmo or send directly to @Christina-Heath-77588</p>
       </div>
-
       <div class="qr-block">
         <h3>PayPal</h3>
         <img src="./images/paypal.jpg" alt="PayPal QR Code">
         <p><strong>Christina Heath</strong></p>
         <p class="note">Scan to pay via PayPal</p>
       </div>
-
     </div>
   </div>
 
-  <button onclick="submitBooking()">Submit Booking</button>
-  <p id="confirmation"></p>
-
   <script>
-    function submitBooking() {
+    function calculateCost() {
       const tier = document.getElementById("tier").value;
       const bagSize = document.getElementById("bagSize").value;
-      const bagCount = parseInt(document.get
+      const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+
+      const detergent = document.getElementById("detergent").value;
+      const softener = document.getElementById("softener").value;
+      const dryerSheets = document.getElementById("dryerSheets").value;
+      const scentBoosters = document.getElementById("scentBoosters").value;
+      const extras = document.getElementById("extras").value;
+
+      let weightPerBag = 20;
+      if (bagSize === "Medium") weightPerBag = 50
