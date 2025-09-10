@@ -81,6 +81,44 @@
     .tier-box p {
       margin: 8px 0;
     }
+
+    form input, form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #2980b9;
+    }
+
+    footer {
+      background-color: #2c3e50;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    footer a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    footer p {
+      margin: 8px 0;
+    }
   </style>
 </head>
 <body>
@@ -121,6 +159,25 @@
     </div>
   </section>
 
+  <!-- Booking Form Section -->
+  <section style="background-color: #f4f4f4;">
+    <h2>Book a Laundry Service</h2>
+    <form action="https://formspree.io/f/xeolnkna" method="POST" style="max-width: 400px; margin: auto;">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Service Tier, Hotel, Add-ons..." required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <!-- Contact + Footer Section -->
+  <footer>
+    <h2>Contact</h2>
+    <p>Email: <a href="mailto:LegacyLaundryCare@gmail.com">LegacyLaundryCare@gmail.com</a></p>
+    <p>Facebook: <a href="https://www.facebook.com/LegacyLaundryCare" target="_blank">Legacy Laundry Care</a></p>
+    <p>Service Hours: Monday–Saturday, 8am–6pm</p>
+    <p style="margin-top: 20px; font-size: 0.9em;">© 2025 Legacy Laundry Care. All rights reserved.</p>
+  </footer>
+
 </body>
 </html>
-
