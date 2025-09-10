@@ -72,12 +72,107 @@
   </style>
 </head>
 <body>
+<script>
+function calculateCost() {
+  const tier = document.getElementById("tier").value;
+  const bagSize = document.getElementById("bagSize").value;
+  const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+
+  const detergent = document.getElementById("detergent").value;
+  const softener = document.getElementById("softener").value;
+  const dryerSheets = document.getElementById("dryerSheets").value;
+  const scentBoosters = document.getElementById("scentBoosters").value;
+  const extras = document.getElementById("extras").value;
+
+  let weightPerBag = 20;
+  if (bagSize === "Medium") weightPerBag = 50;
+  if (bagSize === "Large") weightPerBag = 75;
+
+  const totalWeight = weightPerBag * bagCount;
+  const baseRate = tier === "Express" ? 3.5 : 2.5;
+  const baseCost = totalWeight * baseRate;
+
+  let receipt = `Estimated Receipt:\n--------------------------\n`;
+  receipt += `Base Service (${tier}): $${baseCost.toFixed(2)}\n`;
+
+  let addOnCost = 0;
+
+  if (detergent !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Detergent (${detergent}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (softener !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Fabric Softener (${softener}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (scentBoosters !== "None") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Scent Boosters (${scentBoosters}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (dryerSheets !== "None") {
+    const cost = bagCount * 1.00;
+    addOnCost += cost;
+    receipt += `Dryer Sheets (${dryerSheets}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (extras === "IronOut") {
+    const cost = bagCount * 1.00;
+    addOnCost += cost;
+    receipt += `Other Add-On (Iron Out): $${cost.toFixed(2)}\n`;
+  }
+
+  if (["Bleach", "ColorSafe"].includes(extras)) {
+    const cost = bagCount * 0.50;
+    addOnCost += cost;
+    receipt += `Other Add-On (${extras}): $${cost.toFixed(2)}\n`;
+  }
+
+  if (extras === "OxyClean") {
+    const cost = totalWeight * 0.10;
+    addOnCost += cost;
+    receipt += `Other Add-On (Oxy Clean): $${cost.toFixed(2)}\n`;
+  }
+
+  const totalCost = baseCost + addOnCost;
+  const minimumFee = tier === "Express" ? 45 : 30;
+  const finalCost = Math.max(totalCost, minimumFee);
+
+  if (finalCost > totalCost) {
+    receipt += `Minimum Fee Applied: $${minimumFee.toFixed(2)}\n`;
+  }
+
+  receipt += `--------------------------\nEstimated Total: $${finalCost.toFixed(2)}`;
+
+  document.getElementById("receiptText").innerText = receipt;
+  document.getElementById("estimatedCost").value = `$${finalCost.toFixed(2)}`;
+}
+
+// Auto-refresh receipt on input change
+const fields = [
+  "tier", "bagSize", "bagCount",
+  "detergent", "softener", "dryerSheets",
+  "scentBoosters", "extras"
+];
+
+fields.forEach(id => {
+  document.getElementById(id).addEventListener("change", calculateCost);
+});
+document.getElementById("bagCount").addEventListener("input", calculateCost);
+
+// Trigger once on page load
+window.addEventListener("DOMContentLoaded", calculateCost);
+</script>
 
   <h1>Legacy Laundry Care</h1>
   <p><strong>“You bag it, we stack it.”</strong></p>
-  <p>Professional laundry service for travelers and professionals. We offer convenient pick-up and drop-off directly to your hotel room.</p>
-
   <form id="bookingForm" action="https://formspree.io/f/xeolnkna" method="POST">
+    <!-- Service Tier -->
     <div class="section">
       <h2>Choose Your Service Tier</h2>
       <label for="tier">Service Tier:</label>
@@ -95,11 +190,11 @@
 
       <label for="bagCount">Number of Bags:</label>
       <input type="number" id="bagCount" name="bagCount" min="1" required>
-
       <p class="note">Minimum fees: $30 for Standard, $45 for Express</p>
       <p class="warning">Express orders must be 60 lbs or less to qualify for same-day service.</p>
     </div>
 
+    <!-- Add-Ons -->
     <div class="section">
       <h2>Premium Add-Ons</h2>
       <label for="detergent">Detergent:</label>
@@ -148,53 +243,14 @@
       </select>
     </div>
 
+    <!-- Notes -->
     <div class="section">
       <label for="notes">Special Instructions:</label>
       <textarea id="notes" name="notes" rows="4" placeholder="Delicates, hang dry, stain treatment, etc."></textarea>
     </div>
 
+    <!-- Receipt + Submit -->
     <input type="hidden" id="estimatedCost" name="estimatedCost">
     <div id="receiptText"></div>
     <button type="submit">Submit Booking</button>
   </form>
-
-  <div class="section">
-    <h2>Scan to Pay</h2>
-    <div class="qr-grid">
-      <div class="qr-block">
-        <h3>Zelle®</h3>
-        <img src="./images/zelle.jpg" alt="Zelle QR Code">
-        <p><strong>Christina Heath</strong></p>
-        <p class="note">Scan with your smartphone to send payment via Zelle®</p>
-      </div>
-      <div class="qr-block">
-        <h3>Cash App</h3>
-        <img src="./images/cashapp.jpg" alt="Cash App QR Code">
-        <p><strong>$tinalynn1983</strong></p>
-        <p class="note">Scan with Cash App or send directly to $tinalynn1983</p>
-      </div>
-      <div class="qr-block">
-        <h3>Venmo</h3>
-        <img src="./images/venmo.jpg" alt="Venmo QR Code">
-        <p><strong>@Christina-Heath-77588</strong></p>
-        <p class="note">Scan with Venmo or send directly to @Christina-Heath-77588</p>
-      </div>
-      <div class="qr-block">
-        <h3>PayPal</h3>
-        <img src="./images/paypal.jpg" alt="PayPal QR Code">
-        <p><strong>Christina Heath</strong></p>
-        <p class="note">Scan to pay via PayPal</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function calculateCost() {
-      const tier = document.getElementById("tier").value;
-      const bagSize = document.getElementById("bagSize").value;
-      const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
-
-      const detergent = document.getElementById("detergent").value;
-      const softener = document.getElementById("softener").value;
-      const dryerSheets = document.getElementById("dryerSheets").value;
-      const scentBoosters = document.getElementById("
