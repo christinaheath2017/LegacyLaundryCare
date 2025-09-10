@@ -12,20 +12,24 @@
       padding: 0;
       color: #333;
     }
+
     header {
       background-color: #2c3e50;
       color: white;
       padding: 40px;
       text-align: center;
     }
+
     h1 {
       font-size: 2.5em;
       margin-bottom: 10px;
     }
+
     p {
       font-size: 1.2em;
       margin: 0;
     }
+
     .button {
       display: inline-block;
       margin-top: 20px;
@@ -36,16 +40,87 @@
       border-radius: 4px;
       font-weight: bold;
     }
+
     .button:hover {
       background-color: #2980b9;
+    }
+
+    section {
+      padding: 40px;
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    section h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    .tiers {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .tier-box {
+      flex: 1;
+      min-width: 250px;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fefefe;
+    }
+
+    .tier-box h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .tier-box p {
+      margin: 8px 0;
     }
   </style>
 </head>
 <body>
+
+  <!-- Hero Section -->
   <header>
     <h1>Legacy Laundry Care</h1>
     <p>Professional Laundry Services for Hotel Guests and Local Clients</p>
     <a class="button" href="https://www.facebook.com/LegacyLaundryCare" target="_blank">Book Now</a>
   </header>
+
+  <!-- Service Tiers Section -->
+  <section>
+    <h2>Service Tiers</h2>
+    <div class="tiers">
+
+      <div class="tier-box">
+        <h3>Standard</h3>
+        <p><strong>Turnaround:</strong> 24 hours</p>
+        <p><strong>Rate:</strong> $2.50/lb</p>
+        <p><strong>Add-ons:</strong> Scent-free, hang dry, folding</p>
+      </div>
+
+      <div class="tier-box">
+        <h3>Express</h3>
+        <p><strong>Turnaround:</strong> Same-day</p>
+        <p><strong>Rate:</strong> $3.50/lb</p>
+        <p><strong>Add-ons:</strong> Priority processing, scent customization</p>
+      </div>
+
+      <div class="tier-box">
+        <h3>Rapid Express</h3>
+        <p><strong>Turnaround:</strong> 4–6 hours</p>
+        <p><strong>Rate:</strong> $5.00/lb</p>
+        <p><strong>Add-ons:</strong> Immediate pickup, solo-machine processing</p>
+      </div>
+
+    </div>
+  </section>
+
 </body>
 </html>
+
