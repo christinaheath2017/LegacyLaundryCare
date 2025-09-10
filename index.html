@@ -52,6 +52,20 @@
       width: 200px;
       height: auto;
     }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #confirmation {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #006400;
+    }
   </style>
 </head>
 <body>
@@ -180,5 +194,13 @@
     </div>
   </div>
 
-</body>
-</html>
+  <button onclick="submitBooking()">Submit Booking</button>
+  <p id="confirmation"></p>
+
+  <script>
+    function submitBooking() {
+      const tier = document.getElementById("tier").value;
+      const bagSize = document.getElementById("bagSize").value;
+      const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+
+      const detergent = document.getElementById("detergent").value;
