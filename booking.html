@@ -43,7 +43,14 @@
 <body>
   <div id="clientInfo">Checking login...</div>
   <h2>Book Your Laundry Pickup</h2>
+
   <form id="bookingForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <label for="clientType">Are you a:</label>
+    <select id="clientType" name="clientType" required>
+      <option value="OneTime">One-Time Order</option>
+      <option value="Repeat">Repeat Customer</option>
+    </select>
+
     <label for="tier">Service Tier:</label>
     <select id="tier" name="tier" required>
       <option value="Standard">Standard</option>
@@ -153,6 +160,12 @@
     document.getElementById("bagSize").addEventListener("change", calculateTotal);
     document.getElementById("bagCount").addEventListener("input", calculateTotal);
 
+    document.getElementById("clientType").addEventListener("change", function() {
+      if (this.value === "Repeat") {
+        window.location.href = "signup.html";
+      }
+    });
+
     document.getElementById("bookingForm").addEventListener("submit", async function(e) {
       e.preventDefault();
 
@@ -174,8 +187,8 @@
           scentBoosters: document.getElementById("scentBoosters").value,
           extras: document.getElementById("extras").value
         },
-        estimated_cost: document.getElementById("estimatedCost").value,
-        client_message: document.getElementById("clientMessage").value,
+               estimated_cost: document.getElementById("estimatedCost").value,
+client_message: document.getElementById("clientMessage").value,
         status: "Pending"
       };
 
@@ -192,3 +205,5 @@
   </script>
 </body>
 </html>
+        
+        client_message: document.getElementById("clientMessage").
