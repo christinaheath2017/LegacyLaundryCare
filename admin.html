@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #fff;
+      color: #333;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .booking-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #f9f9f9;
+    }
+    .legacy {
+      border-left: 5px solid gold;
+      background-color: #fffbe6;
+    }
+    select {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard – All Bookings</h2>
+  <div id="adminBookings">Loading bookings...</div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+    );
+
+    async function loadAllBookings() {
+      const { data: bookings, error } = await supabase
+        .from("bookings")
+        .select("*, users(email, name)")
+        .order("created_at", { ascending: false });
+
+      if (error || !bookings.length) {
+        document.getElementById("adminBookings").innerHTML = "<p>No bookings found.</p>";
+        return;
+      }
+
+      const html = bookings.map(b => {
+        const isLegacy = b.users?.name === "Miss Judy";
+        const addOns = Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None";
+
+        return `
+          <div class="booking-entry ${isLegacy ? 'legacy' : ''}">
+            <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
+            <strong>Client:</strong> ${b.users?.name || "Unknown"} (${b.users?.email})<br>
+            Add-ons: ${addOns}<br>
+            Estimated Cost: ${b.estimated_cost}<br>
+            Status: 
+            <select onchange="updateStatus('${b.id}', this.value)">
+              <option value="Pending" ${b.status === "Pending" ? "selected" : ""}>Pending</option>
+              <option value="Completed" ${b.status === "Completed" ? "selected" : ""}>Completed</option>
+              <option value="Canceled" ${b.status === "Canceled" ? "selected" : ""}>Canceled</option>
+            </select><br>
+            Date: ${new Date(b.created_at).toLocaleString()}
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("adminBookings").innerHTML = html;
+    }
+
+    async function updateStatus(bookingId, newStatus) {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: newStatus })
+        .eq("id", bookingId);
+
+      if (error) {
+        alert("Failed to update status: " + error.message);
+      } else {
+        loadAllBookings(); // Refresh view
+      }
+    }
+
+    loadAllBookings();
+  </script>
+</body>
+</html>
