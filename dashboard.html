@@ -3,10 +3,33 @@
 <head>
   <title>Client Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #fefefe;
+      color: #333;
+    }
+    h2, h3 {
+      color: #333;
+    }
+    #clientInfo, .booking-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+    }
+  </style>
 </head>
 <body>
   <h2>Welcome to Your Laundry Dashboard</h2>
-  <div id="clientInfo"></div>
+  <div id="clientInfo">Loading client info...</div>
+  <div id="bookingHistory">Loading booking history...</div>
 
   <script>
     const supabase = supabase.createClient(
@@ -29,57 +52,47 @@
         .eq("email", user.email)
         .single();
 
-      if (userError) {
+      if (userError || !data) {
         document.getElementById("clientInfo").textContent = "User not found.";
-      } else {
-        const prefs = JSON.stringify(data.preferences, null, 2);
-        document.getElementById("clientInfo").innerHTML = `
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Preferences:</strong><pre>${prefs}</pre></p>
-        `;
+        return;
       }
+
+      const prefs = JSON.stringify(data.preferences, null, 2);
+      document.getElementById("clientInfo").innerHTML = `
+        <p><strong>Name:</strong> ${data.name}</p>
+        <p><strong>Email:</strong> ${data.email}</p>
+        <p><strong>Preferences:</strong><pre>${prefs}</pre></p>
+      `;
+
+      loadBookingHistory(data.id); // Pass user ID to booking history
+    }
+
+    async function loadBookingHistory(userId) {
+      const { data: bookings, error: bookingError } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (bookingError || !bookings.length) {
+        document.getElementById("bookingHistory").innerHTML = "<p>No bookings found.</p>";
+        return;
+      }
+
+      const historyHTML = bookings.map(b => `
+        <div class="booking-entry">
+          <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
+          Add-ons: ${Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None"}<br>
+          Estimated Cost: ${b.estimated_cost}<br>
+          Status: ${b.status}<br>
+          Date: ${new Date(b.created_at).toLocaleString()}
+        </div>
+      `).join("");
+
+      document.getElementById("bookingHistory").innerHTML = `<h3>Booking History</h3>${historyHTML}`;
     }
 
     loadClientData();
-    async function loadBookingHistory(email) {
-  const { data: userRecord, error: userError } = await supabase
-    .from("users")
-    .select("id")
-    .eq("email", email)
-    .single();
-
-  if (userError || !userRecord) {
-    console.error("User lookup failed:", userError);
-    return;
-  }
-
-  const { data: bookings, error: bookingError } = await supabase
-    .from("bookings")
-    .select("*")
-    .eq("user_id", userRecord.id)
-    .order("created_at", { ascending: false });
-
-  if (bookingError) {
-    console.error("Booking fetch failed:", bookingError);
-    return;
-  }
-
-  const historyHTML = bookings.map(b => `
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-      <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
-      Add-ons: ${Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None"}<br>
-      Estimated Cost: ${b.estimated_cost}<br>
-      Status: ${b.status}<br>
-      Date: ${new Date(b.created_at).toLocaleString()}
-    </div>
-  `).join("");
-
-  const container = document.createElement("div");
-  container.innerHTML = `<h3>Booking History</h3>${historyHTML}`;
-  document.body.appendChild(container);
-}
-
   </script>
 </body>
 </html>
