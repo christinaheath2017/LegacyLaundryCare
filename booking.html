@@ -234,6 +234,73 @@
     document.getElementById("bagSize").addEventListener("change", calculateTotal);
     document.getElementById("bagCount").addEventListener("input", calculateTotal);
   </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    'https://YOUR_PROJECT_ID.supabase.co',
+    'YOUR_PUBLIC_ANON_KEY'
+  );
+
+  function calculateTotal() {
+    const tier = document.getElementById("tier").value;
+    const bagSize = document.getElementById("bagSize").value;
+    const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+
+    const weightMap = {
+      Small: 20,
+      Medium: 50,
+      Large: 75
+    };
+
+    const weight = weightMap[bagSize] * bagCount;
+    const rate = tier === "Express" ? 3.5 : 2.5;
+    const subtotal = weight * rate;
+    const minimum = tier === "Express" ? 45 : 30;
+    const total = Math.max(subtotal, minimum);
+
+    const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
+    document.getElementById("receiptText").textContent = receipt;
+    document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
+  }
+
+  document.getElementById("tier").addEventListener("change", calculateTotal);
+  document.getElementById("bagSize").addEventListener("change", calculateTotal);
+  document.getElementById("bagCount").addEventListener("input", calculateTotal);
+
+  document.getElementById("bookingForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      alert("Please log in before submitting a booking.");
+      return;
+    }
+
+    const bookingData = {
+      user_id: user.id,
+      tier: document.getElementById("tier").value,
+      bag_size: document.getElementById("bagSize").value,
+      bag_count: parseInt(document.getElementById("bagCount").value),
+      add_ons: {
+        detergent: document.getElementById("detergent").value,
+        softener: document.getElementById("softener").value,
+        dryerSheets: document.getElementById("dryerSheets").value,
+        scentBoosters: document.getElementById("scentBoosters").value,
+        extras: document.getElementById("extras").value
+      },
+      estimated_cost: document.getElementById("estimatedCost").value,
+      status: "Pending"
+    };
+
+    const { error } = await supabase.from("bookings").insert([bookingData]);
+    if (error) {
+      alert("Booking failed: " + error.message);
+    } else {
+      alert("Booking submitted successfully!");
+      e.target.submit(); // continue to Formspree redirect
+    }
+  });
+</script>
 
 </body>
 </html>
