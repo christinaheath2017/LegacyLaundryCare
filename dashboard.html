@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Client Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <h2>Welcome to Your Laundry Dashboard</h2>
+  <div id="clientInfo"></div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+    );
+
+    async function loadClientData() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        alert("Not logged in");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const { data, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", user.email)
+        .single();
+
+      if (userError) {
+        document.getElementById("clientInfo").textContent = "User not found.";
+      } else {
+        const prefs = JSON.stringify(data.preferences, null, 2);
+        document.getElementById("clientInfo").innerHTML = `
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Preferences:</strong><pre>${prefs}</pre></p>
+        `;
+      }
+    }
+
+    loadClientData();
+  </script>
+</body>
+</html>
