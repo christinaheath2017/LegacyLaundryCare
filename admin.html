@@ -23,6 +23,19 @@
       border-left: 5px solid gold;
       background-color: #fffbe6;
     }
+    .tier-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      margin-top: 5px;
+      font-size: 0.85em;
+      background-color: #eee;
+      border-radius: 4px;
+    }
+    .tier-badge.legacy {
+      background-color: gold;
+      color: #333;
+      font-weight: bold;
+    }
     select {
       margin-top: 5px;
     }
@@ -50,15 +63,22 @@
       }
 
       const html = bookings.map(b => {
-        const isLegacy = b.users?.name === "Miss Judy";
+        const clientName = b.users?.name || "Unknown";
+        const clientEmail = b.users?.email || "—";
+        const isLegacy = clientName === "Miss Judy";
+        const tierLabel = isLegacy ? "Legacy Care Client" : "Standard Client";
+        const tierClass = isLegacy ? "legacy" : "";
+
         const addOns = Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None";
 
         return `
-          <div class="booking-entry ${isLegacy ? 'legacy' : ''}">
+          <div class="booking-entry ${tierClass}">
             <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
-            <strong>Client:</strong> ${b.users?.name || "Unknown"} (${b.users?.email})<br>
+            <strong>Client:</strong> ${clientName} (${clientEmail})<br>
+            <span class="tier-badge ${tierClass}">${tierLabel}</span><br>
             Add-ons: ${addOns}<br>
             Estimated Cost: ${b.estimated_cost}<br>
+            <p><strong>Client Message:</strong><br>${b.client_message || "—"}</p>
             Status: 
             <select onchange="updateStatus('${b.id}', this.value)">
               <option value="Pending" ${b.status === "Pending" ? "selected" : ""}>Pending</option>
