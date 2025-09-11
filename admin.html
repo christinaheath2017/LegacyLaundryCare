@@ -23,6 +23,10 @@
       border-left: 5px solid gold;
       background-color: #fffbe6;
     }
+    .express {
+      border-left: 5px solid crimson;
+      background-color: #ffecec;
+    }
     .tier-badge {
       display: inline-block;
       padding: 3px 8px;
@@ -36,8 +40,16 @@
       color: #333;
       font-weight: bold;
     }
-    select {
+    .tier-badge.express {
+      background-color: crimson;
+      color: #fff;
+      font-weight: bold;
+    }
+    select, textarea {
       margin-top: 5px;
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -66,20 +78,24 @@
         const clientName = b.users?.name || "Unknown";
         const clientEmail = b.users?.email || "—";
         const isLegacy = clientName === "Miss Judy";
+        const isExpress = b.tier === "Express";
         const tierLabel = isLegacy ? "Legacy Care Client" : "Standard Client";
         const tierClass = isLegacy ? "legacy" : "";
-
+        const urgencyClass = isExpress ? "express" : "";
         const addOns = Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None";
 
         return `
-          <div class="booking-entry ${tierClass}">
+          <div class="booking-entry ${tierClass} ${urgencyClass}">
             <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
             <strong>Client:</strong> ${clientName} (${clientEmail})<br>
-            <span class="tier-badge ${tierClass}">${tierLabel}</span><br>
+            <span class="tier-badge ${tierClass}">${tierLabel}</span>
+            ${isExpress ? '<span class="tier-badge express">Express Load</span>' : ''}<br>
             Add-ons: ${addOns}<br>
             Estimated Cost: ${b.estimated_cost}<br>
             <p><strong>Client Message:</strong><br>${b.client_message || "—"}</p>
-            Status: 
+            <label>Internal Notes:</label>
+            <textarea onchange="saveInternalNote('${b.id}', this.value)" placeholder="e.g. guest arriving tomorrow">${b.internal_note || ""}</textarea>
+            <label>Status:</label>
             <select onchange="updateStatus('${b.id}', this.value)">
               <option value="Pending" ${b.status === "Pending" ? "selected" : ""}>Pending</option>
               <option value="Completed" ${b.status === "Completed" ? "selected" : ""}>Completed</option>
@@ -102,7 +118,18 @@
       if (error) {
         alert("Failed to update status: " + error.message);
       } else {
-        loadAllBookings(); // Refresh view
+        loadAllBookings();
+      }
+    }
+
+    async function saveInternalNote(bookingId, note) {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ internal_note: note })
+        .eq("id", bookingId);
+
+      if (error) {
+        alert("Failed to save note: " + error.message);
       }
     }
 
