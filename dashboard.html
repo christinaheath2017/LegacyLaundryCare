@@ -13,7 +13,7 @@
     h2, h3 {
       color: #333;
     }
-    #clientInfo, .booking-entry {
+    #clientInfo, .booking-entry, #preferenceEditor {
       border: 1px solid #ccc;
       padding: 15px;
       margin-bottom: 20px;
@@ -24,11 +24,51 @@
       padding: 10px;
       overflow-x: auto;
     }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    select, button {
+      margin-top: 5px;
+      padding: 5px;
+    }
   </style>
 </head>
 <body>
   <h2>Welcome to Your Laundry Dashboard</h2>
   <div id="clientInfo">Loading client info...</div>
+  <div id="preferenceEditor" style="display:none;">
+    <h3>Update Preferences</h3>
+    <form id="prefsForm">
+      <label>Detergent:</label>
+      <select id="detergent">
+        <option value="None">None</option>
+        <option value="Tide">Tide</option>
+        <option value="Gain">Gain</option>
+        <option value="Persil">Persil</option>
+        <option value="All">All Free & Clear</option>
+      </select>
+
+      <label>Softener:</label>
+      <select id="softener">
+        <option value="None">None</option>
+        <option value="Downy">Downy</option>
+        <option value="Gain">Gain</option>
+        <option value="TideFree">Tide Free & Gentle</option>
+        <option value="All">All Free & Clear</option>
+      </select>
+
+      <label>Scent Boosters:</label>
+      <select id="scentBoosters">
+        <option value="None">None</option>
+        <option value="Unstoppables">Unstoppables</option>
+        <option value="GainFireworks">Gain Fireworks</option>
+        <option value="ArmHammer">Arm & Hammer</option>
+      </select>
+
+      <button type="submit">Save Preferences</button>
+    </form>
+  </div>
   <div id="bookingHistory">Loading booking history...</div>
 
   <script>
@@ -64,8 +104,40 @@
         <p><strong>Preferences:</strong><pre>${prefs}</pre></p>
       `;
 
-      loadBookingHistory(data.id); // Pass user ID to booking history
+      populatePreferenceForm(data.preferences);
+      document.getElementById("preferenceEditor").style.display = "block";
+      loadBookingHistory(data.id);
     }
+
+    function populatePreferenceForm(prefs) {
+      document.getElementById("detergent").value = prefs?.detergent || "None";
+      document.getElementById("softener").value = prefs?.softener || "None";
+      document.getElementById("scentBoosters").value = prefs?.scentBoosters || "None";
+    }
+
+    document.getElementById("prefsForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const newPrefs = {
+        detergent: document.getElementById("detergent").value,
+        softener: document.getElementById("softener").value,
+        scentBoosters: document.getElementById("scentBoosters").value
+      };
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { error } = await supabase
+        .from("users")
+        .update({ preferences: newPrefs })
+        .eq("email", user.email);
+
+      if (error) {
+        alert("Failed to update preferences: " + error.message);
+      } else {
+        alert("Preferences updated successfully!");
+        loadClientData(); // Refresh display
+      }
+    });
 
     async function loadBookingHistory(userId) {
       const { data: bookings, error: bookingError } = await supabase
