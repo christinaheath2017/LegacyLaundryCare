@@ -1,213 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Legacy Laundry Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 30px;
       background-color: #fefefe;
       color: #333;
     }
-    h1, h2, h3 {
-      color: #333;
+    h2 {
+      margin-bottom: 20px;
+    }
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      background-color: #f9f9f9;
     }
     label {
-      font-weight: bold;
       display: block;
       margin-top: 10px;
     }
-    select, input, textarea {
+    input, select, textarea, button {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
-      font-size: 1em;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    .note {
-      font-size: 0.9em;
-      color: #555;
-    }
-    .warning {
-      color: #a00;
-      font-weight: bold;
-    }
-    .qr-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-    }
-    .qr-block {
-      text-align: center;
-      max-width: 220px;
-    }
-    img {
-      width: 200px;
-      border: 1px solid #ccc;
-      padding: 5px;
-      background: #f9f9f9;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #333;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
+      box-sizing: border-box;
     }
     #receiptText {
-      background: #f4f4f4;
-      padding: 15px;
-      border: 1px solid #ccc;
+      margin-top: 15px;
+      background: #eee;
+      padding: 10px;
       white-space: pre-wrap;
-      font-family: monospace;
-      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+  <h2>Book Your Laundry Pickup</h2>
+  <form id="bookingForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <label for="tier">Service Tier:</label>
+    <select id="tier" name="tier" required>
+      <option value="Standard">Standard</option>
+      <option value="Express">Express</option>
+    </select>
 
-  <h1>Legacy Laundry Care</h1>
-  <p><strong>“You bag it, we stack it.”</strong></p>
+    <label for="bagSize">Bag Size:</label>
+    <select id="bagSize" name="bagSize" required>
+      <option value="Small">Small (20 lbs)</option>
+      <option value="Medium">Medium (50 lbs)</option>
+      <option value="Large">Large (75 lbs)</option>
+    </select>
 
-  <form id="bookingForm" action="https://formspree.io/f/xeolnkna" method="POST">
-    <input type="hidden" name="_redirect" value="https://christinaheath2017.github.io/LegacyLaundryCare/thankyou.html">
+    <label for="bagCount">Number of Bags:</label>
+    <input type="number" id="bagCount" name="bagCount" min="1" required>
 
-    <div class="section">
-      <h2>Client Information</h2>
-      <label for="name">Full Name:</label>
-      <input type="text" id="name" name="name" required>
+    <label for="detergent">Detergent:</label>
+    <select id="detergent" name="detergent">
+      <option value="None">None</option>
+      <option value="Tide">Tide</option>
+      <option value="Gain">Gain</option>
+      <option value="Persil">Persil</option>
+      <option value="All">All Free & Clear</option>
+    </select>
 
-      <label for="phone">Phone Number:</label>
-      <input type="text" id="phone" name="phone" required>
+    <label for="softener">Softener:</label>
+    <select id="softener" name="softener">
+      <option value="None">None</option>
+      <option value="Downy">Downy</option>
+      <option value="Gain">Gain</option>
+      <option value="TideFree">Tide Free & Gentle</option>
+      <option value="All">All Free & Clear</option>
+    </select>
 
-      <label for="email">Email Address:</label>
-      <input type="email" id="email" name="email" required>
+    <label for="dryerSheets">Dryer Sheets:</label>
+    <select id="dryerSheets" name="dryerSheets">
+      <option value="None">None</option>
+      <option value="Bounce">Bounce</option>
+      <option value="Gain">Gain</option>
+      <option value="Snuggle">Snuggle</option>
+    </select>
 
-      <label for="pickup">Pickup Location:</label>
-      <input type="text" id="pickup" name="pickup" required>
+    <label for="scentBoosters">Scent Boosters:</label>
+    <select id="scentBoosters" name="scentBoosters">
+      <option value="None">None</option>
+      <option value="Unstoppables">Unstoppables</option>
+      <option value="GainFireworks">Gain Fireworks</option>
+      <option value="ArmHammer">Arm & Hammer</option>
+    </select>
 
-      <label for="dropoff">Drop-Off Location:</label>
-      <input type="text" id="dropoff" name="dropoff" required>
-    </div>
+    <label for="extras">Extras:</label>
+    <select id="extras" name="extras">
+      <option value="None">None</option>
+      <option value="StainTreatment">Stain Treatment</option>
+      <option value="Whitening">Whitening Boost</option>
+      <option value="RustRemoval">Rust Removal</option>
+    </select>
 
-    <div class="section">
-      <h2>Choose Your Service Tier</h2>
-      <label for="tier">Service Tier:</label>
-      <select id="tier" name="tier">
-        <option value="Standard">Standard (24–36 hrs) – $2.50/lb</option>
-        <option value="Express">Express (6–12 hrs) – $3.50/lb</option>
-      </select>
-
-      <label for="bagSize">Bag Size:</label>
-      <select id="bagSize" name="bagSize">
-        <option value="Small">Small (13 gal – 20 lbs)</option>
-        <option value="Medium">Medium (33 gal – 50 lbs)</option>
-        <option value="Large">Large (55 gal – 75 lbs)</option>
-      </select>
-
-      <label for="bagCount">Number of Bags:</label>
-      <input type="number" id="bagCount" name="bagCount" min="1" required>
-
-      <p class="note">Minimum fees: $30 for Standard, $45 for Express</p>
-      <p class="warning">Express orders must be 60 lbs or less to qualify for same-day service.</p>
-    </div>
-
-    <div class="section">
-      <h2>Premium Add-Ons</h2>
-      <label for="detergent">Detergent:</label>
-      <select id="detergent" name="detergent">
-        <option value="None">None</option>
-        <option value="Tide">Tide Original</option>
-        <option value="Gain">Gain Original</option>
-        <option value="Persil">Persil Original</option>
-        <option value="All">All Free & Clear</option>
-        <option value="TideFree">Tide Free & Gentle</option>
-      </select>
-
-      <label for="softener">Fabric Softener:</label>
-      <select id="softener" name="softener">
-        <option value="None">None</option>
-        <option value="Downy">Downy April Fresh</option>
-        <option value="Gain">Gain Original</option>
-        <option value="TideFree">Tide Free & Gentle</option>
-        <option value="All">All Free & Clear</option>
-      </select>
-
-      <label for="dryerSheets">Dryer Sheets:</label>
-      <select id="dryerSheets" name="dryerSheets">
-        <option value="None">None</option>
-        <option value="Bounce">Bounce Original</option>
-        <option value="BounceFree">Bounce Free & Gentle</option>
-        <option value="Gain">Gain Original</option>
-        <option value="All">All Free & Clear</option>
-      </select>
-
-      <label for="scentBoosters">Scent Boosters:</label>
-      <select id="scentBoosters" name="scentBoosters">
-        <option value="None">None</option>
-        <option value="Unstoppables">Downy UnStoppables</option>
-        <option value="GainFireworks">Gain Fireworks</option>
-        <option value="ArmHammer">Arm & Hammer Fresh Burst</option>
-      </select>
-
-      <label for="extras">Other Add-Ons:</label>
-      <select id="extras" name="extras">
-        <option value="None">None</option>
-        <option value="IronOut">Iron Out</option>
-        <option value="Bleach">Bleach</option>
-        <option value="ColorSafe">Color-Safe Bleach</option>
-        <option value="OxyClean">Oxy Clean</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <label for="notes">Special Instructions:</label>
-      <textarea id="notes" name="notes" rows="4" placeholder="Delicates, hang dry, stain treatment, etc."></textarea>
-    </div>
+    <label for="clientMessage">Message or Notes:</label>
+    <textarea id="clientMessage" name="clientMessage" rows="4" placeholder="Optional notes for your laundry care..."></textarea>
 
     <input type="hidden" id="estimatedCost" name="estimatedCost">
-    <div id="receiptText"></div>
+    <div id="receiptText">Estimated total will appear here.</div>
+
     <button type="submit">Submit Booking</button>
   </form>
 
-  <div class="section">
-    <h2>Scan to Pay</h2>
-    <div class="qr-grid">
-      <div class="qr-block">
-        <h3>Zelle®</h3>
-        <img src="images/zelle.jpg" alt="Zelle">
-        <p><strong>Christina Heath</strong></p>
-        <p class="note">Scan to pay via Zelle</p>
-      </div>
-      <div class="qr-block">
-        <h3>Cash App</h3>
-        <img src="images/cashapp.jpg" alt="Cash App">
-        <p><strong>$tinalynn1983</strong></p>
-        <p class="note">Scan to pay via Cash App or send to $tinalynn1983</p>
-      </div>
-      <div class="qr-block">
-        <h3>Venmo</h3>
-        <img src="images/venmo.jpg" alt="Venmo">
-        <p><strong>@Christina-Heath-77588</strong></p>
-        <p class="note">Scan to pay via Venmo</p>
-      </div>
-      <div class="qr-block">
-        <h3>PayPal</h3>
-        <img src="images/paypal.jpg" alt="PayPal">
-        <p><strong>Christina Heath</strong></p>
-        <p class="note">Scan to pay via PayPal</p>
-      </div>
-    </div>
-  </div>
-
   <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+    );
+
     function calculateTotal() {
       const tier = document.getElementById("tier").value;
       const bagSize = document.getElementById("bagSize").value;
@@ -215,7 +119,7 @@
 
       const weightMap = {
         Small: 20,
-                Medium: 50,
+        Medium: 50,
         Large: 75
       };
 
@@ -233,77 +137,41 @@
     document.getElementById("tier").addEventListener("change", calculateTotal);
     document.getElementById("bagSize").addEventListener("change", calculateTotal);
     document.getElementById("bagCount").addEventListener("input", calculateTotal);
+
+    document.getElementById("bookingForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        alert("Please log in before submitting a booking.");
+        return;
+      }
+
+      const bookingData = {
+        user_id: user.id,
+        tier: document.getElementById("tier").value,
+        bag_size: document.getElementById("bagSize").value,
+        bag_count: parseInt(document.getElementById("bagCount").value),
+        add_ons: {
+          detergent: document.getElementById("detergent").value,
+          softener: document.getElementById("softener").value,
+          dryerSheets: document.getElementById("dryerSheets").value,
+          scentBoosters: document.getElementById("scentBoosters").value,
+          extras: document.getElementById("extras").value
+        },
+        estimated_cost: document.getElementById("estimatedCost").value,
+        client_message: document.getElementById("clientMessage").value,
+        status: "Pending"
+      };
+
+      const { error } = await supabase.from("bookings").insert([bookingData]);
+      if (error) {
+        alert("Booking failed: " + error.message);
+      } else {
+        alert("Booking submitted successfully!");
+        e.target.submit(); // continue to Formspree redirect
+      }
+    });
   </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-  const supabase = supabase.createClient(
-    'https://ztcyemsqljopyjbzpqvq.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
-  );
-
-  function calculateTotal() {
-    const tier = document.getElementById("tier").value;
-    const bagSize = document.getElementById("bagSize").value;
-    const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
-
-    const weightMap = {
-      Small: 20,
-      Medium: 50,
-      Large: 75
-    };
-
-    const weight = weightMap[bagSize] * bagCount;
-    const rate = tier === "Express" ? 3.5 : 2.5;
-    const subtotal = weight * rate;
-    const minimum = tier === "Express" ? 45 : 30;
-    const total = Math.max(subtotal, minimum);
-
-    const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
-    document.getElementById("receiptText").textContent = receipt;
-    document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
-  }
-
-  document.getElementById("tier").addEventListener("change", calculateTotal);
-  document.getElementById("bagSize").addEventListener("change", calculateTotal);
-  document.getElementById("bagCount").addEventListener("input", calculateTotal);
-
-  document.getElementById("bookingForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      alert("Please log in before submitting a booking.");
-      return;
-    }
-
-    const bookingData = {
-      user_id: user.id,
-      tier: document.getElementById("tier").value,
-      bag_size: document.getElementById("bagSize").value,
-      bag_count: parseInt(document.getElementById("bagCount").value),
-      add_ons: {
-        detergent: document.getElementById("detergent").value,
-        softener: document.getElementById("softener").value,
-        dryerSheets: document.getElementById("dryerSheets").value,
-        scentBoosters: document.getElementById("scentBoosters").value,
-        extras: document.getElementById("extras").value
-      },
-      estimated_cost: document.getElementById("estimatedCost").value,
-      status: "Pending"
-    };
-
-    const { error } = await supabase.from("bookings").insert([bookingData]);
-    if (error) {
-      alert("Booking failed: " + error.message);
-    } else {
-      alert("Booking submitted successfully!");
-      e.target.submit(); // continue to Formspree redirect
-    }
-  });
-</script>
-
 </body>
 </html>
-
-
-        
