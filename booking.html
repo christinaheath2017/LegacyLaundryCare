@@ -206,3 +206,39 @@
       </div>
     </div>
   </
+<script>
+  function calculateTotal() {
+    const tier = document.getElementById("tier").value;
+    const bagSize = document.getElementById("bagSize").value;
+    const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+
+    // Weight per bag
+    const weightMap = {
+      Small: 20,
+      Medium: 50,
+      Large: 75
+    };
+
+    const weight = weightMap[bagSize] * bagCount;
+
+    // Rate per lb
+    const rate = tier === "Express" ? 3.5 : 2.5;
+    const subtotal = weight * rate;
+
+    // Minimum fee enforcement
+    const minimum = tier === "Express" ? 45 : 30;
+    const total = Math.max(subtotal, minimum);
+
+    // Display receipt
+    const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
+    document.getElementById("receiptText").textContent = receipt;
+
+    // Store in hidden field
+    document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
+  }
+
+  // Trigger on input changes
+  document.getElementById("tier").addEventListener("change", calculateTotal);
+  document.getElementById("bagSize").addEventListener("change", calculateTotal);
+  document.getElementById("bagCount").addEventListener("input", calculateTotal);
+</script>
