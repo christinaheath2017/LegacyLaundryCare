@@ -42,6 +42,44 @@
     }
 
     loadClientData();
+    async function loadBookingHistory(email) {
+  const { data: userRecord, error: userError } = await supabase
+    .from("users")
+    .select("id")
+    .eq("email", email)
+    .single();
+
+  if (userError || !userRecord) {
+    console.error("User lookup failed:", userError);
+    return;
+  }
+
+  const { data: bookings, error: bookingError } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("user_id", userRecord.id)
+    .order("created_at", { ascending: false });
+
+  if (bookingError) {
+    console.error("Booking fetch failed:", bookingError);
+    return;
+  }
+
+  const historyHTML = bookings.map(b => `
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+      <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
+      Add-ons: ${Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None"}<br>
+      Estimated Cost: ${b.estimated_cost}<br>
+      Status: ${b.status}<br>
+      Date: ${new Date(b.created_at).toLocaleString()}
+    </div>
+  `).join("");
+
+  const container = document.createElement("div");
+  container.innerHTML = `<h3>Booking History</h3>${historyHTML}`;
+  document.body.appendChild(container);
+}
+
   </script>
 </body>
 </html>
