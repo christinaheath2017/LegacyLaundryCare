@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Legacy Laundry Booking</title>
+  <title>Legacy LaundryCare Booking</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
@@ -34,9 +34,14 @@
       padding: 10px;
       white-space: pre-wrap;
     }
+    #clientInfo {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
+  <div id="clientInfo">Checking login...</div>
   <h2>Book Your Laundry Pickup</h2>
   <form id="bookingForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
     <label for="tier">Service Tier:</label>
@@ -112,6 +117,16 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
 
+    async function showClientInfo() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      const infoBox = document.getElementById("clientInfo");
+      if (user && user.email) {
+        infoBox.textContent = `Logged in as: ${user.email}`;
+      } else {
+        infoBox.textContent = "Not logged in.";
+      }
+    }
+
     function calculateTotal() {
       const tier = document.getElementById("tier").value;
       const bagSize = document.getElementById("bagSize").value;
@@ -172,6 +187,8 @@
         e.target.submit(); // continue to Formspree redirect
       }
     });
+
+    showClientInfo();
   </script>
 </body>
 </html>
