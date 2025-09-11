@@ -77,7 +77,7 @@
   <p><strong>“You bag it, we stack it.”</strong></p>
 
   <form id="bookingForm" action="https://formspree.io/f/xeolnkna" method="POST">
-    <input type="hidden" name="_redirect" value="https://christinahban2017.github.io/LegacyLaundryCare/thankyou.html">
+    <input type="hidden" name="_redirect" value="https://christinaheath2017.github.io/LegacyLaundryCare/thankyou.html">
 
     <div class="section">
       <h2>Client Information</h2>
@@ -205,40 +205,37 @@
         <p class="note">Scan to pay via PayPal</p>
       </div>
     </div>
-  </
-<script>
-  function calculateTotal() {
-    const tier = document.getElementById("tier").value;
-    const bagSize = document.getElementById("bagSize").value;
-    const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
+  </div>
 
-    // Weight per bag
-    const weightMap = {
-      Small: 20,
-      Medium: 50,
-      Large: 75
-    };
+  <script>
+    function calculateTotal() {
+      const tier = document.getElementById("tier").value;
+      const bagSize = document.getElementById("bagSize").value;
+      const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
 
-    const weight = weightMap[bagSize] * bagCount;
+      const weightMap = {
+        Small: 20,
+        Medium: 50,
+                Large: 75
+      };
 
-    // Rate per lb
-    const rate = tier === "Express" ? 3.5 : 2.5;
-    const subtotal = weight * rate;
+      const weight = weightMap[bagSize] * bagCount;
+      const rate = tier === "Express" ? 3.5 : 2.5;
+      const subtotal = weight * rate;
+      const minimum = tier === "Express" ? 45 : 30;
+      const total = Math.max(subtotal, minimum);
 
-    // Minimum fee enforcement
-    const minimum = tier === "Express" ? 45 : 30;
-    const total = Math.max(subtotal, minimum);
+      const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
+      document.getElementById("receiptText").textContent = receipt;
+      document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
+    }
 
-    // Display receipt
-    const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
-    document.getElementById("receiptText").textContent = receipt;
+    document.getElementById("tier").addEventListener("change", calculateTotal);
+    document.getElementById("bagSize").addEventListener("change", calculateTotal);
+    document.getElementById("bagCount").addEventListener("input", calculateTotal);
+  </script>
 
-    // Store in hidden field
-    document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
-  }
+</body>
+</html>
 
-  // Trigger on input changes
-  document.getElementById("tier").addEventListener("change", calculateTotal);
-  document.getElementById("bagSize").addEventListener("change", calculateTotal);
-  document.getElementById("bagCount").addEventListener("input", calculateTotal);
-</script>
+        Large  
