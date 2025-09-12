@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Client Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
@@ -13,16 +15,12 @@
     h2, h3 {
       color: #333;
     }
-    #clientInfo, .booking-entry, #preferenceEditor {
+    #clientInfo, #preferenceEditor {
       border: 1px solid #ccc;
       padding: 15px;
       margin-bottom: 20px;
       background-color: #f9f9f9;
-    }
-    pre {
-      background: #eee;
-      padding: 10px;
-      overflow-x: auto;
+      border-radius: 8px;
     }
     label {
       display: block;
@@ -30,7 +28,12 @@
     }
     select, button {
       margin-top: 5px;
-      padding: 5px;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    .status {
+      font-weight: bold;
+      color: #007bff;
     }
   </style>
 </head>
@@ -44,7 +47,9 @@
     <p><strong>Service Tier:</strong> <span id="serviceTier">Loading...</span></p>
     <p><strong>Pickup Date:</strong> <span id="pickupDate">Loading...</span></p>
     <p><strong>Pickup Time:</strong> <span id="pickupTime">Loading...</span></p>
-    <p><strong>Payment Status:</strong> <span id="paymentStatus">Authorized, pending capture</span></p>
+    <p><strong>Estimated Amount:</strong> <span id="amountEstimate">$0.00</span></p>
+    <p><strong>Payment Status:</strong> <span id="paymentStatus" class="status">Loading...</span></p>
+    <p><strong>Stripe Intent ID:</strong> <span id="intentId">Loading...</span></p>
   </div>
 
   <div id="preferenceEditor">
@@ -91,20 +96,23 @@
         document.getElementById('serviceTier').textContent = booking.service || 'N/A';
         document.getElementById('pickupDate').textContent = booking.date || 'N/A';
         document.getElementById('pickupTime').textContent = booking.time || 'N/A';
+        document.getElementById('amountEstimate').textContent = booking.amount_estimate ? `$${booking.amount_estimate}` : 'N/A';
         document.getElementById('paymentStatus').textContent = booking.status || 'Pending';
+        document.getElementById('intentId').textContent = booking.stripe_intent_id || 'Not yet created';
       }
     }
 
     async function updatePreferences() {
       const softener = document.getElementById('softener').value;
       const detergent = document.getElementById('detergent').value;
+      const email = document.getElementById('clientEmail').textContent;
 
       const { data, error } = await supabase
         .from('users')
         .update({
           preferences: { softener, detergent }
         })
-        .eq('email', document.getElementById('clientEmail').textContent);
+        .eq('email', email);
 
       if (error) {
         alert('Error updating preferences: ' + error.message);
