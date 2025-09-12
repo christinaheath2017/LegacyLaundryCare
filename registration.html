@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Client Registration – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    form {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select, textarea {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h2>Register as a Legacy LaundryCare Client</h2>
+
+  <form id="registerForm">
+    <label>Full Name:</label>
+    <input type="text" name="name" required />
+
+    <label>Email Address:</label>
+    <input type="email" name="email" required />
+
+    <label>Phone Number:</label>
+    <input type="tel" name="phone" required />
+
+    <label>Address:</label>
+    <textarea name="address" rows="2" required></textarea>
+
+    <label>Client Type:</label>
+    <select name="client_type" required>
+      <option value="">Select</option>
+      <option value="Residence">Residence</option>
+      <option value="Business">Business</option>
+    </select>
+
+    <label>Household Members:</label>
+    <input type="number" name="household_total" placeholder="Total members" required />
+    <input type="number" name="household_male" placeholder="Number of males" />
+    <input type="number" name="household_female" placeholder="Number of females" />
+    <input type="text" name="household_ages" placeholder="Age breakdown (e.g. 3, 7, 42)" />
+
+    <label>Allergies or Sensitivities:</label>
+    <textarea name="allergies" rows="2" placeholder="e.g. fragrance-free only"></textarea>
+
+    <label>Product Source:</label>
+    <select name="product_source" required>
+      <option value="">Select</option>
+      <option value="Client Provided">Client Provided</option>
+      <option value="LaundryCare Provided">LaundryCare Provided</option>
+    </select>
+
+    <label>Preferred Detergent:</label>
+    <input type="text" name="preferred_detergent" placeholder="e.g. Tide, Gain" />
+
+    <label>Preferred Softener:</label>
+    <input type="text" name="preferred_softener" placeholder="e.g. Downy, Snuggle" />
+
+    <label>
+      <input type="checkbox" name="agree_terms" required />
+      I agree to the <a href="termsconditions.html" target="_blank">Terms & Conditions</a> and <a href="rules.html" target="_blank">Service Rules</a>.
+    </label>
+
+    <button type="submit">Register</button>
+    <div class="message" id="registerMessage"></div>
+  </form>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+    );
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const message = document.getElementById("registerMessage");
+
+      const client = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        address: formData.get("address"),
+        client_type: formData.get("client_type"),
+        household_total: formData.get("household_total"),
+        household_male: formData.get("household_male"),
+        household_female: formData.get("household_female"),
+        household_ages: formData.get("household_ages"),
+        allergies: formData.get("allergies"),
+        product_source: formData.get("product_source"),
+        preferences: {
+          detergent: formData.get("preferred_detergent"),
+          softener: formData.get("preferred_softener")
+        },
+        agreed_terms: true,
+        terms_version: 1
+      };
+
+      const { data, error } = await supabase
+        .from("users")
+        .insert([client]);
+
+      if (error) {
+        message.textContent = "Registration failed: " + error.message;
+      } else {
+        message.style.color = "green";
+        message.textContent = "Registration successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = "welcome.html";
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
