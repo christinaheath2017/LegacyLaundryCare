@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Legacy LaundryCare Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,6 +12,7 @@
       max-width: 600px;
       margin: auto;
       background-color: #f9f9f9;
+      color: #333;
     }
     h1 {
       text-align: center;
@@ -34,66 +36,113 @@
     button {
       background-color: #007bff;
       color: white;
+      border: none;
       cursor: pointer;
     }
     button:hover {
       background-color: #0056b3;
     }
+    .message {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: red;
+    }
+    #costPreview {
+      font-weight: bold;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #autoReply {
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #856404;
+    }
   </style>
 </head>
 <body>
-  <h1>Book Your Laundry Pickup</h1>
+  <h1>Book Laundry Service</h1>
+
   <form id="bookingForm">
-    <input type="text" name="name" placeholder="Full Name" required />
-    <input type="email" name="email" placeholder="Email Address" required />
-    <input type="tel" name="phone" placeholder="Phone Number" />
-    <input type="date" name="date" required />
-    <input type="time" name="time" required />
-    <select name="service" required>
-      <option value="">Select Service Tier</option>
-      <option value="Standard">Standard</option>
-      <option value="Express">Express</option>
-      <option value="Premium">Premium</option>
-    </select>
-    <textarea name="notes" placeholder="Special Instructions (optional)"></textarea>
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" required />
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" required />
+
+    <label for="weight">Estimated Laundry Weight (lbs):</label>
+    <input type="number" id="weight" required />
+
+    <label for="notes">Booking Notes (optional):</label>
+    <textarea id="notes" rows="3" placeholder="Let us know if you’re facing an emergency or need rapid service."></textarea>
+
+    <p id="costPreview"></p>
+    <div id="autoReply" style="display: none;"></div>
+
     <button type="submit">Submit Booking</button>
+    <div class="message" id="bookingMessage"></div>
   </form>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
     const supabase = supabase.createClient(
       'https://ztcyemsqljopyjbzpqvq.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
 
-    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const formData = new FormData(e.target);
 
-      const booking = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        date: formData.get('date'),
-        time: formData.get('time'),
-        service: formData.get('service'),
-        notes: formData.get('notes'),
-        status: 'Pending',
-        amount_estimate: 25.00 // Placeholder amount, can be dynamic later
-      };
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+      const notes = document.getElementById("notes").value.toLowerCase();
+      const message = document.getElementById("bookingMessage");
+      const costPreview = document.getElementById("costPreview");
+      const autoReply = document.getElementById("autoReply");
+
+      const emergencyKeywords = ["emergency", "funeral", "urgent", "leave by", "departure", "crisis"];
+      const emergencyFlag = emergencyKeywords.some(keyword => notes.includes(keyword));
+      const ratePerPound = emergencyFlag ? 1.00 : 2.00;
+      const estimatedCost = weight * ratePerPound;
+
+      costPreview.textContent = `Estimated Cost: $${estimatedCost.toFixed(2)} (${ratePerPound.toFixed(2)}/lb)`;
+
+      if (emergencyFlag) {
+        autoReply.style.display = "block";
+        autoReply.innerHTML = `
+          <strong>Emergency Detected:</strong><br>
+          I’m terribly sorry about your situation. As it is after hours, please reach out to me personally via <strong>(260) 503-8905</strong>.<br><br>
+          Call once, then text me your name and “Legacy ERC.” Call again and I’ll answer or respond via SMS.<br>
+          My ringer is always on, but if I don’t respond immediately, please call again. I’ll do everything I can to help.
+        `;
+      }
 
       const { data, error } = await supabase
-        .from('bookings')
-        .insert([booking]);
+        .from("bookings")
+        .insert([{
+          name,
+          email,
+          phone,
+          weight,
+          notes,
+          emergency_flag: emergencyFlag,
+          final_rate: ratePerPound,
+          emergency_rate_applied: emergencyFlag
+        }]);
 
       if (error) {
-        alert('Error: ' + error.message);
+        message.textContent = "Booking failed: " + error.message;
       } else {
-        alert('Booking submitted successfully! Your card will be authorized shortly.');
-        e.target.reset();
-
-        // TODO: Call Stripe API to create a payment intent with manual capture
-        // Store the intent ID in Supabase (stripe_intent_id)
+        message.style.color = "green";
+        message.textContent = "Booking successful! We’ll be in touch shortly.";
       }
     });
   </script>
