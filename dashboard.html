@@ -15,7 +15,7 @@
     h2, h3 {
       color: #333;
     }
-    #clientInfo, #preferenceEditor {
+    #clientInfo, #preferenceEditor, #bookingHistory {
       border: 1px solid #ccc;
       padding: 15px;
       margin-bottom: 20px;
@@ -26,34 +26,57 @@
       display: block;
       margin-top: 10px;
     }
-    select, button {
+    select, button, textarea {
       margin-top: 5px;
       padding: 8px;
       font-size: 1rem;
+      width: 100%;
+    }
+    .booking-entry {
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .emergency {
+      background-color: #ffecec;
+      border-left: 4px solid crimson;
+      padding-left: 10px;
     }
     .status {
       font-weight: bold;
       color: #007bff;
     }
+    .flag {
+      color: red;
+      font-weight: bold;
+    }
+    .notes {
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
-  <h2>Welcome to Your Dashboard</h2>
+  <h2>Welcome to Your Legacy Dashboard</h2>
 
   <div id="clientInfo">
-    <h3>Your Booking Details</h3>
-    <p><strong>Name:</strong> <span id="clientName">Loading...</span></p>
-    <p><strong>Email:</strong> <span id="clientEmail">Loading...</span></p>
-    <p><strong>Service Tier:</strong> <span id="serviceTier">Loading...</span></p>
-    <p><strong>Pickup Date:</strong> <span id="pickupDate">Loading...</span></p>
-    <p><strong>Pickup Time:</strong> <span id="pickupTime">Loading...</span></p>
-    <p><strong>Estimated Amount:</strong> <span id="amountEstimate">$0.00</span></p>
-    <p><strong>Payment Status:</strong> <span id="paymentStatus" class="status">Loading...</span></p>
-    <p><strong>Stripe Intent ID:</strong> <span id="intentId">Loading...</span></p>
+    <h3>Your Profile</h3>
+    <p><strong>Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+    <p><strongPhone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Address:</strong> <span id="clientAddress"></span></p>
   </div>
 
   <div id="preferenceEditor">
-    <h3>Update Preferences</h3>
+    <h3>Update Laundry Preferences</h3>
+    <label for="detergent">Preferred Detergent:</label>
+    <select id="detergent">
+      <option value="Tide">Tide</option>
+      <option value="Gain">Gain</option>
+      <option value="Arm & Hammer">Arm & Hammer</option>
+      <option value="All Free & Clear">All Free & Clear</option>
+    </select>
+
     <label for="softener">Preferred Softener:</label>
     <select id="softener">
       <option value="Downy">Downy</option>
@@ -61,14 +84,13 @@
       <option value="None">None</option>
     </select>
 
-    <label for="detergent">Preferred Detergent:</label>
-    <select id="detergent">
-      <option value="Tide">Tide</option>
-      <option value="Gain">Gain</option>
-      <option value="Arm & Hammer">Arm & Hammer</option>
-    </select>
-
     <button onclick="updatePreferences()">Save Preferences</button>
+    <p id="prefMessage"></p>
+  </div>
+
+  <div id="bookingHistory">
+    <h3>Your Booking History</h3>
+    <div id="bookingsContainer">Loading bookings...</div>
   </div>
 
   <script>
@@ -77,51 +99,93 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
 
-    async function loadClientData() {
+    const clientEmail = "client@example.com"; // Replace with dynamic email from login/auth
+
+    async function loadClientInfo() {
       const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .from("users")
+        .select("*")
+        .eq("email", clientEmail)
+        .single();
 
-      if (error) {
-        console.error('Error loading booking:', error.message);
-        return;
-      }
+      if (error || !data) return;
 
-      const booking = data[0];
-      if (booking) {
-        document.getElementById('clientName').textContent = booking.name || 'N/A';
-        document.getElementById('clientEmail').textContent = booking.email || 'N/A';
-        document.getElementById('serviceTier').textContent = booking.service || 'N/A';
-        document.getElementById('pickupDate').textContent = booking.date || 'N/A';
-        document.getElementById('pickupTime').textContent = booking.time || 'N/A';
-        document.getElementById('amountEstimate').textContent = booking.amount_estimate ? `$${booking.amount_estimate}` : 'N/A';
-        document.getElementById('paymentStatus').textContent = booking.status || 'Pending';
-        document.getElementById('intentId').textContent = booking.stripe_intent_id || 'Not yet created';
-      }
+      document.getElementById("clientName").textContent = data.name;
+      document.getElementById("clientEmail").textContent = data.email;
+      document.getElementById("clientPhone").textContent = data.phone;
+      document.getElementById("clientAddress").textContent = data.address;
+      document.getElementById("detergent").value = data.preferences?.detergent || "";
+      document.getElementById("softener").value = data.preferences?.softener || "";
     }
 
     async function updatePreferences() {
-      const softener = document.getElementById('softener').value;
-      const detergent = document.getElementById('detergent').value;
-      const email = document.getElementById('clientEmail').textContent;
+      const detergent = document.getElementById("detergent").value;
+      const softener = document.getElementById("softener").value;
+      const message = document.getElementById("prefMessage");
 
+      const { error } = await supabase
+        .from("users")
+        .update({ preferences: { detergent, softener } })
+        .eq("email", clientEmail);
+
+      message.textContent = error ? "Failed to update preferences." : "Preferences saved!";
+    }
+
+    async function loadBookings() {
       const { data, error } = await supabase
-        .from('users')
-        .update({
-          preferences: { softener, detergent }
-        })
-        .eq('email', email);
+        .from("bookings")
+        .select("*")
+        .eq("email", clientEmail)
+        .order("created_at", { ascending: false });
+
+      const container = document.getElementById("bookingsContainer");
+      container.innerHTML = "";
+
+      if (error || !data.length) {
+        container.textContent = "No bookings found.";
+        return;
+      }
+
+      data.forEach(booking => {
+        const entry = document.createElement("div");
+        entry.className = "booking-entry" + (booking.emergency_flag ? " emergency" : "");
+
+        entry.innerHTML = `
+          <p><strong>Pickup Date:</strong> ${booking.pickup_date || "N/A"}</p>
+          <p><strong>Service Tier:</strong> ${booking.service_tier || "Standard"}</p>
+          <p><strong>Status:</strong> <span class="status">${booking.status || "Pending"}</span></p>
+          <p><strong>Weight:</strong> ${booking.weight} lbs</p>
+          <p><strong>Rate:</strong> $${booking.final_rate.toFixed(2)}/lb</p>
+          <p><strong>Total:</strong> $${(booking.weight * booking.final_rate).toFixed(2)}</p>
+          ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied</p>" : ""}
+          ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
+          ${booking.bag_tracking ? `<p><strong>Bag Status:</strong> ${booking.bag_tracking}</p>` : ""}
+          <label for="clientMessage-${booking.id}">Message or Update:</label>
+          <textarea id="clientMessage-${booking.id}" rows="2" placeholder="Add a note or update...">${booking.client_message || ""}</textarea>
+          <button onclick="saveClientMessage('${booking.id}')">Save Message</button>
+        `;
+
+        container.appendChild(entry);
+      });
+    }
+
+    async function saveClientMessage(id) {
+      const message = document.getElementById(`clientMessage-${id}`).value;
+
+      const { error } = await supabase
+        .from("bookings")
+        .update({ client_message: message })
+        .eq("id", id);
 
       if (error) {
-        alert('Error updating preferences: ' + error.message);
+        alert("Failed to save message.");
       } else {
-        alert('Preferences updated successfully!');
+        alert("Message saved.");
       }
     }
 
-    loadClientData();
+    loadClientInfo();
+    loadBookings();
   </script>
 </body>
 </html>
