@@ -41,10 +41,31 @@
       color: red;
       font-weight: bold;
     }
+    #filters {
+      margin-bottom: 1rem;
+    }
+    #filters input[type="text"] {
+      padding: 0.5rem;
+      width: 60%;
+      font-size: 1rem;
+      margin-right: 1rem;
+    }
+    #filters label {
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
   <h2>Admin Dashboard – Bookings</h2>
+
+  <div id="filters">
+    <input type="text" id="searchInput" placeholder="Search by name, email, or phone" />
+    <label>
+      <input type="checkbox" id="emergencyOnly" />
+      Show emergencies only
+    </label>
+  </div>
+
   <div id="bookingsContainer">Loading bookings...</div>
 
   <script>
@@ -52,6 +73,9 @@
       'https://ztcyemsqljopyjbzpqvq.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
+
+    document.getElementById("searchInput").addEventListener("input", loadBookings);
+    document.getElementById("emergencyOnly").addEventListener("change", loadBookings);
 
     async function loadBookings() {
       const { data, error } = await supabase
@@ -67,7 +91,23 @@
         return;
       }
 
-      data.forEach(booking => {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const emergencyOnly = document.getElementById("emergencyOnly").checked;
+
+      const filtered = data.filter(booking => {
+        const matchSearch = booking.name.toLowerCase().includes(searchTerm)
+          || booking.email.toLowerCase().includes(searchTerm)
+          || booking.phone.toLowerCase().includes(searchTerm);
+        const matchEmergency = emergencyOnly ? booking.emergency_flag : true;
+        return matchSearch && matchEmergency;
+      });
+
+      if (filtered.length === 0) {
+        container.textContent = "No bookings match your filters.";
+        return;
+      }
+
+      filtered.forEach(booking => {
         const entry = document.createElement("div");
         entry.className = "booking-entry " + (booking.emergency_flag ? "emergency" : "standard");
 
