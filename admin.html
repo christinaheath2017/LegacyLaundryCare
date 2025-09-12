@@ -15,6 +15,18 @@
     h2 {
       margin-bottom: 20px;
     }
+    #filters {
+      margin-bottom: 1rem;
+    }
+    #filters input[type="text"] {
+      padding: 0.5rem;
+      width: 60%;
+      font-size: 1rem;
+      margin-right: 1rem;
+    }
+    #filters label {
+      font-size: 0.95rem;
+    }
     .booking-entry {
       border: 1px solid #ccc;
       padding: 15px;
@@ -41,17 +53,13 @@
       color: red;
       font-weight: bold;
     }
-    #filters {
-      margin-bottom: 1rem;
+    .status {
+      margin-top: 0.5rem;
     }
-    #filters input[type="text"] {
-      padding: 0.5rem;
-      width: 60%;
-      font-size: 1rem;
-      margin-right: 1rem;
-    }
-    #filters label {
+    select {
+      padding: 0.4rem;
       font-size: 0.95rem;
+      margin-top: 0.3rem;
     }
   </style>
 </head>
@@ -76,6 +84,19 @@
 
     document.getElementById("searchInput").addEventListener("input", loadBookings);
     document.getElementById("emergencyOnly").addEventListener("change", loadBookings);
+
+    async function updateStatus(id, newStatus) {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: newStatus })
+        .eq("id", id);
+
+      if (error) {
+        alert("Failed to update status: " + error.message);
+      } else {
+        loadBookings(); // Refresh dashboard
+      }
+    }
 
     async function loadBookings() {
       const { data, error } = await supabase
@@ -119,6 +140,14 @@
           💰 Estimated Total: $${(booking.weight * booking.final_rate).toFixed(2)}<br>
           ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied (50% off)</p>" : ""}
           ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
+          <div class="status">
+            <label for="status-${booking.id}"><strong>Status:</strong></label>
+            <select id="status-${booking.id}" onchange="updateStatus('${booking.id}', this.value)">
+              <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="In Progress" ${booking.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </div>
         `;
 
         container.appendChild(entry);
