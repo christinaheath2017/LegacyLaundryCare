@@ -30,6 +30,10 @@
       border-left: 5px solid crimson;
       background-color: #ffecec;
     }
+    .completed {
+      border-left: 5px solid green;
+      background-color: #e6ffe6;
+    }
     .tier-badge {
       display: inline-block;
       padding: 3px 8px;
@@ -46,6 +50,11 @@
     .tier-badge.express {
       background-color: crimson;
       color: #fff;
+      font-weight: bold;
+    }
+    .tier-badge.completed {
+      background-color: green;
+      color: white;
       font-weight: bold;
     }
     select, textarea {
@@ -75,7 +84,7 @@
     async function loadAllBookings() {
       const { data: bookings, error } = await supabase
         .from("bookings")
-        .select("*")
+        .select("*, users(email, name)")
         .order("created_at", { ascending: false });
 
       if (error || !bookings.length) {
@@ -84,19 +93,24 @@
       }
 
       const html = bookings.map(b => {
-        const isLegacy = b.name === "Miss Judy";
-        const isExpress = b.service === "Express";
+        const clientName = b.users?.name || "Unknown";
+        const clientEmail = b.users?.email || "—";
+        const isLegacy = clientName === "Miss Judy";
+        const isExpress = b.tier === "Express";
+        const isCompleted = b.status === "Completed";
         const tierLabel = isLegacy ? "Legacy Care Client" : "Standard Client";
         const tierClass = isLegacy ? "legacy" : "";
         const urgencyClass = isExpress ? "express" : "";
+        const completedClass = isCompleted ? "completed" : "";
         const addOns = b.add_ons ? Object.values(b.add_ons).filter(v => v !== "None").join(", ") : "None";
 
         return `
-          <div class="booking-entry ${tierClass} ${urgencyClass}">
-            <strong>${b.service}</strong> – ${b.bag_count || 0} bags (${b.bag_size || "Standard"})<br>
-            <strong>Client:</strong> ${b.name || "Unknown"} (${b.email || "—"})<br>
+          <div class="booking-entry ${tierClass} ${urgencyClass} ${completedClass}">
+            <strong>${b.tier}</strong> – ${b.bag_count || 0} bags (${b.bag_size || "Standard"})<br>
+            <strong>Client:</strong> ${clientName} (${clientEmail})<br>
             <span class="tier-badge ${tierClass}">${tierLabel}</span>
-            ${isExpress ? '<span class="tier-badge express">Express Load</span>' : ''}<br>
+            ${isExpress ? '<span class="tier-badge express">Express Load</span>' : ''}
+            ${isCompleted ? '<span class="tier-badge completed">Completed</span>' : ''}<br>
             Add-ons: ${addOns}<br>
             Estimated Cost: $${b.amount_estimate || "0.00"}<br>
             Stripe Intent ID: ${b.stripe_intent_id || "Not created"}<br>
