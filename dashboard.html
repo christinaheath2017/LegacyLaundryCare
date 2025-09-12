@@ -63,8 +63,9 @@
     <h3>Your Profile</h3>
     <p><strong>Name:</strong> <span id="clientName"></span></p>
     <p><strong>Email:</strong> <span id="clientEmail"></span></p>
-    <p><strongPhone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
     <p><strong>Address:</strong> <span id="clientAddress"></span></p>
+    <p><strong>Bag Status:</strong> <span id="bagStatus"></span></p>
   </div>
 
   <div id="preferenceEditor">
@@ -99,7 +100,17 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
 
-    const clientEmail = "client@example.com"; // Replace with dynamic email from login/auth
+    let clientEmail = "";
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user && user.email) {
+        clientEmail = user.email;
+        loadClientInfo();
+        loadBookings();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
 
     async function loadClientInfo() {
       const { data, error } = await supabase
@@ -110,10 +121,11 @@
 
       if (error || !data) return;
 
-      document.getElementById("clientName").textContent = data.name;
-      document.getElementById("clientEmail").textContent = data.email;
-      document.getElementById("clientPhone").textContent = data.phone;
-      document.getElementById("clientAddress").textContent = data.address;
+      document.getElementById("clientName").textContent = data.name || "";
+      document.getElementById("clientEmail").textContent = data.email || "";
+      document.getElementById("clientPhone").textContent = data.phone || "";
+      document.getElementById("clientAddress").textContent = data.address || "";
+      document.getElementById("bagStatus").textContent = data.bag_status || "Not tracked";
       document.getElementById("detergent").value = data.preferences?.detergent || "";
       document.getElementById("softener").value = data.preferences?.softener || "";
     }
@@ -153,7 +165,7 @@
         entry.innerHTML = `
           <p><strong>Pickup Date:</strong> ${booking.pickup_date || "N/A"}</p>
           <p><strong>Service Tier:</strong> ${booking.service_tier || "Standard"}</p>
-          <p><strong>Status:</strong> <span class="status">${booking.status || "Pending"}</span></p>
+          <p><strong>Status:</strong> <span class="status">${renderStatus(booking.status)}</span></p>
           <p><strong>Weight:</strong> ${booking.weight} lbs</p>
           <p><strong>Rate:</strong> $${booking.final_rate.toFixed(2)}/lb</p>
           <p><strong>Total:</strong> $${(booking.weight * booking.final_rate).toFixed(2)}</p>
@@ -167,6 +179,12 @@
 
         container.appendChild(entry);
       });
+    }
+
+    function renderStatus(status) {
+      if (status === "Completed") return "Delivered ✅";
+      if (status === "In Progress") return "Enroute 🚚";
+      return "Pending ⏳";
     }
 
     async function saveClientMessage(id) {
@@ -183,9 +201,6 @@
         alert("Message saved.");
       }
     }
-
-    loadClientInfo();
-    loadBookings();
   </script>
 </body>
 </html>
