@@ -54,6 +54,10 @@
       font-size: 0.9rem;
       color: red;
     }
+    .disclaimer {
+      font-size: 0.9rem;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -95,11 +99,26 @@
       <option value="LaundryCare Provided">LaundryCare Provided</option>
     </select>
 
-    <label>Preferred Detergent:</label>
-    <input type="text" name="preferred_detergent" placeholder="e.g. Tide, Gain" />
+    <label>Preferred Detergent (select from available options):</label>
+    <select name="preferred_detergent" required>
+      <option value="">Select</option>
+      <option value="Tide">Tide</option>
+      <option value="Gain">Gain</option>
+      <option value="Arm & Hammer">Arm & Hammer</option>
+      <option value="All Free & Clear">All Free & Clear</option>
+    </select>
 
-    <label>Preferred Softener:</label>
-    <input type="text" name="preferred_softener" placeholder="e.g. Downy, Snuggle" />
+    <label>Preferred Softener (select from available options):</label>
+    <select name="preferred_softener" required>
+      <option value="">Select</option>
+      <option value="Downy">Downy</option>
+      <option value="Snuggle">Snuggle</option>
+      <option value="None">None</option>
+    </select>
+
+    <p class="disclaimer">
+      If you prefer a product or scent not listed above, you must supply it yourself. Legacy LaundryCare does not purchase custom or specialty items.
+    </p>
 
     <label>
       <input type="checkbox" name="agree_terms" required />
