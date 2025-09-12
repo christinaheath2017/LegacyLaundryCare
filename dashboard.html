@@ -35,41 +35,36 @@
   </style>
 </head>
 <body>
-  <h2>Welcome to Your Laundry Dashboard</h2>
-  <div id="clientInfo">Loading client info...</div>
-  <div id="preferenceEditor" style="display:none;">
-    <h3>Update Preferences</h3>
-    <form id="prefsForm">
-      <label>Detergent:</label>
-      <select id="detergent">
-        <option value="None">None</option>
-        <option value="Tide">Tide</option>
-        <option value="Gain">Gain</option>
-        <option value="Persil">Persil</option>
-        <option value="All">All Free & Clear</option>
-      </select>
+  <h2>Welcome to Your Dashboard</h2>
 
-      <label>Softener:</label>
-      <select id="softener">
-        <option value="None">None</option>
-        <option value="Downy">Downy</option>
-        <option value="Gain">Gain</option>
-        <option value="TideFree">Tide Free & Gentle</option>
-        <option value="All">All Free & Clear</option>
-      </select>
-
-      <label>Scent Boosters:</label>
-      <select id="scentBoosters">
-        <option value="None">None</option>
-        <option value="Unstoppables">Unstoppables</option>
-        <option value="GainFireworks">Gain Fireworks</option>
-        <option value="ArmHammer">Arm & Hammer</option>
-      </select>
-
-      <button type="submit">Save Preferences</button>
-    </form>
+  <div id="clientInfo">
+    <h3>Your Booking Details</h3>
+    <p><strong>Name:</strong> <span id="clientName">Loading...</span></p>
+    <p><strong>Email:</strong> <span id="clientEmail">Loading...</span></p>
+    <p><strong>Service Tier:</strong> <span id="serviceTier">Loading...</span></p>
+    <p><strong>Pickup Date:</strong> <span id="pickupDate">Loading...</span></p>
+    <p><strong>Pickup Time:</strong> <span id="pickupTime">Loading...</span></p>
+    <p><strong>Payment Status:</strong> <span id="paymentStatus">Authorized, pending capture</span></p>
   </div>
-  <div id="bookingHistory">Loading booking history...</div>
+
+  <div id="preferenceEditor">
+    <h3>Update Preferences</h3>
+    <label for="softener">Preferred Softener:</label>
+    <select id="softener">
+      <option value="Downy">Downy</option>
+      <option value="Snuggle">Snuggle</option>
+      <option value="None">None</option>
+    </select>
+
+    <label for="detergent">Preferred Detergent:</label>
+    <select id="detergent">
+      <option value="Tide">Tide</option>
+      <option value="Gain">Gain</option>
+      <option value="Arm & Hammer">Arm & Hammer</option>
+    </select>
+
+    <button onclick="updatePreferences()">Save Preferences</button>
+  </div>
 
   <script>
     const supabase = supabase.createClient(
@@ -78,90 +73,44 @@
     );
 
     async function loadClientData() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-
-      if (error || !user) {
-        alert("Not logged in");
-        window.location.href = "login.html";
-        return;
-      }
-
-      const { data, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", user.email)
-        .single();
-
-      if (userError || !data) {
-        document.getElementById("clientInfo").textContent = "User not found.";
-        return;
-      }
-
-      const prefs = JSON.stringify(data.preferences, null, 2);
-      document.getElementById("clientInfo").innerHTML = `
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Preferences:</strong><pre>${prefs}</pre></p>
-      `;
-
-      populatePreferenceForm(data.preferences);
-      document.getElementById("preferenceEditor").style.display = "block";
-      loadBookingHistory(data.id);
-    }
-
-    function populatePreferenceForm(prefs) {
-      document.getElementById("detergent").value = prefs?.detergent || "None";
-      document.getElementById("softener").value = prefs?.softener || "None";
-      document.getElementById("scentBoosters").value = prefs?.scentBoosters || "None";
-    }
-
-    document.getElementById("prefsForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-
-      const newPrefs = {
-        detergent: document.getElementById("detergent").value,
-        softener: document.getElementById("softener").value,
-        scentBoosters: document.getElementById("scentBoosters").value
-      };
-
-      const { data: { user } } = await supabase.auth.getUser();
-
-      const { error } = await supabase
-        .from("users")
-        .update({ preferences: newPrefs })
-        .eq("email", user.email);
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
       if (error) {
-        alert("Failed to update preferences: " + error.message);
-      } else {
-        alert("Preferences updated successfully!");
-        loadClientData(); // Refresh display
-      }
-    });
-
-    async function loadBookingHistory(userId) {
-      const { data: bookings, error: bookingError } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (bookingError || !bookings.length) {
-        document.getElementById("bookingHistory").innerHTML = "<p>No bookings found.</p>";
+        console.error('Error loading booking:', error.message);
         return;
       }
 
-      const historyHTML = bookings.map(b => `
-        <div class="booking-entry">
-          <strong>${b.tier}</strong> – ${b.bag_count} bags (${b.bag_size})<br>
-          Add-ons: ${Object.values(b.add_ons).filter(v => v !== "None").join(", ") || "None"}<br>
-          Estimated Cost: ${b.estimated_cost}<br>
-          Status: ${b.status}<br>
-          Date: ${new Date(b.created_at).toLocaleString()}
-        </div>
-      `).join("");
+      const booking = data[0];
+      if (booking) {
+        document.getElementById('clientName').textContent = booking.name || 'N/A';
+        document.getElementById('clientEmail').textContent = booking.email || 'N/A';
+        document.getElementById('serviceTier').textContent = booking.service || 'N/A';
+        document.getElementById('pickupDate').textContent = booking.date || 'N/A';
+        document.getElementById('pickupTime').textContent = booking.time || 'N/A';
+        document.getElementById('paymentStatus').textContent = booking.status || 'Pending';
+      }
+    }
 
-      document.getElementById("bookingHistory").innerHTML = `<h3>Booking History</h3>${historyHTML}`;
+    async function updatePreferences() {
+      const softener = document.getElementById('softener').value;
+      const detergent = document.getElementById('detergent').value;
+
+      const { data, error } = await supabase
+        .from('users')
+        .update({
+          preferences: { softener, detergent }
+        })
+        .eq('email', document.getElementById('clientEmail').textContent);
+
+      if (error) {
+        alert('Error updating preferences: ' + error.message);
+      } else {
+        alert('Preferences updated successfully!');
+      }
     }
 
     loadClientData();
