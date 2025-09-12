@@ -42,9 +42,7 @@
   </style>
 </head>
 <body>
-
   <h1>Book Your Laundry Pickup</h1>
-
   <form id="bookingForm">
     <input type="text" name="name" placeholder="Full Name" required />
     <input type="email" name="email" placeholder="Email Address" required />
@@ -70,8 +68,8 @@
 
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(e.target);
+
       const booking = {
         name: formData.get('name'),
         email: formData.get('email'),
@@ -80,7 +78,8 @@
         time: formData.get('time'),
         service: formData.get('service'),
         notes: formData.get('notes'),
-        status: 'Pending'
+        status: 'Pending',
+        amount_estimate: 25.00 // Placeholder amount, can be dynamic later
       };
 
       const { data, error } = await supabase
@@ -90,11 +89,13 @@
       if (error) {
         alert('Error: ' + error.message);
       } else {
-        alert('Booking submitted successfully!');
+        alert('Booking submitted successfully! Your card will be authorized shortly.');
         e.target.reset();
+
+        // TODO: Call Stripe API to create a payment intent with manual capture
+        // Store the intent ID in Supabase (stripe_intent_id)
       }
     });
   </script>
-
 </body>
 </html>
