@@ -1,209 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Legacy LaundryCare Booking</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
-      background-color: #fefefe;
-      color: #333;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    form {
-      border: 1px solid #ccc;
-      padding: 20px;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
       background-color: #f9f9f9;
     }
-    label {
-      display: block;
-      margin-top: 10px;
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     input, select, textarea, button {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    #receiptText {
-      margin-top: 15px;
-      background: #eee;
-      padding: 10px;
-      white-space: pre-wrap;
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
     }
-    #clientInfo {
-      margin-bottom: 20px;
-      font-weight: bold;
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <div id="clientInfo">Checking login...</div>
-  <h2>Book Your Laundry Pickup</h2>
 
-  <form id="bookingForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-    <label for="clientType">Are you a:</label>
-    <select id="clientType" name="clientType" required>
-      <option value="OneTime">One-Time Order</option>
-      <option value="Repeat">Repeat Customer</option>
-    </select>
+  <h1>Book Your Laundry Pickup</h1>
 
-    <label for="tier">Service Tier:</label>
-    <select id="tier" name="tier" required>
+  <form id="bookingForm">
+    <input type="text" name="name" placeholder="Full Name" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <input type="tel" name="phone" placeholder="Phone Number" />
+    <input type="date" name="date" required />
+    <input type="time" name="time" required />
+    <select name="service" required>
+      <option value="">Select Service Tier</option>
       <option value="Standard">Standard</option>
       <option value="Express">Express</option>
+      <option value="Premium">Premium</option>
     </select>
-
-    <label for="bagSize">Bag Size:</label>
-    <select id="bagSize" name="bagSize" required>
-      <option value="Small">Small (20 lbs)</option>
-      <option value="Medium">Medium (50 lbs)</option>
-      <option value="Large">Large (75 lbs)</option>
-    </select>
-
-    <label for="bagCount">Number of Bags:</label>
-    <input type="number" id="bagCount" name="bagCount" min="1" required>
-
-    <label for="detergent">Detergent:</label>
-    <select id="detergent" name="detergent">
-      <option value="None">None</option>
-      <option value="Tide">Tide</option>
-      <option value="Gain">Gain</option>
-      <option value="Persil">Persil</option>
-      <option value="All">All Free & Clear</option>
-    </select>
-
-    <label for="softener">Softener:</label>
-    <select id="softener" name="softener">
-      <option value="None">None</option>
-      <option value="Downy">Downy</option>
-      <option value="Gain">Gain</option>
-      <option value="TideFree">Tide Free & Gentle</option>
-      <option value="All">All Free & Clear</option>
-    </select>
-
-    <label for="dryerSheets">Dryer Sheets:</label>
-    <select id="dryerSheets" name="dryerSheets">
-      <option value="None">None</option>
-      <option value="Bounce">Bounce</option>
-      <option value="Gain">Gain</option>
-      <option value="Snuggle">Snuggle</option>
-    </select>
-
-    <label for="scentBoosters">Scent Boosters:</label>
-    <select id="scentBoosters" name="scentBoosters">
-      <option value="None">None</option>
-      <option value="Unstoppables">Unstoppables</option>
-      <option value="GainFireworks">Gain Fireworks</option>
-      <option value="ArmHammer">Arm & Hammer</option>
-    </select>
-
-    <label for="extras">Extras:</label>
-    <select id="extras" name="extras">
-      <option value="None">None</option>
-      <option value="StainTreatment">Stain Treatment</option>
-      <option value="Whitening">Whitening Boost</option>
-      <option value="RustRemoval">Rust Removal</option>
-    </select>
-
-    <label for="clientMessage">Message or Notes:</label>
-    <textarea id="clientMessage" name="clientMessage" rows="4" placeholder="Optional notes for your laundry care..."></textarea>
-
-    <input type="hidden" id="estimatedCost" name="estimatedCost">
-    <div id="receiptText">Estimated total will appear here.</div>
-
+    <textarea name="notes" placeholder="Special Instructions (optional)"></textarea>
     <button type="submit">Submit Booking</button>
   </form>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
     const supabase = supabase.createClient(
       'https://ztcyemsqljopyjbzpqvq.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
     );
 
-    async function showClientInfo() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      const infoBox = document.getElementById("clientInfo");
-      if (user && user.email) {
-        infoBox.textContent = `Logged in as: ${user.email}`;
-      } else {
-        infoBox.textContent = "Not logged in.";
-      }
-    }
-
-    function calculateTotal() {
-      const tier = document.getElementById("tier").value;
-      const bagSize = document.getElementById("bagSize").value;
-      const bagCount = parseInt(document.getElementById("bagCount").value) || 0;
-
-      const weightMap = {
-        Small: 20,
-        Medium: 50,
-        Large: 75
-      };
-
-      const weight = weightMap[bagSize] * bagCount;
-      const rate = tier === "Express" ? 3.5 : 2.5;
-      const subtotal = weight * rate;
-      const minimum = tier === "Express" ? 45 : 30;
-      const total = Math.max(subtotal, minimum);
-
-      const receipt = `Estimated Total: $${total.toFixed(2)}\n\nDetails:\nTier: ${tier}\nBag Size: ${bagSize}\nBags: ${bagCount}\nWeight: ${weight} lbs\nRate: $${rate.toFixed(2)}/lb`;
-      document.getElementById("receiptText").textContent = receipt;
-      document.getElementById("estimatedCost").value = `$${total.toFixed(2)}`;
-    }
-
-    document.getElementById("tier").addEventListener("change", calculateTotal);
-    document.getElementById("bagSize").addEventListener("change", calculateTotal);
-    document.getElementById("bagCount").addEventListener("input", calculateTotal);
-
-    document.getElementById("clientType").addEventListener("change", function() {
-      if (this.value === "Repeat") {
-        window.location.href = "signup.html";
-      }
-    });
-
-    document.getElementById("bookingForm").addEventListener("submit", async function(e) {
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
-        alert("Please log in before submitting a booking.");
-        return;
-      }
-
-      const bookingData = {
-        user_id: user.id,
-        tier: document.getElementById("tier").value,
-        bag_size: document.getElementById("bagSize").value,
-        bag_count: parseInt(document.getElementById("bagCount").value),
-        add_ons: {
-          detergent: document.getElementById("detergent").value,
-          softener: document.getElementById("softener").value,
-          dryerSheets: document.getElementById("dryerSheets").value,
-          scentBoosters: document.getElementById("scentBoosters").value,
-          extras: document.getElementById("extras").value
-        },
-               estimated_cost: document.getElementById("estimatedCost").value,
-client_message: document.getElementById("clientMessage").value,
-        status: "Pending"
+      const formData = new FormData(e.target);
+      const booking = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        date: formData.get('date'),
+        time: formData.get('time'),
+        service: formData.get('service'),
+        notes: formData.get('notes'),
+        status: 'Pending'
       };
 
-      const { error } = await supabase.from("bookings").insert([bookingData]);
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert([booking]);
+
       if (error) {
-        alert("Booking failed: " + error.message);
+        alert('Error: ' + error.message);
       } else {
-        alert("Booking submitted successfully!");
-        e.target.submit(); // continue to Formspree redirect
+        alert('Booking submitted successfully!');
+        e.target.reset();
       }
     });
-
-    showClientInfo();
   </script>
+
 </body>
 </html>
-        
-        client_message: document.getElementById("clientMessage").
