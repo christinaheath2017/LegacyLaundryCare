@@ -42,7 +42,7 @@
       border-radius: 5px;
     }
     button {
-      margin-top: 2rem;
+      margin-top: 1rem;
       padding: 0.75rem 1.5rem;
       background-color: #007bff;
       color: white;
@@ -80,15 +80,8 @@
     <option value="registered">Registered / Repeat</option>
   </select>
 
-  <label>
-    <input type="checkbox" id="noAddons" />
-    No Add-Ons — Just wash and return my laundry
-  </label>
-
-  <label>
-    <input type="checkbox" id="clientProvided" />
-    Client Provided Laundry Care Products (Free)
-  </label>
+  <label><input type="checkbox" id="noAddons" /> No Add-Ons — Just wash and return my laundry</label>
+  <label><input type="checkbox" id="clientProvided" /> Client Provided Laundry Care Products (Free)</label>
 
   <label for="detergent">Detergent <span class="note">(Free: Arm & Hammer | $0.10/lb for others)</span></label>
   <select id="detergent">
@@ -138,98 +131,148 @@
   <label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
   <input type="number" id="stainCount" min="0" value="0" />
 
-  <label>
-    <input type="checkbox" id="hangDry" />
-    Hang Dry (Free, Standard only)
-  </label>
-
-  <label>
-    <input type="checkbox" id="hangers" />
-    Return on Hangers (Free, client provides hangers)
-  </label>
+  <label><input type="checkbox" id="hangDry" /> Hang Dry (Free, Standard only)</label>
+  <label><input type="checkbox" id="hangers" /> Return on Hangers (Free, client provides hangers)</label>
 
   <div id="summary">
     <h2>Estimated Price</h2>
     <p id="priceDisplay">Please complete selections to see pricing.</p>
   </div>
 
+  <button onclick="calculatePrice()">Calculate Price</button>
   <button onclick="confirmCharges()">Confirm Charges</button>
 
-<script>
-  document.getElementById("noAddons").addEventListener("change", function () {
-    const disabled = this.checked;
-    document.getElementById("detergent").disabled = disabled || document.getElementById("clientProvided").checked;
-    document.getElementById("softener").disabled = disabled;
-    document.getElementById("dryerSheets").disabled = disabled;
-    document.getElementById("otherAddons").disabled = disabled;
-  });
+  <script>
+    document.getElementById("noAddons").addEventListener("change", function () {
+      const disabled = this.checked;
+      document.getElementById("detergent").disabled = disabled || document.getElementById("clientProvided").checked;
+      document.getElementById("softener").disabled = disabled;
+      document.getElementById("dryerSheets").disabled = disabled;
+      document.getElementById("otherAddons").disabled = disabled;
+    });
 
-  document.getElementById("clientProvided").addEventListener("change", function () {
-    document.getElementById("detergent").disabled = this.checked || document.getElementById("noAddons").checked;
-  });
+    document.getElementById("clientProvided").addEventListener("change", function () {
+      document.getElementById("detergent").disabled = this.checked || document.getElementById("noAddons").checked;
+    });
 
-  function confirmCharges() {
-    const tier = document.getElementById("tier").value;
-    const weight = parseInt(document.getElementById("weight").value);
-    const userType = document.getElementById("userType").value;
-    const clientProvided = document.getElementById("clientProvided").checked;
-    const noAddons = document.getElementById("noAddons").checked;
-    const detergent = document.getElementById("detergent").value;
-    const softener = document.getElementById("softener").value;
-    const dryerSheets = document.getElementById("dryerSheets").value;
-    const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
-    const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
-    const hangDry = document.getElementById("hangDry").checked;
-    const hangers = document.getElementById("hangers").checked;
+    function calculatePrice() {
+      const tier = document.getElementById("tier").value;
+      const weight = parseInt(document.getElementById("weight").value);
+      const userType = document.getElementById("userType").value;
+      const clientProvided = document.getElementById("clientProvided").checked;
+      const noAddons = document.getElementById("noAddons").checked;
+      const detergent = document.getElementById("detergent").value;
+      const softener = document.getElementById("softener").value;
+      const dryerSheets = document.getElementById("dryerSheets").value;
+      const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
+      const stainCount = parseInt(document.getElementBy
+     const hangDry = document.getElementById("hangDry").checked;
+const hangers = document.getElementById("hangers").checked;
 
-    if (!tier || !weight || !userType) {
-      alert("Please complete all required selections.");
-      return;
-    }
+if (!tier || !weight || !userType) {
+  document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
+  return;
+}
 
-    if ((hangDry || stainCount > 0) && tier !== "standard") {
-      alert("Hang Dry and Stain Fighting are only available with Standard tier.");
-      return;
-    }
+if ((hangDry || stainCount > 0) && tier !== "standard") {
+  document.getElementById("priceDisplay").innerText = "Hang Dry and Stain Fighting are only available with Standard tier.";
+  return;
+}
 
-    let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
-    let extraWeight = Math.max(0, weight - 20);
-    let perPoundRate = 2.00;
-    let addonCharge = 0;
+let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
+let extraWeight = Math.max(0, weight - 20);
+let perPoundRate = 2.00;
+let addonCharge = 0;
 
-    if (!noAddons) {
-      if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
-        addonCharge += 0.10 * weight;
-      }
-      if (softener) addonCharge += 0.10 * weight;
-      if (dryerSheets) addonCharge += 1.00;
-      if (otherAddons.length > 0) addonCharge += 0.10 * weight * otherAddons.length;
-    }
-
-    if (stainCount > 0) {
-      addonCharge += 1.00 * stainCount;
-    }
-
-    let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
-
-    document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
-
-    localStorage.setItem("tier", tier);
-    localStorage.setItem("weight", weight);
-    localStorage.setItem("userType", userType);
-    localStorage.setItem("clientProvided", clientProvided);
-    localStorage.setItem("noAddons", noAddons);
-    localStorage.setItem("detergent", detergent);
-    localStorage.setItem("softener", softener);
-    localStorage.setItem("dryerSheets", dryerSheets);
-    localStorage.setItem("otherAddons", JSON.stringify(otherAddons));
-    localStorage.setItem("stainCount", stainCount);
-    localStorage.setItem("hangDry", hangDry);
-    localStorage.setItem("hangers", hangers);
-    localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
-
-    window.location.href = "booking.html";
+if (!noAddons) {
+  if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
+    addonCharge += 0.10 * weight;
   }
-</script>
+  if (softener) addonCharge += 0.10 * weight;
+  if (dryerSheets) addonCharge += 1.00;
+  if (otherAddons.length > 0) addonCharge += 0.10 * weight * otherAddons.length;
+}
+
+if (stainCount > 0) {
+  addonCharge += 1.00 * stainCount;
+}
+
+let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
+document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
+
+localStorage.setItem("tier", tier);
+localStorage.setItem("weight", weight);
+localStorage.setItem("userType", userType);
+localStorage.setItem("clientProvided", clientProvided);
+localStorage.setItem("noAddons", noAddons);
+localStorage.setItem("detergent", detergent);
+localStorage.setItem("softener", softener);
+localStorage.setItem("dryerSheets", dryerSheets);
+localStorage.setItem("otherAddons", JSON.stringify(otherAddons));
+localStorage.setItem("stainCount", stainCount);
+localStorage.setItem("hangDry", hangDry);
+localStorage.setItem("hangers", hangers);
+localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+      const hangDry = document.getElementById("hangDry").checked;
+      const hangers = document.getElementById("hangers").checked;
+
+      if (!tier || !weight || !userType) {
+        document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
+        return;
+      }
+
+      if ((hangDry || stainCount > 0) && tier !== "standard") {
+        document.getElementById("priceDisplay").innerText = "Hang Dry and Stain Fighting are only available with Standard tier.";
+        return;
+      }
+
+      let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
+      let extraWeight = Math.max(0, weight - 20);
+      let perPoundRate = 2.00;
+      let addonCharge = 0;
+
+      if (!noAddons) {
+        if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
+          addonCharge += 0.10 * weight;
+        }
+        if (softener) addonCharge += 0.10 * weight;
+        if (dryerSheets) addonCharge += 1.00;
+        if (otherAddons.length > 0) addonCharge += 0.10 * weight * otherAddons.length;
+      }
+
+      if (stainCount > 0) {
+        addonCharge += 1.00 * stainCount;
+      }
+
+      let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
+      document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
+
+      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+    }
+
+    function confirmCharges() {
+      const priceText = document.getElementById("priceDisplay").innerText;
+      if (!priceText.includes("$")) {
+        alert("Please calculate your price before confirming.");
+        return;
+      }
+
+      localStorage.setItem("tier", document.getElementById("tier").value);
+      localStorage.setItem("weight", document.getElementById("weight").value);
+      localStorage.setItem("userType", document.getElementById("userType").value);
+      localStorage.setItem("clientProvided", document.getElementById("clientProvided").checked);
+      localStorage.setItem("noAddons", document.getElementById("noAddons").checked);
+      localStorage.setItem("detergent", document.getElementById("detergent").value);
+      localStorage.setItem("softener", document.getElementById("softener").value);
+      localStorage.setItem("dryerSheets", document.getElementById("dryerSheets").value);
+      localStorage.setItem("otherAddons", JSON.stringify(Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value)));
+      localStorage.setItem("stainCount", document.getElementById("stainCount").value);
+      localStorage.setItem("hangDry", document.getElementById("hangDry").checked);
+      localStorage.setItem("hangers", document.getElementById("hangers").checked);
+
+      window.location.href = "booking.html";
+    }
+  </script>
 </body>
 </html>
+                             
