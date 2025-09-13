@@ -2,205 +2,184 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Client Dashboard</title>
+  <title>Client Dashboard – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
       background-color: #fefefe;
       color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
     }
-    h2, h3 {
-      color: #333;
-    }
-    #clientInfo, #preferenceEditor, #bookingHistory {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-bottom: 20px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
     }
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 1rem;
+      font-weight: bold;
     }
-    select, button, textarea {
-      margin-top: 5px;
-      padding: 8px;
-      font-size: 1rem;
+    input, select {
       width: 100%;
-    }
-    .booking-entry {
-      border-top: 1px solid #ccc;
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-    .emergency {
-      background-color: #ffecec;
-      border-left: 4px solid crimson;
-      padding-left: 10px;
-    }
-    .status {
-      font-weight: bold;
-      color: #007bff;
-    }
-    .flag {
-      color: red;
-      font-weight: bold;
-    }
-    .notes {
-      font-style: italic;
+      padding: 0.5rem;
       margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    #summary {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h2>Welcome to Your Legacy Dashboard</h2>
 
-  <div id="clientInfo">
-    <h3>Your Profile</h3>
-    <p><strong>Name:</strong> <span id="clientName"></span></p>
-    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
-    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
-    <p><strong>Address:</strong> <span id="clientAddress"></span></p>
-    <p><strong>Bag Status:</strong> <span id="bagStatus"></span></p>
+  <h1>Welcome to Your Dashboard</h1>
+  <p class="note">Select your service tier, laundry care options, and client type. We'll calculate your estimated price before you confirm.</p>
+
+  <label for="tier">Select Service Tier:</label>
+  <select id="tier">
+    <option value="">-- Choose Tier --</option>
+    <option value="standard">Standard ($40 minimum)</option>
+    <option value="express">Express ($80 minimum)</option>
+    <option value="rapid">Rapid Express ($120 minimum)</option>
+  </select>
+
+  <label for="weight">Estimated Laundry Weight (lbs):</label>
+  <input type="number" id="weight" min="1" />
+  <p class="note">Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
+
+  <label for="userType">Are you a one-time or repeat client?</label>
+  <select id="userType">
+    <option value="">-- Select --</option>
+    <option value="casual">Casual / One-Time</option>
+    <option value="registered">Registered / Repeat</option>
+  </select>
+
+  <label for="clientProvided">
+    <input type="checkbox" id="clientProvided" /> Client Provided Laundry Care Products
+  </label>
+
+  <label for="detergent">Select Detergent:</label>
+  <select id="detergent">
+    <option value="arm-fresh">Arm & Hammer Fresh Burst (Free)</option>
+    <option value="arm-sensitive">Arm & Hammer Sensitive (Free)</option>
+    <option value="tide-original">Tide Original</option>
+    <option value="tide-free">Tide Free & Gentle</option>
+    <option value="gain">Gain Original</option>
+    <option value="persil">Persil</option>
+    <option value="all-sensitive">All Sensitive Skin</option>
+    <option value="all-hypo">All Hypoallergenic</option>
+  </select>
+
+  <label for="softener">Select Liquid Softener:</label>
+  <select id="softener">
+    <option value="">-- None --</option>
+    <option value="downy-april">Downy April Showers</option>
+    <option value="downy-free">Downy Free & Gentle</option>
+    <option value="gain-softener">Gain Original</option>
+    <option value="all-clear">All Free & Clear</option>
+    <option value="snuggle-blue">Snuggle Blue Sparkle</option>
+  </select>
+
+  <label for="dryerSheets">Select Dryer Sheets:</label>
+  <select id="dryerSheets">
+    <option value="">-- None --</option>
+    <option value="bounce-original">Bounce Original</option>
+    <option value="bounce-free">Bounce Free & Gentle</option>
+    <option value="gain-dryer">Gain Original</option>
+    <option value="downy-april-dryer">Downy April Showers</option>
+    <option value="downy-free-dryer">Downy Free & Gentle</option>
+    <option value="snuggle-dryer">Snuggle Blue Sparkle</option>
+    <option value="all-clear-dryer">All Free & Clear</option>
+    <option value="vinegar-rinse">Vinegar Rinse</option>
+  </select>
+
+  <label for="otherAddons">Other Add-Ons:</label>
+  <select id="otherAddons" multiple>
+    <option value="bleach">Bleach</option>
+    <option value="color-safe">Color Safe Bleach</option>
+    <option value="oxiclean">OxiClean</option>
+    <option value="iron-out">Iron Out</option>
+    <option value="peroxide">Hydrogen Peroxide</option>
+    <option value="baking-soda">Baking Soda</option>
+  </select>
+
+  <label for="stainCount">Number of Items for Stain Fighting (Standard only):</label>
+  <input type="number" id="stainCount" min="0" value="0" />
+
+  <label for="hangDry">
+    <input type="checkbox" id="hangDry" /> Hang Dry (Standard only)
+  </label>
+
+  <label for="hangers">
+    <input type="checkbox" id="hangers" /> Return on Hangers (Client provides hangers)
+  </label>
+
+  <div id="summary">
+    <h2>Estimated Price</h2>
+    <p id="priceDisplay">Please complete selections to see pricing.</p>
   </div>
 
-  <div id="preferenceEditor">
-    <h3>Update Laundry Preferences</h3>
-    <label for="detergent">Preferred Detergent:</label>
-    <select id="detergent">
-      <option value="Tide">Tide</option>
-      <option value="Gain">Gain</option>
-      <option value="Arm & Hammer">Arm & Hammer</option>
-      <option value="All Free & Clear">All Free & Clear</option>
-    </select>
-
-    <label for="softener">Preferred Softener:</label>
-    <select id="softener">
-      <option value="Downy">Downy</option>
-      <option value="Snuggle">Snuggle</option>
-      <option value="None">None</option>
-    </select>
-
-    <button onclick="updatePreferences()">Save Preferences</button>
-    <p id="prefMessage"></p>
-  </div>
-
-  <div id="bookingHistory">
-    <h3>Your Booking History</h3>
-    <div id="bookingsContainer">Loading bookings...</div>
-  </div>
+  <button onclick="confirmCharges()">Confirm Charges</button>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://ztcyemsqljopyjbzpqvq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
-    );
-
-    let clientEmail = "";
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user && user.email) {
-        clientEmail = user.email;
-        loadClientInfo();
-        loadBookings();
-      } else {
-        window.location.href = "login.html";
-      }
+    document.getElementById("clientProvided").addEventListener("change", function () {
+      document.getElementById("detergent").disabled = this.checked;
     });
 
-    async function loadClientInfo() {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", clientEmail)
-        .single();
-
-      if (error || !data) return;
-
-      document.getElementById("clientName").textContent = data.name || "";
-      document.getElementById("clientEmail").textContent = data.email || "";
-      document.getElementById("clientPhone").textContent = data.phone || "";
-      document.getElementById("clientAddress").textContent = data.address || "";
-      document.getElementById("bagStatus").textContent = data.bag_status || "Not tracked";
-      document.getElementById("detergent").value = data.preferences?.detergent || "";
-      document.getElementById("softener").value = data.preferences?.softener || "";
-    }
-
-    async function updatePreferences() {
+    function confirmCharges() {
+      const tier = document.getElementById("tier").value;
+      const weight = parseInt(document.getElementById("weight").value);
+      const userType = document.getElementById("userType").value;
+      const clientProvided = document.getElementById("clientProvided").checked;
       const detergent = document.getElementById("detergent").value;
       const softener = document.getElementById("softener").value;
-      const message = document.getElementById("prefMessage");
+      const dryerSheets = document.getElementById("dryerSheets").value;
+      const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
+      const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
+      const hangDry = document.getElementById("hangDry").checked;
+      const hangers = document.getElementById("hangers").checked;
 
-      const { error } = await supabase
-        .from("users")
-        .update({ preferences: { detergent, softener } })
-        .eq("email", clientEmail);
-
-      message.textContent = error ? "Failed to update preferences." : "Preferences saved!";
-    }
-
-    async function loadBookings() {
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("email", clientEmail)
-        .order("created_at", { ascending: false });
-
-      const container = document.getElementById("bookingsContainer");
-      container.innerHTML = "";
-
-      if (error || !data.length) {
-        container.textContent = "No bookings found.";
+      if (!tier || !weight || !userType) {
+        alert("Please complete all required selections.");
         return;
       }
 
-      data.forEach(booking => {
-        const entry = document.createElement("div");
-        entry.className = "booking-entry" + (booking.emergency_flag ? " emergency" : "");
-
-        entry.innerHTML = `
-          <p><strong>Pickup Date:</strong> ${booking.pickup_date || "N/A"}</p>
-          <p><strong>Service Tier:</strong> ${booking.service_tier || "Standard"}</p>
-          <p><strong>Status:</strong> <span class="status">${renderStatus(booking.status)}</span></p>
-          <p><strong>Weight:</strong> ${booking.weight} lbs</p>
-          <p><strong>Rate:</strong> $${booking.final_rate.toFixed(2)}/lb</p>
-          <p><strong>Total:</strong> $${(booking.weight * booking.final_rate).toFixed(2)}</p>
-          ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied</p>" : ""}
-          ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
-          ${booking.bag_tracking ? `<p><strong>Bag Status:</strong> ${booking.bag_tracking}</p>` : ""}
-          <label for="clientMessage-${booking.id}">Message or Update:</label>
-          <textarea id="clientMessage-${booking.id}" rows="2" placeholder="Add a note or update...">${booking.client_message || ""}</textarea>
-          <button onclick="saveClientMessage('${booking.id}')">Save Message</button>
-        `;
-
-        container.appendChild(entry);
-      });
-    }
-
-    function renderStatus(status) {
-      if (status === "Completed") return "Delivered ✅";
-      if (status === "In Progress") return "Enroute 🚚";
-      return "Pending ⏳";
-    }
-
-    async function saveClientMessage(id) {
-      const message = document.getElementById(`clientMessage-${id}`).value;
-
-      const { error } = await supabase
-        .from("bookings")
-        .update({ client_message: message })
-        .eq("id", id);
-
-      if (error) {
-        alert("Failed to save message.");
-      } else {
-        alert("Message saved.");
+      if ((hangDry || stainCount > 0) && tier !== "standard") {
+        alert("Hang Dry and Stain Fighting are only available with Standard tier.");
+        return;
       }
-    }
-  </script>
-</body>
-</html>
+
+      let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
+      let extraWeight = Math.max(0, weight - 20);
+      let perPoundRate = 2.00;
+      let addonCharge = 0;
+
+      // Detergent charge
+      if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
+        addonCharge += 0.10
