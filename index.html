@@ -4,67 +4,103 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Legacy LaundryCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 2rem;
-      background-color: #f9f9f9;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f7f9fc;
       color: #333;
     }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    section {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    ul {
-      padding-left: 1.2rem;
-    }
-    li {
-      margin-bottom: 0.5rem;
-    }
-    a.button {
-      display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.75rem 1.5rem;
-      background-color: #007bff;
+    .hero {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
       color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
+      text-align: center;
+      padding: 60px 20px;
     }
-    a.button:hover {
-      background-color: #0056b3;
+    .hero h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .cta-button {
+      background-color: #fff;
+      color: #00aaff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .how-it-works, .testimonials {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .how-it-works h2, .testimonials h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .steps div {
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+    .steps span {
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+    blockquote {
+      font-style: italic;
+      margin: 20px 0;
+      padding-left: 20px;
+      border-left: 4px solid #00aaff;
+    }
+    footer {
+      background-color: #e0e0e0;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+    }
+    footer a {
+      color: #0077cc;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to Legacy LaundryCare</h1>
-    <p>Professional laundry pickup and delivery with personalized care.</p>
-  </header>
 
-  <section>
-    <h2>How It Works</h2>
-    <ul>
-      <li>📅 Book your pickup online—choose your service tier and time slot.</li>
-      <li>💳 Your card is authorized at booking. We only capture payment after service is complete.</li>
-      <li>🧼 We wash, dry, fold, and deliver with your preferred detergent and softener.</li>
-      <li>📦 You receive a digital and paper receipt with final weight and itemized cost.</li>
-    </ul>
-
-    <a href="booking.html" class="button">Book Now</a>
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Legacy LaundryCare</h1>
+    <p>Professional laundry pickup & delivery with personalized care</p>
+    <a href="booking.html" class="cta-button">Schedule Your Pickup</a>
   </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div><span>📅</span> Book online—choose your service tier & time slot</div>
+      <div><span>💳</span> Card authorized at booking, charged after service</div>
+      <div><span>🧼</span> We wash, dry, fold & deliver with your preferences</div>
+      <div><span>📦</span> You get a digital & paper receipt with itemized cost</div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <h2>What Our Clients Say</h2>
+    <blockquote>“Fast, friendly, and my clothes smell amazing!” – Jordan M.</blockquote>
+    <blockquote>“I love the personalized care. Never going back to laundromats.” – Casey R.</blockquote>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Legacy LaundryCare | <a href="contact.html">Contact Us</a></p>
+  </footer>
+
 </body>
 </html>
