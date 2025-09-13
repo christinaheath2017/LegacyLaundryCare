@@ -2,149 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Legacy LaundryCare Booking</title>
+  <title>Book Laundry Service – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      color: #333;
       padding: 2rem;
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
-      background-color: #f9f9f9;
-      color: #333;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
-      color: #333;
+      margin-bottom: 1rem;
     }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
     }
-    input, select, textarea, button {
-      padding: 0.75rem;
-      font-size: 1rem;
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 5px;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
     }
     button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
       background-color: #007bff;
       color: white;
       border: none;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
     }
     button:hover {
       background-color: #0056b3;
     }
-    .message {
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: red;
-    }
-    #costPreview {
-      font-weight: bold;
-      margin-top: 1rem;
-      text-align: center;
-    }
-    #autoReply {
-      background-color: #fff3cd;
-      border: 1px solid #ffeeba;
-      padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: #856404;
-    }
   </style>
 </head>
 <body>
+
   <h1>Book Laundry Service</h1>
 
-  <form id="bookingForm">
+  <p class="note">Need help estimating weight? Use this guide: Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
+
+  <form>
     <label for="name">Full Name:</label>
-    <input type="text" id="name" required />
+    <input type="text" id="name" name="name" required />
 
     <label for="email">Email:</label>
-    <input type="email" id="email" required />
+    <input type="email" id="email" name="email" required />
 
     <label for="phone">Phone Number:</label>
-    <input type="tel" id="phone" required />
+    <input type="tel" id="phone" name="phone" required />
 
     <label for="weight">Estimated Laundry Weight (lbs):</label>
-    <input type="number" id="weight" required />
+    <input type="number" id="weight" name="weight" min="1" required />
+
+    <label for="tier">Select Service Tier:</label>
+    <select id="tier" name="tier" required>
+      <option value="">-- Choose Tier --</option>
+      <option value="standard">Standard ($40 minimum)</option>
+      <option value="express">Express ($80 minimum)</option>
+      <option value="rapid">Rapid Express ($120 minimum)</option>
+    </select>
+
+    <label for="addons">Select Add-Ons:</label>
+    <select id="addons" name="addons" multiple>
+      <option value="none">Just wash my laundry</option>
+      <option value="hypoallergenic">Hypoallergenic Detergent</option>
+      <option value="softener">Softener Use</option>
+      <option value="dryer-sheets">Dryer Sheets</option>
+      <option value="stain-fighting">Stain Fighting (Standard only)</option>
+      <option value="hang-dry">Hang Dry (Standard only)</option>
+      <option value="hangers">Return on Hangers</option>
+    </select>
+    <p class="note">Note: Stain Fighting and Hang Dry are only available with Standard tier.</p>
 
     <label for="notes">Booking Notes (optional):</label>
-    <textarea id="notes" rows="3" placeholder="Let us know if you’re facing an emergency or need rapid service."></textarea>
-
-    <p id="costPreview"></p>
-    <div id="autoReply" style="display: none;"></div>
+    <textarea id="notes" name="notes" rows="4" placeholder="Let us know if you’re facing an emergency or need rapid service."></textarea>
 
     <button type="submit">Submit Booking</button>
-    <div class="message" id="bookingMessage"></div>
   </form>
 
-  <script>
-    const supabase = supabase.createClient(
-      'https://ztcyemsqljopyjbzpqvq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
-    );
-
-    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value;
-      const weight = parseFloat(document.getElementById("weight").value);
-      const notes = document.getElementById("notes").value.toLowerCase();
-      const message = document.getElementById("bookingMessage");
-      const costPreview = document.getElementById("costPreview");
-      const autoReply = document.getElementById("autoReply");
-
-      const emergencyKeywords = ["emergency", "funeral", "urgent", "leave by", "departure", "crisis"];
-      const emergencyFlag = emergencyKeywords.some(keyword => notes.includes(keyword));
-      const ratePerPound = emergencyFlag ? 1.00 : 2.00;
-      const estimatedCost = weight * ratePerPound;
-
-      costPreview.textContent = `Estimated Cost: $${estimatedCost.toFixed(2)} (${ratePerPound.toFixed(2)}/lb)`;
-
-      if (emergencyFlag) {
-        autoReply.style.display = "block";
-        autoReply.innerHTML = `
-          <strong>Emergency Detected:</strong><br>
-          I’m terribly sorry about your situation. As it is after hours, please reach out to me personally via <strong>(260) 503-8905</strong>.<br><br>
-          Call once, then text me your name and “Legacy ERC.” Call again and I’ll answer or respond via SMS.<br>
-          My ringer is always on, but if I don’t respond immediately, please call again. I’ll do everything I can to help.
-        `;
-      }
-
-      const { data, error } = await supabase
-        .from("bookings")
-        .insert([{
-          name,
-          email,
-          phone,
-          weight,
-          notes,
-          emergency_flag: emergencyFlag,
-          final_rate: ratePerPound,
-          emergency_rate_applied: emergencyFlag
-        }]);
-
-      if (error) {
-        message.textContent = "Booking failed: " + error.message;
-      } else {
-        message.style.color = "green";
-        message.textContent = "Booking successful! We’ll be in touch shortly.";
-      }
-    });
-  </script>
 </body>
 </html>
