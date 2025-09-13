@@ -32,7 +32,7 @@
     .note {
       font-size: 0.9rem;
       color: #555;
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
     #summary {
       margin-top: 2rem;
@@ -80,23 +80,29 @@
     <option value="registered">Registered / Repeat</option>
   </select>
 
-  <label for="clientProvided">
-    <input type="checkbox" id="clientProvided" /> Client Provided Laundry Care Products
+  <label>
+    <input type="checkbox" id="noAddons" />
+    No Add-Ons — Just wash and return my laundry
   </label>
 
-  <label for="detergent">Select Detergent:</label>
+  <label>
+    <input type="checkbox" id="clientProvided" />
+    Client Provided Laundry Care Products (Free)
+  </label>
+
+  <label for="detergent">Detergent <span class="note">(Free: Arm & Hammer | $0.10/lb for others)</span></label>
   <select id="detergent">
     <option value="arm-fresh">Arm & Hammer Fresh Burst (Free)</option>
     <option value="arm-sensitive">Arm & Hammer Sensitive (Free)</option>
-    <option value="tide-original">Tide Original</option>
-    <option value="tide-free">Tide Free & Gentle</option>
-    <option value="gain">Gain Original</option>
-    <option value="persil">Persil</option>
-    <option value="all-sensitive">All Sensitive Skin</option>
-    <option value="all-hypo">All Hypoallergenic</option>
+    <option value="tide-original">Tide Original ($0.10/lb)</option>
+    <option value="tide-free">Tide Free & Gentle ($0.10/lb)</option>
+    <option value="gain">Gain Original ($0.10/lb)</option>
+    <option value="persil">Persil ($0.10/lb)</option>
+    <option value="all-sensitive">All Sensitive Skin ($0.10/lb)</option>
+    <option value="all-hypo">All Hypoallergenic ($0.10/lb)</option>
   </select>
 
-  <label for="softener">Select Liquid Softener:</label>
+  <label for="softener">Liquid Softener <span class="note">($0.10/lb)</span></label>
   <select id="softener">
     <option value="">-- None --</option>
     <option value="downy-april">Downy April Showers</option>
@@ -106,7 +112,7 @@
     <option value="snuggle-blue">Snuggle Blue Sparkle</option>
   </select>
 
-  <label for="dryerSheets">Select Dryer Sheets:</label>
+  <label for="dryerSheets">Dryer Sheets <span class="note">($1.00/load)</span></label>
   <select id="dryerSheets">
     <option value="">-- None --</option>
     <option value="bounce-original">Bounce Original</option>
@@ -119,7 +125,7 @@
     <option value="vinegar-rinse">Vinegar Rinse</option>
   </select>
 
-  <label for="otherAddons">Other Add-Ons:</label>
+  <label for="otherAddons">Other Add-Ons <span class="note">($0.10/lb each)</span></label>
   <select id="otherAddons" multiple>
     <option value="bleach">Bleach</option>
     <option value="color-safe">Color Safe Bleach</option>
@@ -129,15 +135,17 @@
     <option value="baking-soda">Baking Soda</option>
   </select>
 
-  <label for="stainCount">Number of Items for Stain Fighting (Standard only):</label>
+  <label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
   <input type="number" id="stainCount" min="0" value="0" />
 
-  <label for="hangDry">
-    <input type="checkbox" id="hangDry" /> Hang Dry (Standard only)
+  <label>
+    <input type="checkbox" id="hangDry" />
+    Hang Dry (Free, Standard only)
   </label>
 
-  <label for="hangers">
-    <input type="checkbox" id="hangers" /> Return on Hangers (Client provides hangers)
+  <label>
+    <input type="checkbox" id="hangers" />
+    Return on Hangers (Free, client provides hangers)
   </label>
 
   <div id="summary">
@@ -148,8 +156,16 @@
   <button onclick="confirmCharges()">Confirm Charges</button>
 
   <script>
+    document.getElementById("noAddons").addEventListener("change", function () {
+      const disabled = this.checked;
+      document.getElementById("detergent").disabled = disabled || document.getElementById("clientProvided").checked;
+      document.getElementById("softener").disabled = disabled;
+      document.getElementById("dryerSheets").disabled = disabled;
+      document.getElementById("otherAddons").disabled = disabled;
+    });
+
     document.getElementById("clientProvided").addEventListener("change", function () {
-      document.getElementById("detergent").disabled = this.checked;
+      document.getElementById("detergent").disabled = this.checked || document.getElementById("noAddons").checked;
     });
 
     function confirmCharges() {
@@ -157,29 +173,11 @@
       const weight = parseInt(document.getElementById("weight").value);
       const userType = document.getElementById("userType").value;
       const clientProvided = document.getElementById("clientProvided").checked;
+      const noAddons = document.getElementById("noAddons").checked;
       const detergent = document.getElementById("detergent").value;
       const softener = document.getElementById("softener").value;
       const dryerSheets = document.getElementById("dryerSheets").value;
       const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
       const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
       const hangDry = document.getElementById("hangDry").checked;
-      const hangers = document.getElementById("hangers").checked;
-
-      if (!tier || !weight || !userType) {
-        alert("Please complete all required selections.");
-        return;
-      }
-
-      if ((hangDry || stainCount > 0) && tier !== "standard") {
-        alert("Hang Dry and Stain Fighting are only available with Standard tier.");
-        return;
-      }
-
-      let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
-      let extraWeight = Math.max(0, weight - 20);
-      let perPoundRate = 2.00;
-      let addonCharge = 0;
-
-      // Detergent charge
-      if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
-        addonCharge += 0.10
+      const hangers = document.getElement
