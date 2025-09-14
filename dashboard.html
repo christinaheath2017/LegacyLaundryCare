@@ -124,7 +124,8 @@
   <button onclick="confirmCharges()">Confirm Charges</button>
   <button onclick="window.location.href='booking.html'">Continue to Booking</button>
 
-<script>
+
+  <script>
   function calculatePrice() {
     const tier = document.getElementById("tier").value;
     const bagSize = document.getElementById("bagSize").value;
@@ -141,7 +142,10 @@
       "bleach", "colorSafeBleach", "oxiClean", "ironOut",
       "hydrogenPeroxide", "bakingSoda"
     ];
-    const addonsSelected = addonIds.filter(id => document.getElementById(id)?.checked);
+    const addonsSelected = addonIds.filter(id => {
+      const el = document.getElementById(id);
+      return el && el.checked;
+    });
 
     // Calculate weight
     let weight = 0;
@@ -218,8 +222,16 @@
 
     alert("Selections saved! You can now continue to booking.");
   }
+
+  // Auto-trigger price calculation on page load and input changes
+  window.addEventListener("DOMContentLoaded", () => {
+    const inputs = document.querySelectorAll("select, input");
+    inputs.forEach(input => {
+      input.addEventListener("change", calculatePrice);
+      input.addEventListener("input", calculatePrice);
+    });
+    calculatePrice();
+  });
 </script>
 </body>
 </html>
-
-  
