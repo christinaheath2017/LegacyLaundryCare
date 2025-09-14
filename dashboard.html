@@ -218,11 +218,15 @@
       if (softener !== "-- None --") {
         addonCharge += 0.10 * weight;
       }
-
-      // Dryer sheets
-      if (dryerSheets !== "-- None --") {
-        addonCharge += 1.00 * bagCount;
-      }
+// Dryer sheets (flat rate per bag based on size)
+if (dryerSheets !== "-- None --") {
+  let dryerSheetRate = 0;
+  if (bagSize === "small") dryerSheetRate = 1.00;
+  else if (bagSize === "medium") dryerSheetRate = 2.00;
+  else if (bagSize === "large") dryerSheetRate = 3.00;
+  addonCharge += dryerSheetRate * bagCount;
+}
+     
 
       // Other add-ons
       addonCharge += addonsSelected.length * 0.10 * weight;
