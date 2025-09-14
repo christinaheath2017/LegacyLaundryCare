@@ -124,59 +124,102 @@
   <button onclick="confirmCharges()">Confirm Charges</button>
   <button onclick="window.location.href='booking.html'">Continue to Booking</button>
 
-  <script>
-    function calculatePrice() {
-      const tier = document.getElementById("tier").value;
-      const bagSize = document.getElementById("bagSize").value;
-      const bagCount = parseInt(document.getElementById("bagCount").value);
-      const userType = document.getElementById("userType").value;
-      const clientProvided = document.getElementById("clientProvided").checked;
-      const noAddons = document.getElementById("noAddons").checked;
-      const detergent = document.getElementById("detergent").value;
+<script>
+  function calculatePrice() {
+    const tier = document.getElementById("tier").value;
+    const bagSize = document.getElementById("bagSize").value;
+    const bagCount = parseInt(document.getElementById("bagCount").value);
+    const userType = document.getElementById("userType").value;
+    const clientProvided = document.getElementById("clientProvided").checked;
+    const noAddons = document.getElementById("noAddons").checked;
+    const detergent = document.getElementById("detergent").value;
+    const softener = document.getElementById("softener").value;
+    const dryerSheets = document.getElementById("dryerSheets").value;
+    const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
 
-      // Calculate weight
-      let weight = 0;
-      if (bagSize === "small") weight = 20 * bagCount;
-      else if (bagSize === "medium") weight = 40 * bagCount;
-      else if (bagSize === "large") weight = 80 * bagCount;
+    const addonIds = [
+      "bleach", "colorSafeBleach", "oxiClean", "ironOut",
+      "hydrogenPeroxide", "bakingSoda"
+    ];
+    const addonsSelected = addonIds.filter(id => document.getElementById(id)?.checked);
 
-      document.getElementById("weightDisplay").innerText = `${weight} lbs estimated`;
+    // Calculate weight
+    let weight = 0;
+    if (bagSize === "small") weight = 20 * bagCount;
+    else if (bagSize === "medium") weight = 40 * bagCount;
+    else if (bagSize === "large") weight = 80 * bagCount;
 
-      // Basic validation
-      if (!tier || !bagSize || !bagCount || !userType) {
-        document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
-        return;
-      }
+    document.getElementById("weightDisplay").innerText = `${weight} lbs estimated`;
 
-      // Base pricing
-      let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
-      let extraWeight = Math.max(0, weight - 20);
-      let perPoundRate = 2.00;
-      let addonCharge = 0;
-
-      // Add-on pricing
-      if (!noAddons) {
-        if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
-          addonCharge += 0.10 * weight;
-        }
-      }
-
-      // Final price
-      let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
-      document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
-      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+    // Basic validation
+    if (!tier || !bagSize || isNaN(bagCount) || !userType) {
+      document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
+      return;
     }
 
-    function confirmCharges() {
-      localStorage.setItem("tier", document.getElementById("tier").value);
-      localStorage.setItem("bagSize", document.getElementById("bagSize").value);
-      localStorage.setItem("bagCount", document.getElementById("bagCount").value);
-      localStorage.setItem("userType", document.getElementById("userType").value);
-      localStorage.setItem("clientProvided", document.getElementById("clientProvided").checked);
-      localStorage.setItem("noAddons", document.getElementById("noAddons").checked);
-      localStorage.setItem("detergent", document.getElementById("detergent").value);
-      alert("Selections saved! You can now continue to booking.");
+    // Base pricing
+    let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
+    let extraWeight = Math.max(0, weight - 20);
+    let perPoundRate = 2.00;
+    let addonCharge = 0;
+
+    if (!noAddons) {
+      // Detergent surcharge
+      if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
+        addonCharge += 0.10 * weight;
+      }
+
+      // Liquid softener
+      if (softener !== "-- None --") {
+        addonCharge += 0.10 * weight;
+      }
+
+      // Dryer sheets
+      if (dryerSheets !== "-- None --") {
+        addonCharge += 1.00 * bagCount;
+      }
+
+      // Other add-ons
+      addonCharge += addonsSelected.length * 0.10 * weight;
+
+      // Stain fighting (only for Standard tier)
+      if (tier === "standard" && stainCount > 0) {
+        addonCharge += 1.00 * stainCount;
+      }
     }
-  </script>
+
+    let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
+    document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
+    localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+  }
+
+  function confirmCharges() {
+    const fields = [
+      "tier", "bagSize", "bagCount", "userType", "clientProvided",
+      "noAddons", "detergent", "softener", "dryerSheets", "stainCount"
+    ];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        localStorage.setItem(id, el.type === "checkbox" ? el.checked : el.value);
+      }
+    });
+
+    const addonIds = [
+      "bleach", "colorSafeBleach", "oxiClean", "ironOut",
+      "hydrogenPeroxide", "bakingSoda"
+    ];
+    addonIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        localStorage.setItem(id, el.checked);
+      }
+    });
+
+    alert("Selections saved! You can now continue to booking.");
+  }
+</script>
 </body>
 </html>
+
+  
