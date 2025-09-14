@@ -114,7 +114,40 @@
     <option value="all-hypo">All Hypoallergenic ($0.10/lb)</option>
   </select>
 
-  <!-- Additional options omitted for brevity, but you can paste them back in -->
+<!-- Liquid Softener -->
+<label for="softener">Liquid Softener <span class="note">($0.10/lb)</span></label>
+<select id="softener" onchange="calculatePrice()">
+  <option>-- None --</option>
+  <option value="snuggle">Snuggle</option>
+  <option value="downy">Downy</option>
+  <option value="gain">Gain</option>
+  <option value="method">Method</option>
+</select>
+
+<!-- Dryer Sheets -->
+<label for="dryerSheets">Dryer Sheets <span class="note">($1.00/load)</span></label>
+<select id="dryerSheets" onchange="calculatePrice()">
+  <option>-- None --</option>
+  <option value="bounce">Bounce</option>
+  <option value="downy">Downy</option>
+  <option value="gain">Gain</option>
+  <option value="seventhGen">Seventh Generation</option>
+</select>
+
+<!-- Add-Ons -->
+<label>Other Add-Ons <span class="note">($0.10/lb each)</span></label>
+<div class="checkbox-group">
+  <label><input type="checkbox" id="bleach" onchange="calculatePrice()" /> Bleach</label>
+  <label><input type="checkbox" id="colorSafeBleach" onchange="calculatePrice()" /> Color Safe Bleach</label>
+  <label><input type="checkbox" id="oxiClean" onchange="calculatePrice()" /> OxiClean</label>
+  <label><input type="checkbox" id="ironOut" onchange="calculatePrice()" /> Iron Out</label>
+  <label><input type="checkbox" id="hydrogenPeroxide" onchange="calculatePrice()" /> Hydrogen Peroxide</label>
+  <label><input type="checkbox" id="bakingSoda" onchange="calculatePrice()" /> Baking Soda</label>
+</div>
+
+<!-- Stain Fighting -->
+<label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
+<input type="number" id="stainCount" min="0" value="0" oninput="calculatePrice()" />
 
   <div id="summary">
     <h2>Estimated Price</h2>
