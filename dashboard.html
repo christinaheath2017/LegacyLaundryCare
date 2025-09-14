@@ -54,12 +54,23 @@
     button:hover {
       background-color: #0056b3;
     }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .checkbox-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
   </style>
 </head>
 <body>
 
   <h1>Welcome to Your Dashboard</h1>
-  <p class="note">Select your service tier, laundry care options, and client type. Your estimated price will update automatically.</p>
+  <p class="note">Select your service tier, bag size, and number of bags. Your estimated price will update automatically.</p>
 
   <label for="tier">Select Service Tier:</label>
   <select id="tier" onchange="calculatePrice()">
@@ -69,9 +80,16 @@
     <option value="rapid">Rapid Express ($120 minimum)</option>
   </select>
 
-  <label for="weight">Estimated Laundry Weight (lbs):</label>
-  <input type="number" id="weight" min="1" oninput="calculatePrice()" />
-  <p class="note">Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
+  <label for="bagSize">Bag Size:</label>
+  <select id="bagSize" onchange="calculatePrice()">
+    <option value="">-- Select Bag Size --</option>
+    <option value="small">Small (13 gal ≈ 20 lbs)</option>
+    <option value="medium">Medium (33 gal ≈ 40 lbs)</option>
+    <option value="large">Large (55 gal ≈ 80 lbs)</option>
+  </select>
+
+  <label for="bagCount">Number of Bags:</label>
+  <input type="number" id="bagCount" min="1" value="1" oninput="calculatePrice()" />
 
   <label for="userType">Are you a one-time or repeat client?</label>
   <select id="userType" onchange="calculatePrice()">
@@ -118,15 +136,15 @@
     <option value="vinegar-rinse">Vinegar Rinse</option>
   </select>
 
-  <label for="otherAddons">Other Add-Ons <span class="note">($0.10/lb each)</span></label>
-  <select id="otherAddons" multiple onchange="calculatePrice()">
-    <option value="bleach">Bleach</option>
-    <option value="color-safe">Color Safe Bleach</option>
-    <option value="oxiclean">OxiClean</option>
-    <option value="iron-out">Iron Out</option>
-    <option value="peroxide">Hydrogen Peroxide</option>
-    <option value="baking-soda">Baking Soda</option>
-  </select>
+  <label>Other Add-Ons <span class="note">($0.10/lb each)</span></label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" class="addon" value="bleach" onchange="calculatePrice()" /> Bleach</label>
+    <label><input type="checkbox" class="addon" value="color-safe" onchange="calculatePrice()" /> Color Safe Bleach</label>
+    <label><input type="checkbox" class="addon" value="oxiclean" onchange="calculatePrice()" /> OxiClean</label>
+    <label><input type="checkbox" class="addon" value="iron-out" onchange="calculatePrice()" /> Iron Out</label>
+    <label><input type="checkbox" class="addon" value="peroxide" onchange="calculatePrice()" /> Hydrogen Peroxide</label>
+    <label><input type="checkbox" class="addon" value="baking-soda" onchange="calculatePrice()" /> Baking Soda</label>
+  </div>
 
   <label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
   <input type="number" id="stainCount" min="0" value="0" oninput="calculatePrice()" />
@@ -143,28 +161,263 @@
   <button onclick="window.location.href='booking.html'">Continue to Booking</button>
 
   <script>
-    document.getElementById("noAddons").addEventListener("change", function () {
-      const disabled = this.checked;
-      document.getElementById("detergent").disabled = disabled || document.getElementById("clientProvided").checked;
-      document.getElementById("softener").disabled = disabled;
-      document.getElementById("dryerSheets").disabled = disabled;
-      document.getElementById("otherAddons").disabled = disabled;
-    });
-
-    document.getElementById("clientProvided").addEventListener("change", function () {
-      document.getElementById("detergent").disabled = this.checked || document.getElementById("noAddons").checked;
-    });
-
     function calculatePrice() {
       const tier = document.getElementById("tier").value;
-      const weight = parseInt(document.getElementById("weight").value);
+      const bagSize = document.getElementById("bagSize").value;
+      const bagCount = parseInt(document.getElementById("bagCount").value);
       const userType = document.getElementById("userType").value;
       const clientProvided = document.getElementById("clientProvided").checked;
       const noAddons = document.getElementById("noAddons").checked;
       const detergent = document.getElementById("detergent").value;
-      const softener = document.getElementById("softener").value;
-      const dryerSheets = document.getElementById("dryerSheets").value;
-      const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
-      const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
-      const hangDry = document.getElementById("hangDry").checked;
-      const hangers =
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Client Dashboard – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.25rem;
+    }
+    #summary {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .checkbox-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to Your Dashboard</h1>
+  <p class="note">Select your service tier, bag size, and number of bags. Your estimated price will update automatically.</p>
+
+  <label for="tier">Select Service Tier:</label>
+  <select id="tier" onchange="calculatePrice()">
+    <option value="">-- Choose Tier --</option>
+    <option value="standard">Standard ($40 minimum)</option>
+    <option value="express">Express ($80 minimum)</option>
+    <option value="rapid">Rapid Express ($120 minimum)</option>
+  </select>
+
+  <label for="bagSize">Bag Size:</label>
+  <select id="bagSize" onchange="calculatePrice()">
+    <option value="">-- Select Bag Size --</option>
+    <option value="small">Small (13 gal ≈ 20 lbs)</option>
+    <option value="medium">Medium (33 gal ≈ 40 lbs)</option>
+    <option value="large">Large (55 gal ≈ 80 lbs)</option>
+  </select>
+
+  <label for="bagCount">Number of Bags:</label>
+  <input type="number" id="bagCount" min="1" value="1" oninput="calculatePrice()" />
+
+  <label for="userType">Are you a one-time or repeat client?</label>
+  <select id="userType" onchange="calculatePrice()">
+    <option value="">-- Select --</option>
+    <option value="casual">Casual / One-Time</option>
+    <option value="registered">Registered / Repeat</option>
+  </select>
+
+  <label><input type="checkbox" id="noAddons" onchange="calculatePrice()" /> No Add-Ons — Just wash and return my laundry</label>
+  <label><input type="checkbox" id="clientProvided" onchange="calculatePrice()" /> Client Provided Laundry Care Products (Free)</label>
+
+  <label for="detergent">Detergent <span class="note">(Free: Arm & Hammer | $0.10/lb for others)</span></label>
+  <select id="detergent" onchange="calculatePrice()">
+    <option value="arm-fresh">Arm & Hammer Fresh Burst (Free)</option>
+    <option value="arm-sensitive">Arm & Hammer Sensitive (Free)</option>
+    <option value="tide-original">Tide Original ($0.10/lb)</option>
+    <option value="tide-free">Tide Free & Gentle ($0.10/lb)</option>
+    <option value="gain">Gain Original ($0.10/lb)</option>
+    <option value="persil">Persil ($0.10/lb)</option>
+    <option value="all-sensitive">All Sensitive Skin ($0.10/lb)</option>
+    <option value="all-hypo">All Hypoallergenic ($0.10/lb)</option>
+  </select>
+
+  <label for="softener">Liquid Softener <span class="note">($0.10/lb)</span></label>
+  <select id="softener" onchange="calculatePrice()">
+    <option value="">-- None --</option>
+    <option value="downy-april">Downy April Showers</option>
+    <option value="downy-free">Downy Free & Gentle</option>
+    <option value="gain-softener">Gain Original</option>
+    <option value="all-clear">All Free & Clear</option>
+    <option value="snuggle-blue">Snuggle Blue Sparkle</option>
+  </select>
+
+  <label for="dryerSheets">Dryer Sheets <span class="note">($1.00/load)</span></label>
+  <select id="dryerSheets" onchange="calculatePrice()">
+    <option value="">-- None --</option>
+    <option value="bounce-original">Bounce Original</option>
+    <option value="bounce-free">Bounce Free & Gentle</option>
+    <option value="gain-dryer">Gain Original</option>
+    <option value="downy-april-dryer">Downy April Showers</option>
+    <option value="downy-free-dryer">Downy Free & Gentle</option>
+    <option value="snuggle-dryer">Snuggle Blue Sparkle</option>
+    <option value="all-clear-dryer">All Free & Clear</option>
+    <option value="vinegar-rinse">Vinegar Rinse</option>
+  </select>
+
+  <label>Other Add-Ons <span class="note">($0.10/lb each)</span></label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" class="addon" value="bleach" onchange="calculatePrice()" /> Bleach</label>
+    <label><input type="checkbox" class="addon" value="color-safe" onchange="calculatePrice()" /> Color Safe Bleach</label>
+    <label><input type="checkbox" class="addon" value="oxiclean" onchange="calculatePrice()" /> OxiClean</label>
+    <label><input type="checkbox" class="addon" value="iron-out" onchange="calculatePrice()" /> Iron Out</label>
+    <label><input type="checkbox" class="addon" value="peroxide" onchange="calculatePrice()" /> Hydrogen Peroxide</label>
+    <label><input type="checkbox" class="addon" value="baking-soda" onchange="calculatePrice()" /> Baking Soda</label>
+  </div>
+
+  <label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
+  <input type="number" id="stainCount" min="0" value="0" oninput="calculatePrice()" />
+
+  <label><input type="checkbox" id="hangDry" onchange="calculatePrice()" /> Hang Dry (Free, Standard only)</label>
+  <label><input type="checkbox" id="hangers" onchange="calculatePrice()" /> Return on Hangers (Free, client provides hangers)</label>
+
+  <div id="summary">
+    <h2>Estimated Price</h2>
+    <p id="priceDisplay">Please complete selections to see pricing.</p>
+  </div>
+
+  <button onclick="confirmCharges()">Confirm Charges</button>
+  <button onclick="window.location.href='booking.html'">Continue to Booking</button>
+
+  <script>
+    function calculatePrice() {
+      const tier = document.getElementById("tier").value;
+      const bagSize = document.getElementById("bagSize").value;
+      const bagCount = parseInt(document.getElementById("bagCount").value);
+      const userType = document.getElementById("userType").value;
+      const clientProvided = document.getElementById("clientProvided").checked;
+      const noAddons = document.getElementById("noAddons").checked;
+      const detergent = document.getElementById("detergent").value;
+const softener = document.getElementById("softener").value;
+const dryerSheets = document.getElementById("dryerSheets").value;
+const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
+const hangDry = document.getElementById("hangDry").checked;
+const hangers = document.getElementById("hangers").checked;
+
+// Calculate weight from bag size and count
+let weight = 0;
+if (bagSize === "small") weight = 20 * bagCount;
+else if (bagSize === "medium") weight = 40 * bagCount;
+else if (bagSize === "large") weight = 80 * bagCount;
+
+// Validate required fields
+if (!tier || !bagSize || !bagCount || !userType) {
+  document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
+  return;
+}
+
+if ((hangDry || stainCount > 0) && tier !== "standard") {
+  document.getElementById("priceDisplay").innerText = "Hang Dry and Stain Fighting are only available with Standard tier.";
+  return;
+}
+
+// Base pricing
+let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
+let extraWeight = Math.max(0, weight - 20);
+let perPoundRate = 2.00;
+let addonCharge = 0;
+
+// Add-on pricing
+if (!noAddons) {
+  if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
+    addonCharge += 0.10 * weight;
+  }
+  if (softener) addonCharge += 0.10 * weight;
+  if (dryerSheets) addonCharge += 1.00;
+
+  const addonCheckboxes = document.querySelectorAll(".addon");
+  const selectedAddons = Array.from(addonCheckboxes).filter(box => box.checked).map(box => box.value);
+  if (selectedAddons.length > 0) {
+    addonCharge += 0.10 * weight * selectedAddons.length;
+  }
+}
+
+// Stain fighting
+if (stainCount > 0) {
+  addonCharge += 1.00 * stainCount;
+}
+
+// Final price
+let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
+document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
+localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+}
+
+// Confirm Charges button
+function confirmCharges() {
+  localStorage.setItem("tier", document.getElementById("tier").value);
+  localStorage.setItem("bagSize", document.getElementById("bagSize").value);
+  localStorage.setItem("bagCount", document.getElementById("bagCount").value);
+  localStorage.setItem("userType", document.getElementById("userType").value);
+  localStorage.setItem("clientProvided", document.getElementById("clientProvided").checked);
+  localStorage.setItem("noAddons", document.getElementById("noAddons").checked);
+  localStorage.setItem("detergent", document.getElementById("detergent").value);
+  localStorage.setItem("softener", document.getElementById("softener").value);
+  localStorage.setItem("dryerSheets", document.getElementById("dryerSheets").value);
+  localStorage.setItem("stainCount", document.getElementById("stainCount").value);
+  localStorage.setItem("hangDry", document.getElementById("hangDry").checked);
+  localStorage.setItem("hangers", document.getElementById("hangers").checked);
+
+  const addonCheckboxes = document.querySelectorAll(".addon");
+  const selectedAddons = Array.from(addonCheckboxes).filter(box => box.checked).map(box => box.value);
+  localStorage.setItem("otherAddons", JSON.stringify(selectedAddons));
+
+  alert("Selections saved! You can now continue to booking.");
+}
+</script>
+</body>
+</html>
+
+      
