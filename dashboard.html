@@ -59,10 +59,10 @@
 <body>
 
   <h1>Welcome to Your Dashboard</h1>
-  <p class="note">Select your service tier, laundry care options, and client type. We'll calculate your estimated price before you confirm.</p>
+  <p class="note">Select your service tier, laundry care options, and client type. Your estimated price will update automatically.</p>
 
   <label for="tier">Select Service Tier:</label>
-  <select id="tier">
+  <select id="tier" onchange="calculatePrice()">
     <option value="">-- Choose Tier --</option>
     <option value="standard">Standard ($40 minimum)</option>
     <option value="express">Express ($80 minimum)</option>
@@ -70,21 +70,21 @@
   </select>
 
   <label for="weight">Estimated Laundry Weight (lbs):</label>
-  <input type="number" id="weight" min="1" />
+  <input type="number" id="weight" min="1" oninput="calculatePrice()" />
   <p class="note">Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
 
   <label for="userType">Are you a one-time or repeat client?</label>
-  <select id="userType">
+  <select id="userType" onchange="calculatePrice()">
     <option value="">-- Select --</option>
     <option value="casual">Casual / One-Time</option>
     <option value="registered">Registered / Repeat</option>
   </select>
 
-  <label><input type="checkbox" id="noAddons" /> No Add-Ons — Just wash and return my laundry</label>
-  <label><input type="checkbox" id="clientProvided" /> Client Provided Laundry Care Products (Free)</label>
+  <label><input type="checkbox" id="noAddons" onchange="calculatePrice()" /> No Add-Ons — Just wash and return my laundry</label>
+  <label><input type="checkbox" id="clientProvided" onchange="calculatePrice()" /> Client Provided Laundry Care Products (Free)</label>
 
   <label for="detergent">Detergent <span class="note">(Free: Arm & Hammer | $0.10/lb for others)</span></label>
-  <select id="detergent">
+  <select id="detergent" onchange="calculatePrice()">
     <option value="arm-fresh">Arm & Hammer Fresh Burst (Free)</option>
     <option value="arm-sensitive">Arm & Hammer Sensitive (Free)</option>
     <option value="tide-original">Tide Original ($0.10/lb)</option>
@@ -96,7 +96,7 @@
   </select>
 
   <label for="softener">Liquid Softener <span class="note">($0.10/lb)</span></label>
-  <select id="softener">
+  <select id="softener" onchange="calculatePrice()">
     <option value="">-- None --</option>
     <option value="downy-april">Downy April Showers</option>
     <option value="downy-free">Downy Free & Gentle</option>
@@ -106,7 +106,7 @@
   </select>
 
   <label for="dryerSheets">Dryer Sheets <span class="note">($1.00/load)</span></label>
-  <select id="dryerSheets">
+  <select id="dryerSheets" onchange="calculatePrice()">
     <option value="">-- None --</option>
     <option value="bounce-original">Bounce Original</option>
     <option value="bounce-free">Bounce Free & Gentle</option>
@@ -119,7 +119,7 @@
   </select>
 
   <label for="otherAddons">Other Add-Ons <span class="note">($0.10/lb each)</span></label>
-  <select id="otherAddons" multiple>
+  <select id="otherAddons" multiple onchange="calculatePrice()">
     <option value="bleach">Bleach</option>
     <option value="color-safe">Color Safe Bleach</option>
     <option value="oxiclean">OxiClean</option>
@@ -129,18 +129,18 @@
   </select>
 
   <label for="stainCount">Stain Fighting <span class="note">($1.00/item, Standard only)</span></label>
-  <input type="number" id="stainCount" min="0" value="0" />
+  <input type="number" id="stainCount" min="0" value="0" oninput="calculatePrice()" />
 
-  <label><input type="checkbox" id="hangDry" /> Hang Dry (Free, Standard only)</label>
-  <label><input type="checkbox" id="hangers" /> Return on Hangers (Free, client provides hangers)</label>
+  <label><input type="checkbox" id="hangDry" onchange="calculatePrice()" /> Hang Dry (Free, Standard only)</label>
+  <label><input type="checkbox" id="hangers" onchange="calculatePrice()" /> Return on Hangers (Free, client provides hangers)</label>
 
   <div id="summary">
     <h2>Estimated Price</h2>
     <p id="priceDisplay">Please complete selections to see pricing.</p>
   </div>
 
-  <button onclick="calculatePrice()">Calculate Price</button>
   <button onclick="confirmCharges()">Confirm Charges</button>
+  <button onclick="window.location.href='booking.html'">Continue to Booking</button>
 
   <script>
     document.getElementById("noAddons").addEventListener("change", function () {
@@ -165,114 +165,6 @@
       const softener = document.getElementById("softener").value;
       const dryerSheets = document.getElementById("dryerSheets").value;
       const otherAddons = Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value);
-      const stainCount = parseInt(document.getElementBy
-     const hangDry = document.getElementById("hangDry").checked;
-const hangers = document.getElementById("hangers").checked;
-
-if (!tier || !weight || !userType) {
-  document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
-  return;
-}
-
-if ((hangDry || stainCount > 0) && tier !== "standard") {
-  document.getElementById("priceDisplay").innerText = "Hang Dry and Stain Fighting are only available with Standard tier.";
-  return;
-}
-
-let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
-let extraWeight = Math.max(0, weight - 20);
-let perPoundRate = 2.00;
-let addonCharge = 0;
-
-if (!noAddons) {
-  if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
-    addonCharge += 0.10 * weight;
-  }
-  if (softener) addonCharge += 0.10 * weight;
-  if (dryerSheets) addonCharge += 1.00;
-  if (otherAddons.length > 0) addonCharge += 0.10 * weight * otherAddons.length;
-}
-
-if (stainCount > 0) {
-  addonCharge += 1.00 * stainCount;
-}
-
-let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
-document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
-
-localStorage.setItem("tier", tier);
-localStorage.setItem("weight", weight);
-localStorage.setItem("userType", userType);
-localStorage.setItem("clientProvided", clientProvided);
-localStorage.setItem("noAddons", noAddons);
-localStorage.setItem("detergent", detergent);
-localStorage.setItem("softener", softener);
-localStorage.setItem("dryerSheets", dryerSheets);
-localStorage.setItem("otherAddons", JSON.stringify(otherAddons));
-localStorage.setItem("stainCount", stainCount);
-localStorage.setItem("hangDry", hangDry);
-localStorage.setItem("hangers", hangers);
-localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+      const stainCount = parseInt(document.getElementById("stainCount").value) || 0;
       const hangDry = document.getElementById("hangDry").checked;
-      const hangers = document.getElementById("hangers").checked;
-
-      if (!tier || !weight || !userType) {
-        document.getElementById("priceDisplay").innerText = "Please complete all required selections.";
-        return;
-      }
-
-      if ((hangDry || stainCount > 0) && tier !== "standard") {
-        document.getElementById("priceDisplay").innerText = "Hang Dry and Stain Fighting are only available with Standard tier.";
-        return;
-      }
-
-      let basePrice = tier === "standard" ? 40 : tier === "express" ? 80 : 120;
-      let extraWeight = Math.max(0, weight - 20);
-      let perPoundRate = 2.00;
-      let addonCharge = 0;
-
-      if (!noAddons) {
-        if (!clientProvided && !["arm-fresh", "arm-sensitive"].includes(detergent)) {
-          addonCharge += 0.10 * weight;
-        }
-        if (softener) addonCharge += 0.10 * weight;
-        if (dryerSheets) addonCharge += 1.00;
-        if (otherAddons.length > 0) addonCharge += 0.10 * weight * otherAddons.length;
-      }
-
-      if (stainCount > 0) {
-        addonCharge += 1.00 * stainCount;
-      }
-
-      let estimatedPrice = basePrice + (extraWeight * perPoundRate) + addonCharge;
-      document.getElementById("priceDisplay").innerText = `$${estimatedPrice.toFixed(2)} estimated`;
-
-      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
-    }
-
-    function confirmCharges() {
-      const priceText = document.getElementById("priceDisplay").innerText;
-      if (!priceText.includes("$")) {
-        alert("Please calculate your price before confirming.");
-        return;
-      }
-
-      localStorage.setItem("tier", document.getElementById("tier").value);
-      localStorage.setItem("weight", document.getElementById("weight").value);
-      localStorage.setItem("userType", document.getElementById("userType").value);
-      localStorage.setItem("clientProvided", document.getElementById("clientProvided").checked);
-      localStorage.setItem("noAddons", document.getElementById("noAddons").checked);
-      localStorage.setItem("detergent", document.getElementById("detergent").value);
-      localStorage.setItem("softener", document.getElementById("softener").value);
-      localStorage.setItem("dryerSheets", document.getElementById("dryerSheets").value);
-      localStorage.setItem("otherAddons", JSON.stringify(Array.from(document.getElementById("otherAddons").selectedOptions).map(opt => opt.value)));
-      localStorage.setItem("stainCount", document.getElementById("stainCount").value);
-      localStorage.setItem("hangDry", document.getElementById("hangDry").checked);
-      localStorage.setItem("hangers", document.getElementById("hangers").checked);
-
-      window.location.href = "booking.html";
-    }
-  </script>
-</body>
-</html>
-                             
+      const hangers =
