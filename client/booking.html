@@ -62,13 +62,16 @@
 
   <div class="summary">
     <h2>Client Info</h2>
-    <p><strong>Name:</strong> [Auto-filled from intake]</p>
-    <p><strong>Email:</strong> [Auto-filled]</p>
-    <p><strongPhone:</strong> [Auto-filled]</p>
-    <p><strongService Tier:</strong> [Selected tier]</p>
+    <p><strong>Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Service Tier:</strong> <span id="tier"></span></p>
+    <p><strong>Bag Size:</strong> <span id="bagSize"></span></p>
+    <p><strong>Number of Bags:</strong> <span id="bagCount"></span></p>
+    <p><strong>Estimated Weight:</strong> <span id="estimatedWeight"></span> lbs</p>
+    <p><strong>Add-Ons:</strong> <span id="addonsSummary"></span></p>
+    <p><strong>Contact Method:</strong> <span id="contactMethod"></span></p>
   </div>
-
-  <p class="note">Need help estimating weight? Use this guide: Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
 
   <form>
     <label for="weight">Estimated Laundry Weight (lbs):</label>
@@ -91,6 +94,39 @@
 
     <button type="submit">Submit Booking</button>
   </form>
+
+  <script>
+    // Pull data from localStorage
+    document.getElementById("clientName").innerText = localStorage.getItem("clientName") || "—";
+    document.getElementById("clientEmail").innerText = localStorage.getItem("clientEmail") || "—";
+    document.getElementById("clientPhone").innerText = localStorage.getItem("clientPhone") || "—";
+    document.getElementById("tier").innerText = localStorage.getItem("tier") || "—";
+    document.getElementById("bagSize").innerText = localStorage.getItem("bagSize") || "—";
+    document.getElementById("bagCount").innerText = localStorage.getItem("bagCount") || "—";
+    document.getElementById("estimatedWeight").innerText = localStorage.getItem("estimatedWeight") || "—";
+    document.getElementById("contactMethod").innerText = localStorage.getItem("contactMethod") || "—";
+
+    const addons = localStorage.getItem("addons");
+    document.getElementById("addonsSummary").innerText = addons ? addons.replace(/,/g, ", ") : "—";
+
+    // Pre-fill weight field
+    const weightInput = document.getElementById("weight");
+    const storedWeight = localStorage.getItem("estimatedWeight");
+    if (storedWeight) weightInput.value = storedWeight;
+
+    // Pre-fill add-ons
+    const addonSelect = document.getElementById("addons");
+    if (addons) {
+      const selected = addons.split(",");
+      Array.from(addonSelect.options).forEach(opt => {
+        if (selected.includes(opt.value)) opt.selected = true;
+      });
+    }
+
+    // Pre-fill notes if available
+    const notes = localStorage.getItem("orderNotes") || localStorage.getItem("clientNotes");
+    if (notes) document.getElementById("notes").value = notes;
+  </script>
 
 </body>
 </html>
