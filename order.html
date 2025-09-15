@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Order Details – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff8dc;
+      color: #333;
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    .tier-box {
+      background-color: #e6f2ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Order Details</h1>
+
+  <div class="summary">
+    <h2>Client Info</h2>
+    <p><strong>Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Hotel/Motel:</strong> <span id="locationSelected"></span></p>
+    <p><strong>Pickup Address:</strong> <span id="pickupAddress"></span></p>
+    <p><strong>Room Number:</strong> <span id="roomNumber"></span></p>
+  </div>
+
+  <form id="orderForm" action="booking.html" method="get" onsubmit="saveOrderDetails(); return true;">
+    <label for="serviceTier">Select Your Service Tier:</label>
+
+    <div class="tier-box">
+      <input type="radio" name="serviceTier" value="standard" required /> <strong>Standard</strong> – $2/lb, 25 lb minimum, 24–48 hr turnaround<br />
+      Includes stain treatment and hang dry options.
+    </div>
+
+    <div class="tier-box">
+      <input type="radio" name="serviceTier" value="express" /> <strong>Express</strong> – $4/lb, 25 lb minimum, 60 lb max, 12–24 hr turnaround<br />
+      No stain treatment or hang dry.
+    </div>
+
+    <div class="tier-box">
+      <input type="radio" name="serviceTier" value="rapid" /> <strong>Rapid Express</strong> – $6/lb, 60 lb max, 6–12 hr turnaround<br />
+      No stain treatment or hang dry.
+    </div>
+
+    <p class="note">You’ll select your bag sizes and add-ons next. Final price is estimated based on max weight per bag.</p>
+
+    <button type="submit">Continue to Bag Selection</button>
+  </form>
+
+  <script>
+    document.getElementById("clientName").textContent = localStorage.getItem("clientName") || "";
+    document.getElementById("clientEmail").textContent = localStorage.getItem("clientEmail") || "";
+    document.getElementById("clientPhone").textContent = localStorage.getItem("clientPhone") || "";
+    document.getElementById("locationSelected").textContent = localStorage.getItem("locationSelected") || "";
+    document.getElementById("pickupAddress").textContent = localStorage.getItem("pickupAddress") || "";
+    document.getElementById("roomNumber").textContent = localStorage.getItem("roomNumber") || "";
+
+    function saveOrderDetails() {
+      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
+      localStorage.setItem("serviceTier", tier);
+    }
+  </script>
+
+</body>
+</html>
