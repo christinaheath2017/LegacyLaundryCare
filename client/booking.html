@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Laundry Service – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
 
+  <h1>Book Laundry Service</h1>
+
+  <p class="note">Need help estimating weight? Use this guide: Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
+
+  <form>
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone" required />
+
+    <label for="weight">Estimated Laundry Weight (lbs):</label>
+    <input type="number" id="weight" name="weight" min="1" required />
+
+    <label for="tier">Select Service Tier:</label>
+    <select id="tier" name="tier" required>
+      <option value="">-- Choose Tier --</option>
+      <option value="standard">Standard ($40 minimum)</option>
+      <option value="express">Express ($80 minimum)</option>
+      <option value="rapid">Rapid Express ($120 minimum)</option>
+    </select>
+
+    <label for="addons">Select Add-Ons:</label>
+    <select id="addons" name="addons" multiple>
+      <option value="none">Just wash my laundry</option>
+      <option value="hypoallergenic">Hypoallergenic Detergent</option>
+      <option value="softener">Softener Use</option>
+      <option value="dryer-sheets">Dryer Sheets</option>
+      <option value="stain-fighting">Stain Fighting (Standard only)</option>
+      <option value="hang-dry">Hang Dry (Standard only)</option>
+      <option value="hangers">Return on Hangers</option>
+    </select>
+    <p class="note">Note: Stain Fighting and Hang Dry are only available with Standard tier.</p>
+
+    <label for="notes">Booking Notes (optional):</label>
+    <textarea id="notes" name="notes" rows="4" placeholder="Let us know if you’re facing an emergency or need rapid service."></textarea>
+
+    <button type="submit">Submit Booking</button>
+  </form>
+
+</body>
+</html>
