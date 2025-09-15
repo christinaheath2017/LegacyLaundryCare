@@ -13,7 +13,7 @@
       max-width: 800px;
       margin: auto;
     }
-    h1, h2 {
+    h1, h2, h3 {
       text-align: center;
       margin-bottom: 1rem;
     }
@@ -42,6 +42,31 @@
     }
     .cta a:hover {
       background-color: #0056b3;
+    }
+    .option-block {
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+    .casual-button {
+      background-color: #fff8dc;
+      color: #333;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    .registered-button {
+      background-color: #e6f2ff;
+      color: #333;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -84,8 +109,19 @@
     <li>All your preferences and household info are now saved—future bookings will be faster and easier.</li>
   </ul>
 
-  <div class="cta">
-    <a href="intake.html">I'm interested—let's do this!</a>
+  <h2>Choose Your Booking Path</h2>
+  <p>We offer two ways to book laundry service—both designed to meet you where you are:</p>
+
+  <div class="option-block" style="background-color:#fff8dc;">
+    <h3>🟨 Book Without Registering</h3>
+    <p>Perfect for one-time or emergency service. No login required. Just fill out your info, select your service, and you're done.</p>
+    <a href="intake.html" class="casual-button">Start Without Registering</a>
+  </div>
+
+  <div class="option-block" style="background-color:#e6f2ff;">
+    <h3>🟦 Register for a Client Dashboard</h3>
+    <p>Ideal for repeat clients. Save your preferences, track past orders, and access personalized tools. Takes just a minute to set up.</p>
+    <a href="registration.html" class="registered-button">Register or Log In</a>
   </div>
 
 </body>
