@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #fff;
+      color: #333;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    #filters {
+      margin-bottom: 1rem;
+    }
+    #filters input[type="text"] {
+      padding: 0.5rem;
+      width: 60%;
+      font-size: 1rem;
+      margin-right: 1rem;
+    }
+    #filters label {
+      font-size: 0.95rem;
+    }
+    .booking-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    .emergency {
+      border-left: 5px solid crimson;
+      background-color: #ffecec;
+    }
+    .standard {
+      border-left: 5px solid #007bff;
+    }
+    .rate {
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+    .notes {
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+    .flag {
+      color: red;
+      font-weight: bold;
+    }
+    .status {
+      margin-top: 0.5rem;
+    }
+    select {
+      padding: 0.4rem;
+      font-size: 0.95rem;
+      margin-top: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard – Bookings</h2>
+
+  <div id="filters">
+    <input type="text" id="searchInput" placeholder="Search by name, email, or phone" />
+    <label>
+      <input type="checkbox" id="emergencyOnly" />
+      Show emergencies only
+    </label>
+  </div>
+
+  <div id="bookingsContainer">Loading bookings...</div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+    );
+
+    document.getElementById("searchInput").addEventListener("input", loadBookings);
+    document.getElementById("emergencyOnly").addEventListener("change", loadBookings);
+
+    async function updateStatus(id, newStatus) {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: newStatus })
+        .eq("id", id);
+
+      if (error) {
+        alert("Failed to update status: " + error.message);
+      } else {
+        loadBookings(); // Refresh dashboard
+      }
+    }
+
+    async function loadBookings() {
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const container = document.getElementById("bookingsContainer");
+      container.innerHTML = "";
+
+      if (error) {
+        container.textContent = "Error loading bookings: " + error.message;
+        return;
+      }
+
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const emergencyOnly = document.getElementById("emergencyOnly").checked;
+
+      const filtered = data.filter(booking => {
+        const matchSearch = booking.name.toLowerCase().includes(searchTerm)
+          || booking.email.toLowerCase().includes(searchTerm)
+          || booking.phone.toLowerCase().includes(searchTerm);
+        const matchEmergency = emergencyOnly ? booking.emergency_flag : true;
+        return matchSearch && matchEmergency;
+      });
+
+      if (filtered.length === 0) {
+        container.textContent = "No bookings match your filters.";
+        return;
+      }
+
+      filtered.forEach(booking => {
+        const entry = document.createElement("div");
+        entry.className = "booking-entry " + (booking.emergency_flag ? "emergency" : "standard");
+
+        entry.innerHTML = `
+          <strong>${booking.name}</strong> (${booking.email})<br>
+          📞 ${booking.phone}<br>
+          🧺 Weight: ${booking.weight} lbs<br>
+          💲 Rate: $${booking.final_rate.toFixed(2)}/lb<br>
+          💰 Estimated Total: $${(booking.weight * booking.final_rate).toFixed(2)}<br>
+          ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied (50% off)</p>" : ""}
+          ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
+          <div class="status">
+            <label for="status-${booking.id}"><strong>Status:</strong></label>
+            <select id="status-${booking.id}" onchange="updateStatus('${booking.id}', this.value)">
+              <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="In Progress" ${booking.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            </select>
+          </div>
+        `;
+
+        container.appendChild(entry);
+      });
+    }
+
+    loadBookings();
+  </script>
+</body>
+</html>
 
