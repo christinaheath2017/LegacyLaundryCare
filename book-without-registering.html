@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffeb3b; /* Bold yellow */
+      background-color: #ffeb3b;
       color: #333;
       padding: 2rem;
       max-width: 800px;
@@ -58,7 +58,9 @@
 <body>
 
   <h1>Book Without Registering</h1>
-  <p>We’re honored to serve you. This form helps us understand your needs and prepare with care—no login required.</p>
+  <p>
+    We’re honored to serve you. This form is for guests staying at hotels and motels in the Warsaw area—especially those located along or near US 30. No login required. Just tell us where you’re staying, and we’ll handle the rest.
+  </p>
 
   <form onsubmit="saveClientInfo(); return true;" action="order.html" method="get">
     <label for="name">Full Name:</label>
@@ -96,31 +98,26 @@
 
     <label>
       <input type="checkbox" id="isVisitor" onchange="toggleVisitorOptions()" />
-      Are you visiting from out of town and need fast, friendly, reliable care that doesn’t interrupt your stay?
+      Are you visiting from out of town and staying at a hotel or motel in the Warsaw area?
     </label>
 
     <div id="lodgingOptions" style="display:none;">
+      <!-- Campground option removed for now -->
       <label>
-        <input type="radio" name="lodgingType" value="campground" onchange="populateCampgrounds()" />
-        Staying at a Campground
-      </label>
-      <label>
-        <input type="radio" name="lodgingType" value="hotel" onchange="populateHotels()" />
+        <input type="radio" name="lodgingType" value="hotel" onchange="populateHotels()" checked />
         Staying at a Hotel/Motel
       </label>
 
-      <label for="locationSelect">Select Your Location:</label>
-      <select id="locationSelect" onchange="showRoomOrMeetingInstructions()">
+      <label for="locationSelect">Select Your Hotel or Motel:</label>
+      <select id="locationSelect" onchange="showRoomInstructions()">
         <option value="">-- Choose Location --</option>
       </select>
 
       <div id="roomOrInstructions" style="display:none;">
-        <label for="roomNumber" id="roomLabel" style="display:none;">Room Number (Hotel/Motel only):</label>
-        <input type="text" id="roomNumber" style="display:none;" />
+        <label for="roomNumber" id="roomLabel">Room Number:</label>
+        <input type="text" id="roomNumber" />
 
-        <p id="campgroundNote" style="display:none;" class="note">
-          Please meet us at the campground entrance or office. Most campgrounds do not allow entry without a gate pass or card.
-        </p>
+        <p class="note">We’ll meet you at the front desk or your room—just let us know what’s easiest.</p>
       </div>
     </div>
 
@@ -139,7 +136,7 @@
       localStorage.setItem("clientType", document.getElementById("clientType").value);
       localStorage.setItem("clientNotes", document.getElementById("notes").value);
       localStorage.setItem("isVisitor", document.getElementById("isVisitor").checked);
-      localStorage.setItem("lodgingType", document.querySelector('input[name="lodgingType"]:checked')?.value || "");
+      localStorage.setItem("lodgingType", "hotel");
       localStorage.setItem("locationSelected", document.getElementById("locationSelect").value);
       localStorage.setItem("roomNumber", document.getElementById("roomNumber").value);
       localStorage.setItem("pickupAddress", document.getElementById("pickupAddress").value);
@@ -153,63 +150,35 @@
       document.getElementById("pickupAddress").value = "";
     }
 
-    function populateCampgrounds() {
-      const campgrounds = [
-        { name: "JT'S Lakeside Campground", address: "6402 E McKenna Rd, Warsaw, IN 46582" },
-        { name: "Hoffman Lake Campground", address: "7638 W 300 N, Warsaw, IN 46582" },
-        { name: "Pike Lake Campground", address: "1011 Arthur St, Warsaw, IN 46580" },
-        { name: "Camp and Fish LLC", address: "74 EMS C23 Ln, Warsaw, IN 46582" },
-        { name: "Jellystone Park Pierceton", address: "1916 N 850 E, Pierceton, IN 46562" },
-        { name: "Lakeview Campground", address: "7781 E 300 N, Rochester, IN 46975" },
-        { name: "Tippecanoe River Run", address: "1417 W 375 N, Rochester, IN 46975" },
-        { name: "Bass Lake Beach & Campground", address: "5837 IN-10, Knox, IN 46534" },
-        { name: "Southern Sites Campground", address: "6688 E Co Rd 625 N, Twelve Mile, IN 46988" },
-        { name: "Rising Sun Campground", address: "7510 County Rd N 250 E, Monterey, IN 46960" }
-      ];
-      populateLocationDropdown(campgrounds);
-    }
-
     function populateHotels() {
       const hotels = [
-        { name: "Quality Inn Rochester South", address: "289 McDonald Dr, Rochester, IN 46975" },
-        { name: "Super 8 by Wyndham Rochester", address: "209 McDonald Dr, Rochester, IN 46975" },
-        { name: "Holiday Inn Express Plymouth", address: "2619 N Michigan St, Plymouth, IN 46563" },
-        { name: "Economy Inn Plymouth", address: "2535 N Michigan St, Plymouth, IN 46563" },
-        { name: "Days Inn by Wyndham Plymouth", address: "2229 N Michigan St, Plymouth, IN 46563" },
-        { name: "Lincoln Lodge Motel", address: "11425 US Hwy 52 S, Clarks Hill, IN 47930" },
-        { name: "ROCHESTER MOTEL", address: "2147 Southway 31, Rochester, IN 46975" }
+        { name: "Wyndham Garden Warsaw", address: "2519 E Center St, Warsaw, IN 46580" },
+        { name: "Days Inn by Wyndham Warsaw", address: "3014 Frontage Rd, Warsaw, IN 46580" },
+        { name: "Comfort Inn & Suites Warsaw", address: "3328 E Center St, Warsaw, IN 46582" },
+        { name: "Holiday Inn Express Warsaw", address: "300 Prosperity Dr, Warsaw, IN 46582" },
+        { name: "Hampton Inn Warsaw", address: "115 Robmar Dr, Warsaw, IN 46580" },
+        { name: "Tru by Hilton Warsaw", address: "200 Prosperity Dr, Warsaw, IN 46580" },
+        { name: "Fairfield Inn & Suites Warsaw", address: "54 Petro Dr, Warsaw, IN 46582" },
+        { name: "Best Western Plus Warsaw", address: "3825 Lake City Hwy, Warsaw, IN 46580" },
+        { name: "Deluxe Inn", address: "2575 E Center St, Warsaw, IN 46580" }
       ];
-      populateLocationDropdown(hotels);
-    }
-
-    function populateLocationDropdown(locations) {
       const select = document.getElementById("locationSelect");
       select.innerHTML = '<option value="">-- Choose Location --</option>';
-      locations.forEach(loc => {
+      hotels.forEach(hotel => {
         const option = document.createElement("option");
-        option.value = loc.address;
-        option.text = `${loc.name} – ${loc.address}`;
+        option.value = hotel.address;
+        option.text = `${hotel.name} – ${hotel.address}`;
         select.appendChild(option);
       });
     }
 
-    function showRoomOrMeetingInstructions() {
-      const lodgingType = document.querySelector('input[name="lodgingType"]:checked')?.value;
+    function showRoomInstructions() {
       const selectedOption = document.getElementById("locationSelect").selectedOptions[0];
       const address = selectedOption?.value || "";
-
       document.getElementById("pickupAddress").value = address;
       localStorage.setItem("pickupAddress", address);
-
       document.getElementById("roomOrInstructions").style.display = "block";
-
-      const isHotel = lodgingType === "hotel";
-      document.getElementById("roomLabel").style.display = isHotel ? "block" : "none";
-      document.getElementById("roomNumber").style.display = isHotel ? "block" : "none";
-      document.getElementById("campgroundNote").style.display = lodgingType === "campground" ? "block" : "none";
     }
   </script>
 </body>
 </html>
-
-        
