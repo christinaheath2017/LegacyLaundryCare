@@ -13,15 +13,9 @@
       max-width: 900px;
       margin: auto;
     }
-    h1 {
+    h1, h2, h3 {
       text-align: center;
       margin-bottom: 1rem;
-    }
-    .summary {
-      background-color: #f0f8ff;
-      padding: 1rem;
-      border-radius: 5px;
-      margin-bottom: 2rem;
     }
     label {
       display: block;
@@ -39,6 +33,12 @@
       font-size: 0.9rem;
       color: #555;
       margin-top: 0.5rem;
+    }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
     }
     .tier-box {
       background-color: #e6f2ff;
@@ -76,106 +76,119 @@
   </div>
 
   <form id="orderForm" action="booking.html" method="get" onsubmit="saveOrderDetails(); return true;">
-    <label for="serviceTier">Select Your Service Tier:</label>
 
+    <h2>Choose Your Service Tier</h2>
     <div class="tier-box">
       <input type="radio" name="serviceTier" value="standard" required /> <strong>Standard</strong> – $2/lb, 25 lb minimum, 24–48 hr turnaround<br />
       Includes stain treatment and hang dry options.
     </div>
-
     <div class="tier-box">
       <input type="radio" name="serviceTier" value="express" /> <strong>Express</strong> – $4/lb, 25 lb minimum, 60 lb max, 12–24 hr turnaround<br />
       No stain treatment or hang dry.
     </div>
-
     <div class="tier-box">
       <input type="radio" name="serviceTier" value="rapid" /> <strong>Rapid Express</strong> – $6/lb, 60 lb max, 6–12 hr turnaround<br />
       No stain treatment or hang dry.
     </div>
-<h2>Bag Size & Quantity</h2>
 
-<p>Select all bag sizes you’re using. Then tell us how many of each you have.</p>
+    <h2>Bag Size & Quantity</h2>
+    <p>Select all bag sizes you’re using. Then tell us how many of each you have.</p>
+    <div id="bagSelection">
+      <label><input type="checkbox" name="bagSize" value="xs" onchange="toggleBagInput('xs')"> Extra Small (7 gal, ~10 lbs)</label>
+      <input type="number" id="xsCount" placeholder="How many?" style="display:none;" min="0" />
 
-<div id="bagSelection">
-  <label><input type="checkbox" name="bagSize" value="xs" onchange="toggleBagInput('xs')"> Extra Small (7 gal, ~10 lbs)</label>
-  <input type="number" id="xsCount" placeholder="How many?" style="display:none;" min="0" />
+      <label><input type="checkbox" name="bagSize" value="sm" onchange="toggleBagInput('sm')"> Small (13 gal, ~25 lbs)</label>
+      <input type="number" id="smCount" placeholder="How many?" style="display:none;" min="0" />
 
-  <label><input type="checkbox" name="bagSize" value="sm" onchange="toggleBagInput('sm')"> Small (13 gal, ~25 lbs)</label>
-  <input type="number" id="smCount" placeholder="How many?" style="display:none;" min="0" />
+      <label><input type="checkbox" name="bagSize" value="md" onchange="toggleBagInput('md')"> Medium (30/33 gal, ~60 lbs)</label>
+      <input type="number" id="mdCount" placeholder="How many?" style="display:none;" min="0" />
 
-  <label><input type="checkbox" name="bagSize" value="md" onchange="toggleBagInput('md')"> Medium (30/33 gal, ~60 lbs)</label>
-  <input type="number" id="mdCount" placeholder="How many?" style="display:none;" min="0" />
+      <label><input type="checkbox" name="bagSize" value="lg" onchange="toggleBagInput('lg')"> Large (40 gal, ~90 lbs)</label>
+      <input type="number" id="lgCount" placeholder="How many?" style="display:none;" min="0" />
 
-  <label><input type="checkbox" name="bagSize" value="lg" onchange="toggleBagInput('lg')"> Large (40 gal, ~90 lbs)</label>
-  <input type="number" id="lgCount" placeholder="How many?" style="display:none;" min="0" />
+      <label><input type="checkbox" name="bagSize" value="xl" onchange="toggleBagInput('xl')"> Extra Large (55 gal, ~120 lbs)</label>
+      <input type="number" id="xlCount" placeholder="How many?" style="display:none;" min="0" />
+    </div>
 
-  <label><input type="checkbox" name="bagSize" value="xl" onchange="toggleBagInput('xl')"> Extra Large (55 gal, ~120 lbs)</label>
-  <input type="number" id="xlCount" placeholder="How many?" style="display:none;" min="0" />
-</div>
+    <h3>Sorting Options (Optional)</h3>
+    <label><input type="checkbox" name="sortOption" value="delicates"> Delicates</label>
+    <label><input type="checkbox" name="sortOption" value="hangDry"> Hang Dry (Standard only)</label>
+    <label><input type="checkbox" name="sortOption" value="whitening"> Whitening</label>
+    <label><input type="checkbox" name="sortOption" value="hangers"> Return on Hangers (client provides hangers)</label>
 
-<h3>Sorting Options (Optional)</h3>
-<p>Select any sorting preferences. These will be treated as separate bags.</p>
+    <h2>Product Preferences</h2>
+    <h3>Included Detergent (Free)</h3>
+    <label><input type="radio" name="freeDetergent" value="Arm & Hammer Fresh Burst" checked /> Arm & Hammer Fresh Burst</label>
+    <label><input type="radio" name="freeDetergent" value="Arm & Hammer Sensitive Skin" /> Arm & Hammer Sensitive Skin</label>
 
-<label><input type="checkbox" name="sortOption" value="delicates"> Delicates</label>
-<label><input type="checkbox" name="sortOption" value="hangDry"> Hang Dry (Standard only)</label>
-<label><input type="checkbox" name="sortOption" value="whitening"> Whitening</label>
-<label><input type="checkbox" name="sortOption" value="hangers"> Return on Hangers (client provides hangers)</label>
+    <h3>Premium Detergents ($0.10/lb)</h3>
+    <select id="premiumDetergents" multiple>
+      <option value="Tide Original">Tide Original</option>
+      <option value="Tide Hypoallergenic">Tide Hypoallergenic</option>
+      <option value="Gain Original">Gain Original</option>
+      <option value="Persil Original">Persil Original</option>
+      <option value="All Free Clear">All Free Clear</option>
+    </select>
 
-<p class="note">Each sorting option may require a separate bag. We’ll confirm final weight and pricing after intake.</p>
+    <h3>Liquid Softeners ($0.10/lb)</h3>
+    <select id="liquidSofteners" multiple>
+      <option value="Downy April Fresh">Downy April Fresh</option>
+      <option value="Gain Original">Gain Original</option>
+      <option value="All Free Clear">All Free Clear</option>
+      <option value="Snuggle Blue Sparkle">Snuggle Blue Sparkle</option>
+    </select>
 
-<h3>Estimated Price</h3>
-<p><strong>Estimated Max Weight:</strong> <span id="estimatedWeight">0</span> lbs</p>
-<p><strong>Estimated Price:</strong> $<span id="estimatedPrice">0.00</span></p>
+    <h3>Dryer Sheets ($0.10/lb)</h3>
+    <select id="dryerSheets" multiple>
+      <option value="Bounce">Bounce</option>
+      <option value="Bounce Hypoallergenic">Bounce Hypoallergenic</option>
+      <option value="Gain Original">Gain Original</option>
+      <option value="Downy April Fresh">Downy April Fresh</option>
+      <option value="All Free Clear">All Free Clear</option>
+    </select>
 
-<script>
-  const tierRates = {
-    standard: 2,
-    express: 4,
-    rapid: 6
-  };
+    <h3>Scent Boosters ($0.10/lb)</h3>
+    <select id="scentBoosters" multiple>
+      <option value="Downy Fresh">Downy Fresh</option>
+      <option value="Arm & Hammer Fresh Burst">Arm & Hammer Fresh Burst</option>
+      <option value="Gain Fireworks Original">Gain Fireworks Original</option>
+    </select>
 
-  const bagWeights = {
-    xs: 10,
-    sm: 25,
-    md: 60,
-    lg: 90,
-    xl: 120
-  };
+    <h3>Whitening Agents (Bag Required)</h3>
+    <select id="whiteningAgents" multiple>
+      <option value="Iron Out">Iron Out</option>
+      <option value="Bleach">Bleach</option>
+      <option value="White Out">White Out</option>
+            <option value="Hydrogen Peroxide + Baking Soda">Hydrogen Peroxide + Baking Soda</option>
+      <option value="OxiClean White">OxiClean White</option>
+    </select>
 
-  function toggleBagInput(size) {
-    const input = document.getElementById(size + "Count");
-    input.style.display = input.style.display === "none" ? "inline-block" : "none";
-    calculateEstimate();
-  }
+    <h3>Color-Safe Additives</h3>
+    <select id="colorAdditives" multiple>
+      <option value="OxiClean">OxiClean</option>
+      <option value="Color Safe Bleach">Color Safe Bleach</option>
+      <option value="BIZ">BIZ</option>
+    </select>
 
-  document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.addEventListener("input", calculateEstimate);
-  });
+    <h3>Stain Treatment ($1/item – Standard Tier Only)</h3>
+    <label for="stainCount">How many items need stain treatment?</label>
+    <input type="number" id="stainCount" min="0" />
+    <p class="note">We cannot guarantee stain removal. Some stains are permanent. Fee applies whether stain lifts or not.</p>
 
-  document.querySelectorAll('input[name="serviceTier"]').forEach(radio => {
-    radio.addEventListener("change", calculateEstimate);
-  });
+    <h3>Load-Specific Add-Ons</h3>
+    <label><input type="checkbox" name="hangDry" /> Hang Dry (Standard only)</label>
+    <label><input type="checkbox" name="returnHangers" /> Return on Hangers (client provides hangers)</label>
 
-  function calculateEstimate() {
-    let totalWeight = 0;
-    ["xs", "sm", "md", "lg", "xl"].forEach(size => {
-      const count = parseInt(document.getElementById(size + "Count")?.value || "0");
-      totalWeight += count * bagWeights[size];
-    });
+    <h2>Final Estimate</h2>
+    <p><strong>Estimated Max Weight:</strong> <span id="estimatedWeight">0</span> lbs</p>
+    <p><strong>Estimated Price:</strong> $<span id="estimatedPrice">0.00</span></p>
+    <p class="note">This estimate is based on maximum bag capacity. Final charges are usually lower, but this ensures funds are available.</p>
 
-    const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
-    const rate = tierRates[tier] || 0;
-    const estimatedPrice = totalWeight * rate;
+    <h2>Terms & Authorization</h2>
+    <label><input type="checkbox" id="agreeTerms" required /> I agree to Legacy LaundryCare’s <a href="termconditions.html" target="_blank">Terms and Conditions</a> for this order.</label>
 
-    document.getElementById("estimatedWeight").textContent = totalWeight;
-    document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
-
-    localStorage.setItem("estimatedWeight", totalWeight);
-    localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
-  }
-</script>
-
-    
+    <button type="submit">Continue to Payment</button>
+  </form>
 
   <script>
     document.getElementById("clientName").textContent = localStorage.getItem("clientName") || "";
@@ -185,9 +198,74 @@
     document.getElementById("pickupAddress").textContent = localStorage.getItem("pickupAddress") || "";
     document.getElementById("roomNumber").textContent = localStorage.getItem("roomNumber") || "";
 
+    const tierRates = {
+      standard: 2,
+      express: 4,
+      rapid: 6
+    };
+
+    const bagWeights = {
+      xs: 10,
+      sm: 25,
+      md: 60,
+      lg: 90,
+      xl: 120
+    };
+
+    function toggleBagInput(size) {
+      const input = document.getElementById(size + "Count");
+      input.style.display = input.style.display === "none" ? "inline-block" : "none";
+      input.value = "";
+      calculateEstimate();
+    }
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+      input.addEventListener("input", calculateEstimate);
+    });
+
+    document.querySelectorAll('input[name="serviceTier"]').forEach(radio => {
+      radio.addEventListener("change", calculateEstimate);
+    });
+
+    function calculateEstimate() {
+      let totalWeight = 0;
+      ["xs", "sm", "md", "lg", "xl"].forEach(size => {
+        const countInput = document.getElementById(size + "Count");
+        if (countInput && countInput.style.display !== "none") {
+          const count = parseInt(countInput.value || "0");
+          totalWeight += count * bagWeights[size];
+        }
+      });
+
+      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
+      const rate = tierRates[tier] || 0;
+      const estimatedPrice = totalWeight * rate;
+
+      document.getElementById("estimatedWeight").textContent = totalWeight;
+      document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
+
+      localStorage.setItem("estimatedWeight", totalWeight);
+      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+    }
+
     function saveOrderDetails() {
       const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
       localStorage.setItem("serviceTier", tier);
+      localStorage.setItem("freeDetergent", document.querySelector('input[name="freeDetergent"]:checked')?.value || "");
+      localStorage.setItem("premiumDetergents", getMultiSelectValues("premiumDetergents"));
+      localStorage.setItem("liquidSofteners", getMultiSelectValues("liquidSofteners"));
+      localStorage.setItem("dryerSheets", getMultiSelectValues("dryerSheets"));
+      localStorage.setItem("scentBoosters", getMultiSelectValues("scentBoosters"));
+      localStorage.setItem("whiteningAgents", getMultiSelectValues("whiteningAgents"));
+      localStorage.setItem("colorAdditives", getMultiSelectValues("colorAdditives"));
+      localStorage.setItem("stainCount", document.getElementById("stainCount").value || "0");
+      localStorage.setItem("hangDry", document.querySelector('input[name="hangDry"]')?.checked || false);
+      localStorage.setItem("returnHangers", document.querySelector('input[name="returnHangers"]')?.checked || false);
+    }
+
+    function getMultiSelectValues(id) {
+      const select = document.getElementById(id);
+      return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
     }
   </script>
 
