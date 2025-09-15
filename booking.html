@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Book Laundry Service – Legacy LaundryCare</title>
+  <title>Finalize Booking – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,6 +35,12 @@
       color: #555;
       margin-top: 0.5rem;
     }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
     button {
       margin-top: 2rem;
       padding: 0.75rem 1.5rem;
@@ -51,30 +58,21 @@
 </head>
 <body>
 
-  <h1>Book Laundry Service</h1>
+  <h1>Finalize Your Booking</h1>
+
+  <div class="summary">
+    <h2>Client Info</h2>
+    <p><strong>Name:</strong> [Auto-filled from intake]</p>
+    <p><strong>Email:</strong> [Auto-filled]</p>
+    <p><strongPhone:</strong> [Auto-filled]</p>
+    <p><strongService Tier:</strong> [Selected tier]</p>
+  </div>
 
   <p class="note">Need help estimating weight? Use this guide: Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
 
   <form>
-    <label for="name">Full Name:</label>
-    <input type="text" id="name" name="name" required />
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required />
-
-    <label for="phone">Phone Number:</label>
-    <input type="tel" id="phone" name="phone" required />
-
     <label for="weight">Estimated Laundry Weight (lbs):</label>
     <input type="number" id="weight" name="weight" min="1" required />
-
-    <label for="tier">Select Service Tier:</label>
-    <select id="tier" name="tier" required>
-      <option value="">-- Choose Tier --</option>
-      <option value="standard">Standard ($40 minimum)</option>
-      <option value="express">Express ($80 minimum)</option>
-      <option value="rapid">Rapid Express ($120 minimum)</option>
-    </select>
 
     <label for="addons">Select Add-Ons:</label>
     <select id="addons" name="addons" multiple>
@@ -96,3 +94,5 @@
 
 </body>
 </html>
+
+
