@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Finalize Booking – Legacy LaundryCare</title>
+  <title>Confirm Your Order – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
   <style>
@@ -51,48 +51,87 @@
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover {
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    button:hover:enabled {
       background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <h1>Finalize Your Booking</h1>
+  <h1>Confirm Your Order</h1>
 
   <div class="summary">
-    <h2>Client Info</h2>
-    <p><strong>Name:</strong> [Auto-filled from intake]</p>
-    <p><strong>Email:</strong> [Auto-filled]</p>
-    <p><strongPhone:</strong> [Auto-filled]</p>
-    <p><strongService Tier:</strong> [Selected tier]</p>
+    <h2>Order Summary</h2>
+    <p><strong>Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Hotel/Motel:</strong> <span id="locationSelected"></span></p>
+    <p><strong>Pickup Address:</strong> <span id="pickupAddress"></span></p>
+    <p><strong>Room Number:</strong> <span id="roomNumber"></span></p>
+    <p><strong>Service Tier:</strong> <span id="serviceTier"></span></p>
+    <p><strong>Estimated Weight:</strong> <span id="estimatedWeight"></span> lbs</p>
+    <p><strong>Estimated Price:</strong> $<span id="estimatedPrice"></span></p>
   </div>
 
-  <p class="note">Need help estimating weight? Use this guide: Small (13 gal) ≈ 20 lbs, Medium (33 gal) ≈ 50 lbs, Large (55 gal) ≈ 75 lbs.</p>
+  <form onsubmit="return confirmOrder();">
+    <label for="pickupInstructions">Pickup Instructions:</label>
+    <textarea id="pickupInstructions" rows="3" placeholder="Gate codes, timing, or special pickup notes"></textarea>
 
-  <form>
-    <label for="weight">Estimated Laundry Weight (lbs):</label>
-    <input type="number" id="weight" name="weight" min="1" required />
+    <label for="dropoffInstructions">Drop-Off Instructions:</label>
+    <textarea id="dropoffInstructions" rows="3" placeholder="Where should we return your laundry?"></textarea>
 
-    <label for="addons">Select Add-Ons:</label>
-    <select id="addons" name="addons" multiple>
-      <option value="none">Just wash my laundry</option>
-      <option value="hypoallergenic">Hypoallergenic Detergent</option>
-      <option value="softener">Softener Use</option>
-      <option value="dryer-sheets">Dryer Sheets</option>
-      <option value="stain-fighting">Stain Fighting (Standard only)</option>
-      <option value="hang-dry">Hang Dry (Standard only)</option>
-      <option value="hangers">Return on Hangers</option>
-    </select>
-    <p class="note">Note: Stain Fighting and Hang Dry are only available with Standard tier.</p>
+    <label for="serviceNotes">Personalized Notes for Your Service Provider:</label>
+    <textarea id="serviceNotes" rows="4" placeholder="Anything you'd like us to know?"></textarea>
 
-    <label for="notes">Booking Notes (optional):</label>
-    <textarea id="notes" name="notes" rows="4" placeholder="Let us know if you’re facing an emergency or need rapid service."></textarea>
+    <label>
+      <input type="checkbox" id="agreeTerms" disabled />
+      I agree to Legacy LaundryCare’s <a href="termconditions.html" target="_blank">Terms & Conditions</a>.
+    </label>
 
-    <button type="submit">Submit Booking</button>
+    <button type="submit" id="continueBtn" disabled>Continue to Billing</button>
   </form>
+
+  <script>
+    // Populate client info from localStorage
+    document.getElementById("clientName").textContent = localStorage.getItem("clientName") || "[Not provided]";
+    document.getElementById("clientEmail").textContent = localStorage.getItem("clientEmail") || "[Not provided]";
+    document.getElementById("clientPhone").textContent = localStorage.getItem("clientPhone") || "[Not provided]";
+    document.getElementById("locationSelected").textContent = localStorage.getItem("locationSelected") || "[Not provided]";
+    document.getElementById("pickupAddress").textContent = localStorage.getItem("pickupAddress") || "[Not provided]";
+    document.getElementById("roomNumber").textContent = localStorage.getItem("roomNumber") || "[Not provided]";
+    document.getElementById("serviceTier").textContent = localStorage.getItem("serviceTier") || "[Not selected]";
+    document.getElementById("estimatedWeight").textContent = localStorage.getItem("estimatedWeight") || "0";
+    document.getElementById("estimatedPrice").textContent = localStorage.getItem("estimatedPrice") || "0.00";
+
+    // Enable checkbox and button if terms were agreed to
+    if (localStorage.getItem("agreedToTerms") === "true") {
+      document.getElementById("agreeTerms").checked = true;
+      document.getElementById("agreeTerms").disabled = false;
+      document.getElementById("continueBtn").disabled = false;
+    }
+
+    document.getElementById("agreeTerms").addEventListener("change", function () {
+      document.getElementById("continueBtn").disabled = !this.checked;
+    });
+
+    function confirmOrder() {
+      if (!document.getElementById("agreeTerms").checked) {
+        alert("Please agree to the Terms & Conditions before continuing.");
+        return false;
+      }
+
+      localStorage.setItem("pickupInstructions", document.getElementById("pickupInstructions").value);
+      localStorage.setItem("dropoffInstructions", document.getElementById("dropoffInstructions").value);
+      localStorage.setItem("serviceNotes", document.getElementById("serviceNotes").value);
+
+      window.location.href = "complete-order.html";
+      return false;
+    }
+  </script>
 
 </body>
 </html>
-
-
