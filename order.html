@@ -158,7 +158,7 @@
       <option value="Bounce Hypoallergenic">Bounce Hypoallergenic</option>
       <option value="Gain Original">Gain Original</option>
       <option value="Downy April Fresh">Downy April Fresh</option>
-      <option value="All Free Clear">All Free Clear</option>
+          <option value="All Free Clear">All Free Clear</option>
     </select>
 
     <h3>Scent Boosters ($0.10/lb)</h3>
@@ -186,6 +186,8 @@
 
     <h3>Stain Count</h3>
     <input type="number" id="stainCount" min="0" placeholder="How many stained items?" />
+
+    <label><input type="checkbox" id="agreeTerms" required /> I agree to the Terms & Conditions</label>
 
     <div class="summary">
       <h2>Estimate</h2>
@@ -229,98 +231,92 @@
 
       addonCategories.forEach(id => {
         const selected = Array.from(document.getElementById(id).selectedOptions);
-              if (selected.length > 0) addonCount += 1;
-    });
+        if (selected.length > 0) addonCount += 1;
+      });
 
-    let addonPrice = addonCount * 0.10 * totalWeight;
+      let addonPrice = addonCount * 0.10 * totalWeight;
 
-    // Whitening logic: uses selected bag size and count
-    const whiteningSelected = document.querySelector('input[name="sortOption"][value="whitening"]')?.checked;
-    let whiteningWeight = 0;
-    if (whiteningSelected) {
-      const size = document.getElementById("whiteningBagSize")?.value;
-      const count = parseInt(document.getElementById("whiteningBagCount")?.value || "0");
-      if (size && count > 0) {
-        whiteningWeight = count * bagWeights[size];
-        addonPrice += 0.10 * whiteningWeight;
+      const whiteningSelected = document.querySelector('input[name="sortOption"][value="whitening"]')?.checked;
+      if (whiteningSelected) {
+        const size = document.getElementById("whiteningBagSize")?.value;
+        const count = parseInt(document.getElementById("whiteningBagCount")?.value || "0");
+        if (size && count > 0) {
+          const whiteningWeight = count * bagWeights[size];
+          addonPrice += 0.10 * whiteningWeight;
+        }
       }
+
+      return addonPrice;
     }
 
-    return addonPrice;
-}
-    return addonPrice;
-  }
+    function calculateEstimate() {
+      let totalWeight = 0;
+      ["xs", "sm", "md", "lg", "xl"].forEach(size => {
+        const countInput = document.getElementById(size + "Count");
+        if (countInput && countInput.style.display !== "none") {
+          const count = parseInt(countInput.value || "0");
+          totalWeight += count * bagWeights[size];
+        }
+      });
 
-  function calculateEstimate() {
-    let totalWeight = 0;
-    ["xs", "sm", "md", "lg", "xl"].forEach(size => {
-      const countInput = document.getElementById(size + "Count");
-      if (countInput && countInput.style.display !== "none") {
-        const count = parseInt(countInput.value || "0");
-        totalWeight += count * bagWeights[size];
-      }
-    });
+      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
+      const rate = tierRates[tier] || 0;
+      const addonPrice = calculateAddOnPrice(totalWeight);
+      const estimatedPrice = totalWeight * rate + addonPrice;
 
-    const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
-    const rate = tierRates[tier] || 0;
-    const addonPrice = calculateAddOnPrice(totalWeight);
-    const estimatedPrice = totalWeight * rate + addonPrice;
+      document.getElementById("estimatedWeight").textContent = totalWeight;
+      document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
 
-    document.getElementById("estimatedWeight").textContent = totalWeight;
-    document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
-
-    localStorage.setItem("estimatedWeight", totalWeight);
-    localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
-  }
-
-  document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.addEventListener("input", calculateEstimate);
-  });
-
-  document.querySelectorAll('input[name="serviceTier"]').forEach(radio => {
-    radio.addEventListener("change", calculateEstimate);
-  });
-
-  document.getElementById("premiumDetergents").addEventListener("change", () => {
-    const premiumSelected = Array.from(document.getElementById("premiumDetergents").selectedOptions).length > 0;
-    document.querySelectorAll('input[name="freeDetergent"]').forEach(radio => {
-      radio.disabled = premiumSelected;
-      if (premiumSelected) radio.checked = false;
-    });
-  });
-
-  document.querySelector('input[name="sortOption"][value="whitening"]').addEventListener("change", (e) => {
-    const show = e.target.checked;
-    document.getElementById("whiteningBagDetails").style.display = show ? "block" : "none";
-    if (!show) {
-      document.getElementById("whiteningBagSize").value = "";
-      document.getElementById("whiteningBagCount").value = "";
+      localStorage.setItem("estimatedWeight", totalWeight);
+      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
     }
-    calculateEstimate();
-  });
 
-  function saveOrderDetails() {
-    const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
-    localStorage.setItem("serviceTier", tier);
-    localStorage.setItem("freeDetergent", document.querySelector('input[name="freeDetergent"]:checked')?.value || "");
-    localStorage.setItem("premiumDetergents", getMultiSelectValues("premiumDetergents"));
-    localStorage.setItem("liquidSofteners", getMultiSelectValues("liquidSofteners"));
-    localStorage.setItem("dryerSheets", getMultiSelectValues("dryerSheets"));
-    localStorage.setItem("scentBoosters", getMultiSelectValues("scentBoosters"));
-    localStorage.setItem("whiteningAgents", getMultiSelectValues("whiteningAgents"));
-    localStorage.setItem("colorAdditives", getMultiSelectValues("colorAdditives"));
-    localStorage.setItem("stainCount", document.getElementById("stainCount").value || "0");
-    localStorage.setItem("hangDry", document.querySelector('input[name="hangDry"]')?.checked || false);
-    localStorage.setItem("returnHangers", document.querySelector('input[name="returnHangers"]')?.checked || false);
-    localStorage.setItem("whiteningBagSize", document.getElementById("whiteningBagSize").value || "");
-    localStorage.setItem("whiteningBagCount", document.getElementById("whiteningBagCount").value || "0");
-  }
+    document.querySelectorAll('input[type="number"], select, input[type="checkbox"], input[type="radio"]').forEach(el => {
+      el.addEventListener("change", calculateEstimate);
+    });
 
-  function getMultiSelectValues(id) {
-    const select = document.getElementById(id);
-    return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
-  }
-</script>
+    document.getElementById("premiumDetergents").addEventListener("change", () => {
+      const premiumSelected = Array.from(document.getElementById("premiumDetergents").selectedOptions).length > 0;
+      document.querySelectorAll('input[name="freeDetergent"]').forEach(radio => {
+        radio.disabled = premiumSelected;
+        if (premiumSelected) radio.checked = false;
+      });
+    });
+
+    document.querySelector('input[name="sortOption"][value="whitening"]').addEventListener("change", (e) => {
+      const show = e.target.checked;
+      document.getElementById("whiteningBagDetails").style.display = show ? "block" : "none";
+      if (!show) {
+        document.getElementById("whiteningBagSize").value = "";
+        document.getElementById("whiteningBagCount").value = "";
+      }
+      calculateEstimate();
+    });
+
+    function saveOrderDetails() {
+      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
+      localStorage.setItem("serviceTier", tier);
+      localStorage.setItem("freeDetergent", document.querySelector('input[name="freeDetergent"]:checked')?.value || "");
+      localStorage.setItem("premiumDetergents", getMultiSelectValues("premiumDetergents"));
+      localStorage.setItem("liquidSofteners", getMultiSelectValues("liquidSofteners"));
+      localStorage.setItem("dryerSheets", getMultiSelectValues("dryerSheets"));
+      localStorage.setItem("scentBoosters", getMultiSelectValues("scentBoosters"));
+      localStorage.setItem("whiteningAgents", getMultiSelectValues("whiteningAgents"));
+      localStorage.setItem("colorAdditives", getMultiSelectValues("colorAdditives"));
+      localStorage.setItem("stainCount", document.getElementById("stainCount").value || "0");
+      localStorage.setItem("hangDry", document.querySelector('input[name="hangDry"]')?.checked || false);
+      localStorage.setItem("returnHangers", document.querySelector('input[name="returnHangers"]')?.checked || false);
+      localStorage.setItem("whiteningBagSize", document.getElementById("whiteningBagSize").value || "");
+      localStorage.setItem("whiteningBagCount", document.getElementById("whiteningBagCount").value || "0");
+    }
+
+    function getMultiSelectValues(id) {
+      const select = document.getElementById(id);
+      return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
+    }
+
+    calculateEstimate(); // Initial estimate on page load
+  </script>
 
 </body>
 </html>
