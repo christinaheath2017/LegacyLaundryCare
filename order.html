@@ -326,6 +326,28 @@
       const select = document.getElementById(id);
       return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
     }
+const bgColor = localStorage.getItem("pageColor");
+const bgTheme = localStorage.getItem("pageBackground");
+
+if (bgTheme === "gardenGradient") {
+  document.body.style.background = `
+    linear-gradient(
+      to bottom,
+      #fff9c4 0%,
+      #ffe0b2 10%,
+      #e0f7fa 20%,
+      #c8e6c9 40%,
+      #a5d6a7 60%,
+      #f8bbd0 80%,
+      #e1bee7 85%,
+      #bbdefb 90%,
+      #dcedc8 95%,
+      #fff9c4 100%
+    )
+  `;
+} else if (bgColor) {
+  document.body.style.backgroundColor = bgColor;
+}
 
     calculateEstimate(); // Initial estimate on page load
   </script>
