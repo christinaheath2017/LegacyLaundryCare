@@ -66,5 +66,26 @@
   <p>Terms may be updated periodically. Registered users will be prompted to re-accept if changes are made.</p>
 
   <p style="margin-top: 2rem;">Last updated: September 12, 2025</p>
+  <div style="margin-top: 2rem;">
+  <label>
+    <input type="checkbox" id="agreeTermsCheck" />
+    I have read and agree to the Terms & Conditions
+  </label>
+  <br />
+  <button onclick="confirmTerms()">Return to Confirm Your Order</button>
+</div>
+
+<script>
+  function confirmTerms() {
+    const agreed = document.getElementById("agreeTermsCheck").checked;
+    if (!agreed) {
+      alert("Please confirm that you've read and agreed to the Terms & Conditions.");
+      return;
+    }
+    localStorage.setItem("agreedToTerms", "true");
+    window.location.href = "booking.html";
+  }
+</script>
+
 </body>
 </html>
