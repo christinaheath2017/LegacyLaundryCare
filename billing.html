@@ -120,6 +120,8 @@
   </form>
 
   <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // 🌟 Populate client info from localStorage
     const fields = [
       "clientName", "clientEmail", "clientPhone", "locationSelected",
       "pickupAddress", "roomNumber", "serviceTier", "estimatedWeight",
@@ -132,6 +134,31 @@
 
     document.getElementById("estimatedPriceHold").textContent = localStorage.getItem("estimatedPrice") || "0.00";
 
+    // 🌈 Apply background styling
+    const bgColor = localStorage.getItem("pageColor");
+    const bgTheme = localStorage.getItem("pageBackground");
+
+    if (bgTheme === "gardenGradient") {
+      document.body.style.background = `
+        linear-gradient(
+          to bottom,
+          #fff9c4 0%,
+          #ffe0b2 10%,
+          #e0f7fa 20%,
+          #c8e6c9 40%,
+          #a5d6a7 60%,
+          #f8bbd0 80%,
+          #e1bee7 85%,
+          #bbdefb 90%,
+          #dcedc8 95%,
+          #fff9c4 100%
+        )
+      `;
+    } else if (bgColor) {
+      document.body.style.backgroundColor = bgColor;
+    }
+
+    // 🏷️ Checkbox logic for billing address
     document.getElementById("sameAsService").addEventListener("change", function () {
       const billingField = document.getElementById("billingAddress");
       if (this.checked) {
@@ -142,62 +169,65 @@
       }
     });
 
-    function generateOrderID() {
-      const hotelCode = getHotelCode(localStorage.getItem("locationSelected"));
-      const clientInitials = getInitials(localStorage.getItem("clientName"));
-      const room = localStorage.getItem("roomNumber") || "RM000";
-      const today = new Date();
-      const dateCode = `${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}${String(today.getFullYear()).slice(-2)}`;
-      return `${hotelCode}-${clientInitials}-${room}/${dateCode}`;
-    }
-
-    function getHotelCode(hotelName) {
-      if (!hotelName) return "XX";
-      const map = {
-        "Comfort Inn and Suites Warsaw": "CISW",
-        "Tru by Hilton Warsaw": "Tru",
-        "Holiday Inn Express and Suites Warsaw": "HIESW",
-        "Days Inn by Wyndham Warsaw": "DIWW",
-        "Warsaw Lodging": "WL",
-        "Delux Inn": "DI",
-        "Wyndham Garden Warsaw": "WGW",
-        "Hampton Inn Warsaw": "HIW"
-      };
-      return map[hotelName.trim()] || hotelName.slice(0,4).toUpperCase();
-    }
-
-    function getInitials(name) {
-      if (!name) return "XX";
-      return name.split(" ").map(part => part[0].toUpperCase()).join("").slice(0,2);
-    }
-
+    // 🆔 Generate Order ID
     const orderID = generateOrderID();
     document.getElementById("orderID").textContent = orderID;
     localStorage.setItem("orderID", orderID);
+  });
 
-    function submitBilling() {
-      const cardName = document.getElementById("cardName").value;
-      const cardType = document.getElementById("cardType").value;
-      const last4 = document.getElementById("last4").value;
-      const billingAddress = document.getElementById("billingAddress").value;
-      const billingMethod = document.getElementById("billingMethod").value;
+  function generateOrderID() {
+    const hotelCode = getHotelCode(localStorage.getItem("locationSelected"));
+    const clientInitials = getInitials(localStorage.getItem("clientName"));
+    const room = localStorage.getItem("roomNumber") || "RM000";
+    const today = new Date();
+    const dateCode = `${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}${String(today.getFullYear()).slice(-2)}`;
+    return `${hotelCode}-${clientInitials}-${room}/${dateCode}`;
+  }
 
-      if (!cardName || !cardType || !last4 || !billingAddress || !billingMethod) {
-        alert("Please complete all billing fields.");
-        return false;
-      }
+  function getHotelCode(hotelName) {
+    if (!hotelName) return "XX";
+    const map = {
+      "Comfort Inn and Suites Warsaw": "CISW",
+      "Tru by Hilton Warsaw": "Tru",
+      "Holiday Inn Express and Suites Warsaw": "HIESW",
+      "Days Inn by Wyndham Warsaw": "DIWW",
+      "Warsaw Lodging": "WL",
+      "Delux Inn": "DI",
+      "Wyndham Garden Warsaw": "WGW",
+      "Hampton Inn Warsaw": "HIW"
+    };
+    return map[hotelName.trim()] || hotelName.slice(0,4).toUpperCase();
+  }
 
-      localStorage.setItem("cardName", cardName);
-      localStorage.setItem("cardType", cardType);
-      localStorage.setItem("last4", last4);
-      localStorage.setItem("billingAddress", billingAddress);
-      localStorage.setItem("billingMethod", billingMethod);
+  function getInitials(name) {
+    if (!name) return "XX";
+    return name.split(" ").map(part => part[0].toUpperCase()).join("").slice(0,2);
+  }
 
-      alert("Payment submitted. A hold has been placed on your card.");
-      window.location.href = "track-order.html";
+  function submitBilling() {
+    const cardName = document.getElementById("cardName").value;
+    const cardType = document.getElementById("cardType").value;
+    const last4 = document.getElementById("last4").value;
+    const billingAddress = document.getElementById("billingAddress").value;
+    const billingMethod = document.getElementById("billingMethod").value;
+
+    if (!cardName || !cardType || !last4 || !billingAddress || !billingMethod) {
+      alert("Please complete all billing fields.");
       return false;
     }
-  </script>
+
+    localStorage.setItem("cardName", cardName);
+    localStorage.setItem("cardType", cardType);
+    localStorage.setItem("last4", last4);
+    localStorage.setItem("billingAddress", billingAddress);
+    localStorage.setItem("billingMethod", billingMethod);
+
+    alert("Payment submitted. A hold has been placed on your card.");
+    window.location.href = "track-order.html";
+    return false;
+  }
+</script>
+
 
 </body>
 </html>
