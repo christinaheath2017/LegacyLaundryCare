@@ -79,6 +79,7 @@
     <p><strong>Pickup Instructions:</strong> <span id="pickupInstructions"></span></p>
     <p><strong>Drop-Off Instructions:</strong> <span id="dropoffInstructions"></span></p>
     <p><strong>Service Notes:</strong> <span id="serviceNotes"></span></p>
+    <p><strong>Estimated Amount to Be Held:</strong> $<span id="estimatedPriceHold"></span></p>
   </div>
 
   <form onsubmit="return submitBilling();">
@@ -111,22 +112,25 @@
     </select>
 
     <p class="legal">
-      By clicking “Submit Payment,” you authorize Legacy LaundryCare to place a temporary hold on your card for the estimated amount. Final charges will be confirmed after service completion.
+      By clicking “Submit Payment,” you authorize Legacy LaundryCare to place a temporary hold on your card for the estimated amount shown above. Final charges will be confirmed after service completion.
     </p>
 
     <button type="submit">Submit Payment</button>
   </form>
 
   <script>
-    // Populate summary from localStorage
     const fields = [
       "clientName", "clientEmail", "clientPhone", "locationSelected",
       "pickupAddress", "roomNumber", "serviceTier", "estimatedWeight",
       "estimatedPrice", "pickupInstructions", "dropoffInstructions", "serviceNotes"
     ];
     fields.forEach(id => {
-      document.getElementById(id).textContent = localStorage.getItem(id) || "[Not provided]";
+      const value = localStorage.getItem(id) || "[Not provided]";
+      document.getElementById(id).textContent = value;
     });
+
+    // Show estimated amount for hold
+    document.getElementById("estimatedPriceHold").textContent = localStorage.getItem("estimatedPrice") || "0.00";
 
     // Auto-fill billing address if checkbox is selected
     document.getElementById("sameAsService").addEventListener("change", function () {
@@ -158,7 +162,7 @@
       localStorage.setItem("billingMethod", billingMethod);
 
       alert("Payment submitted. A hold has been placed on your card.");
-      window.location.href = "thank-you.html";
+      window.location.href = "track-order.html";
       return false;
     }
   </script>
