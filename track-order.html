@@ -8,15 +8,29 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #fff;
-      color: #333;
       padding: 2rem;
       max-width: 800px;
       margin: auto;
+      color: #333;
     }
     h1, h2 {
       text-align: center;
       margin-bottom: 1rem;
+    }
+    .summary, .status {
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    .summary {
+      background-color: #f0f8ff;
+    }
+    .status {
+      background-color: #e6ffe6;
+    }
+    .status.failed {
+      background-color: #ffe6e6;
+      border: 2px solid red;
     }
     label {
       display: block;
@@ -29,18 +43,6 @@
       margin-top: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
-    }
-    .summary {
-      background-color: #f0f8ff;
-      padding: 1rem;
-      border-radius: 5px;
-      margin-bottom: 2rem;
-    }
-    .status {
-      background-color: #e6ffe6;
-      padding: 1rem;
-      border-radius: 5px;
-      margin-bottom: 2rem;
     }
     button {
       margin-top: 1rem;
@@ -62,20 +64,16 @@
   </style>
 </head>
 <body>
-
   <h1>Track Your Order</h1>
 
   <div id="loginSection">
     <h2>Re-Access Your Dashboard</h2>
     <label for="loginOrderID">Order ID:</label>
     <input type="text" id="loginOrderID" placeholder="e.g. CISW-MS-RM204/091625" />
-
     <label for="loginName">Full Name:</label>
     <input type="text" id="loginName" />
-
     <label for="loginEmail">Email Address:</label>
     <input type="email" id="loginEmail" />
-
     <button onclick="verifyLogin()">Access Dashboard</button>
   </div>
 
@@ -92,9 +90,10 @@
       <p><strong>Estimated Price:</strong> $<span id="estimatedPrice"></span></p>
     </div>
 
-    <div class="status">
+    <div class="status" id="statusBox">
       <h2>Order Status</h2>
       <p id="orderStatus">🟡 Awaiting Pickup</p>
+      <div id="feeDetails" style="margin-top:1rem;"></div>
     </div>
 
     <label for="clientMessage">Send a Message to Your Provider:</label>
@@ -123,6 +122,54 @@
       });
 
       document.getElementById("dashboardSection").style.display = "block";
+
+      const status = localStorage.getItem("paymentStatus") || "awaiting";
+      const statusBox = document.getElementById("statusBox");
+      const statusText = document.getElementById("orderStatus");
+      const feeDetails = document.getElementById("feeDetails");
+
+      if (status === "failed-payment") {
+        statusBox.classList.add("failed");
+        statusText.textContent = "🔴 Payment Failed – Delivery Halted";
+
+        const failureTime = parseInt(localStorage.getItem("paymentFailureTime")) || Date.now();
+        const now = Date.now();
+        const daysElapsed = Math.floor((now - failureTime) / (1000 * 60 * 60 * 24));
+
+        let holdingFee = 0;
+        let serviceFee = 0;
+        let escalationNote = "";
+
+        if (daysElapsed >= 10) {
+          localStorage.setItem("paymentStatus", "account-closed");
+          statusText.textContent = "🚫 Account Closed – Laundry Donated";
+          escalationNote = "Your laundry has been donated to a local shelter. Your account is now closed.";
+        } else if (daysElapsed >= 5) {
+          localStorage.setItem("paymentStatus", "donation");
+          statusText.textContent = "🔴 Donation Status – Urgent Action Required";
+          holdingFee = daysElapsed * 15;
+          serviceFee = 0.15;
+          escalationNote = "Your laundry is in donation status. Fees have increased.";
+        } else if (daysElapsed >= 1) {
+          localStorage.setItem("paymentStatus", "holding");
+          statusText.textContent = "🔴 Payment Failed – Holding Fees Active";
+          holdingFee = daysElapsed * 10;
+          serviceFee = 0.10;
+          escalationNote = "Holding fees are now active. Please update payment.";
+        }
+
+        const basePrice = parseFloat(localStorage.getItem("estimatedPrice")) || 0;
+        const totalFees = holdingFee + (basePrice * serviceFee);
+        const updatedTotal = basePrice + totalFees;
+
+        feeDetails.innerHTML = `
+          <p><strong>Days Since Failure:</strong> ${daysElapsed}</p>
+          <p><strong>Holding Fee:</strong> $${holdingFee.toFixed(2)}</p>
+          <p><strong>Service Fee:</strong> $${(basePrice * serviceFee).toFixed(2)}</p>
+          <p><strong>Updated Total:</strong> $${updatedTotal.toFixed(2)}</p>
+          <p style="color:red;"><strong>${escalationNote}</strong></p>
+        `;
+      }
     }
 
     function verifyLogin() {
@@ -153,6 +200,5 @@
       }
     }
   </script>
-
 </body>
 </html>
