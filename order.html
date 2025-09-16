@@ -209,6 +209,26 @@
   </form>
 
   <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const fieldsToPopulate = [
+    "clientName",
+    "clientEmail",
+    "clientPhone",
+    "locationSelected",
+    "pickupAddress",
+    "roomNumber"
+  ];
+
+  fieldsToPopulate.forEach(id => {
+    const value = localStorage.getItem(id);
+    if (value) {
+      const span = document.getElementById(id);
+      if (span) span.textContent = value;
+    }
+  });
+});
+
+
     const tierRates = {
       standard: 2,
       express: 4,
