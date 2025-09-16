@@ -95,8 +95,9 @@
     <button type="submit" id="continueBtn" disabled>Continue to Billing</button>
   </form>
 
-  <script>
-    // Populate client info from localStorage
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // 🌟 Populate client info from localStorage
     document.getElementById("clientName").textContent = localStorage.getItem("clientName") || "[Not provided]";
     document.getElementById("clientEmail").textContent = localStorage.getItem("clientEmail") || "[Not provided]";
     document.getElementById("clientPhone").textContent = localStorage.getItem("clientPhone") || "[Not provided]";
@@ -107,7 +108,31 @@
     document.getElementById("estimatedWeight").textContent = localStorage.getItem("estimatedWeight") || "0";
     document.getElementById("estimatedPrice").textContent = localStorage.getItem("estimatedPrice") || "0.00";
 
-    // Enable checkbox and button if terms were agreed to
+    // 🌈 Apply background styling
+    const bgColor = localStorage.getItem("pageColor");
+    const bgTheme = localStorage.getItem("pageBackground");
+
+    if (bgTheme === "gardenGradient") {
+      document.body.style.background = `
+        linear-gradient(
+          to bottom,
+          #fff9c4 0%,
+          #ffe0b2 10%,
+          #e0f7fa 20%,
+          #c8e6c9 40%,
+          #a5d6a7 60%,
+          #f8bbd0 80%,
+          #e1bee7 85%,
+          #bbdefb 90%,
+          #dcedc8 95%,
+          #fff9c4 100%
+        )
+      `;
+    } else if (bgColor) {
+      document.body.style.backgroundColor = bgColor;
+    }
+
+    // ✅ Enable checkbox and button if terms were agreed to
     if (localStorage.getItem("agreedToTerms") === "true") {
       document.getElementById("agreeTerms").checked = true;
       document.getElementById("agreeTerms").disabled = false;
@@ -117,21 +142,25 @@
     document.getElementById("agreeTerms").addEventListener("change", function () {
       document.getElementById("continueBtn").disabled = !this.checked;
     });
+  });
 
-    function confirmOrder() {
-      if (!document.getElementById("agreeTerms").checked) {
-        alert("Please agree to the Terms & Conditions before continuing.");
-        return false;
-      }
-
-      localStorage.setItem("pickupInstructions", document.getElementById("pickupInstructions").value);
-      localStorage.setItem("dropoffInstructions", document.getElementById("dropoffInstructions").value);
-      localStorage.setItem("serviceNotes", document.getElementById("serviceNotes").value);
-
-      window.location.href = "complete-order.html";
+  function confirmOrder() {
+    if (!document.getElementById("agreeTerms").checked) {
+      alert("Please agree to the Terms & Conditions before continuing.");
       return false;
     }
-  </script>
+
+    localStorage.setItem("pickupInstructions", document.getElementById("pickupInstructions").value);
+    localStorage.setItem("dropoffInstructions", document.getElementById("dropoffInstructions").value);
+    localStorage.setItem("serviceNotes", document.getElementById("serviceNotes").value);
+
+    window.location.href = "complete-order.html";
+    return false;
+  }
+</script>
+
+
+  
 
 </body>
 </html>
