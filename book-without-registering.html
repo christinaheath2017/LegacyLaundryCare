@@ -111,44 +111,92 @@
     <button type="submit">Continue to Order Page</button>
   </form>
 
-  <script>
-    const hotelAddresses = {
-      "Comfort Inn and Suites Warsaw": "3328 Lake City Hwy, Warsaw, IN 46580 | Front Desk: (574) 269-6655",
-      "Tru by Hilton Warsaw": "2680 Frontage Rd, Warsaw, IN 46580 | Front Desk: (574) 306-8686",
-      "Holiday Inn Express and Suites Warsaw": "3825 Lake City Hwy, Warsaw, IN 46580 | Front Desk: (574) 549-9400",
-      "Days Inn by Wyndham Warsaw": "2575 E Center St, Warsaw, IN 46580 | Front Desk: (574) 267-6656",
-      "Warsaw Lodging": "123 Local St, Warsaw, IN 46580 | Front Desk: (574) 555-1234",
-      "Delux Inn": "2001 E Center St, Warsaw, IN 46580 | Front Desk: (574) 267-8888",
-      "Wyndham Garden Warsaw": "2519 E Center St, Warsaw, IN 46580 | Front Desk: (574) 269-6060",
-      "Hampton Inn Warsaw": "1155 Executive Dr, Warsaw, IN 46580 | Front Desk: (574) 267-7001"
-    };
+ <script>
+  const hotelStyles = {
+    "Comfort Inn and Suites Warsaw": { color: "#f0f8ff" }, // light blue
+    "Tru by Hilton Warsaw": { color: "#ffe6f0" },           // light pink
+    "Holiday Inn Express and Suites Warsaw": { color: "#fff3e0" }, // light orange
+    "Days Inn by Wyndham Warsaw": { color: "#f3e5f5" },     // light purple
+    "Warsaw Lodging": { color: "#fdd835" },                 // Warsaw Tigers gold
+    "Delux Inn": { color: "#efebe9" },                      // light brown
+    "Wyndham Garden Warsaw": { background: "gardenGradient" }, // garden gradient
+    "Hampton Inn Warsaw": { color: "#c8e6c9" }              // medium green
+  };
+  const defaultGuestStyle = { color: "#e8f5e9" }; // light green for non-lodging guests
 
-    document.getElementById("isHotelGuest").addEventListener("change", function () {
-      const hotelSection = document.getElementById("hotelSection");
-      hotelSection.style.display = this.checked ? "block" : "none";
-      if (!this.checked) {
-        document.getElementById("pickupAddress").value = "";
-      }
-    });
+  const hotelAddresses = {
+    "Comfort Inn and Suites Warsaw": "3328 Lake City Hwy, Warsaw, IN 46580 | Front Desk: (574) 269-6655",
+    "Tru by Hilton Warsaw": "2680 Frontage Rd, Warsaw, IN 46580 | Front Desk: (574) 306-8686",
+    "Holiday Inn Express and Suites Warsaw": "3825 Lake City Hwy, Warsaw, IN 46580 | Front Desk: (574) 549-9400",
+    "Days Inn by Wyndham Warsaw": "2575 E Center St, Warsaw, IN 46580 | Front Desk: (574) 267-6656",
+    "Warsaw Lodging": "123 Local St, Warsaw, IN 46580 | Front Desk: (574) 555-1234",
+    "Delux Inn": "2001 E Center St, Warsaw, IN 46580 | Front Desk: (574) 267-8888",
+    "Wyndham Garden Warsaw": "2519 E Center St, Warsaw, IN 46580 | Front Desk: (574) 269-6060",
+    "Hampton Inn Warsaw": "1155 Executive Dr, Warsaw, IN 46580 | Front Desk: (574) 267-7001"
+  };
 
-    document.getElementById("hotelSelect").addEventListener("change", function () {
-      const selectedHotel = this.value;
-      if (hotelAddresses[selectedHotel]) {
-        document.getElementById("pickupAddress").value = hotelAddresses[selectedHotel];
-      }
-    });
-
-    function saveGuestInfo() {
-      localStorage.setItem("clientName", document.getElementById("clientName").value);
-      localStorage.setItem("clientEmail", document.getElementById("clientEmail").value);
-      localStorage.setItem("clientPhone", document.getElementById("clientPhone").value);
-      localStorage.setItem("pickupAddress", document.getElementById("pickupAddress").value);
-      localStorage.setItem("roomNumber", document.getElementById("roomNumber").value);
-      localStorage.setItem("locationSelected", document.getElementById("hotelSelect").value);
-      localStorage.setItem("householdSize", document.getElementById("householdSize").value);
-      localStorage.setItem("usageFrequency", document.getElementById("usageFrequency").value);
+  document.getElementById("isHotelGuest").addEventListener("change", function () {
+    const hotelSection = document.getElementById("hotelSection");
+    hotelSection.style.display = this.checked ? "block" : "none";
+    if (!this.checked) {
+      document.getElementById("pickupAddress").value = "";
     }
-  </script>
+  });
+
+  document.getElementById("hotelSelect").addEventListener("change", function () {
+    const selectedHotel = this.value;
+    const style = hotelStyles[selectedHotel] || defaultGuestStyle;
+
+    if (style.color) {
+      localStorage.setItem("pageColor", style.color);
+    }
+
+    if (style.background === "gardenGradient") {
+      localStorage.setItem("pageBackground", "gardenGradient");
+    } else {
+      localStorage.removeItem("pageBackground");
+    }
+
+    if (hotelAddresses[selectedHotel]) {
+      document.getElementById("pickupAddress").value = hotelAddresses[selectedHotel];
+    }
+  });
+
+  function saveGuestInfo() {
+    const bgColor = localStorage.getItem("pageColor");
+    const bgTheme = localStorage.getItem("pageBackground");
+
+    if (bgTheme === "gardenGradient") {
+      document.body.style.background = `
+        linear-gradient(
+          to bottom,
+          #fff9c4 0%,
+          #ffe0b2 10%,
+          #e0f7fa 20%,
+          #c8e6c9 40%,
+          #a5d6a7 60%,
+          #f8bbd0 80%,
+          #e1bee7 85%,
+          #bbdefb 90%,
+          #dcedc8 95%,
+          #fff9c4 100%
+        )
+      `;
+    } else if (bgColor) {
+      document.body.style.backgroundColor = bgColor;
+    }
+
+    localStorage.setItem("clientName", document.getElementById("clientName").value);
+    localStorage.setItem("clientEmail", document.getElementById("clientEmail").value);
+    localStorage.setItem("clientPhone", document.getElementById("clientPhone").value);
+    localStorage.setItem("pickupAddress", document.getElementById("pickupAddress").value);
+    localStorage.setItem("roomNumber", document.getElementById("roomNumber").value);
+    localStorage.setItem("locationSelected", document.getElementById("hotelSelect").value);
+    localStorage.setItem("householdSize", document.getElementById("householdSize").value);
+    localStorage.setItem("usageFrequency", document.getElementById("usageFrequency").value);
+  }
+</script>
+
 
 </body>
 </html>
