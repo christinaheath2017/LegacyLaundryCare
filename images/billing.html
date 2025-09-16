@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Billing – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .legal {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+    @media print {
+      button, .legal, form {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Secure Billing</h1>
+
+  <div class="summary" id="orderSummary">
+    <h2>Printable Order Confirmation</h2>
+    <p><strong>Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+    <p><strong>Hotel/Motel:</strong> <span id="locationSelected"></span></p>
+    <p><strong>Pickup Address:</strong> <span id="pickupAddress"></span></p>
+    <p><strong>Room Number:</strong> <span id="roomNumber"></span></p>
+    <p><strong>Service Tier:</strong> <span id="serviceTier"></span></p>
+    <p><strong>Estimated Weight:</strong> <span id="estimatedWeight"></span> lbs</p>
+    <p><strong>Estimated Price:</strong> $<span id="estimatedPrice"></span></p>
+    <p><strong>Pickup Instructions:</strong> <span id="pickupInstructions"></span></p>
+    <p><strong>Drop-Off Instructions:</strong> <span id="dropoffInstructions"></span></p>
+    <p><strong>Service Notes:</strong> <span id="serviceNotes"></span></p>
+  </div>
+
+  <form onsubmit="return submitBilling();">
+    <label for="cardName">Cardholder Name:</label>
+    <input type="text" id="cardName" required />
+
+    <label for="cardType">Card Type:</label>
+    <select id="cardType" required>
+      <option value="">-- Select --</option>
+      <option value="visa">Visa</option>
+      <option value="mastercard">MasterCard</option>
+      <option value="amex">American Express</option>
+      <option value="discover">Discover</option>
+    </select>
+
+    <label for="last4">Last 4 Digits of Card:</label>
+    <input type="text" id="last4" maxlength="4" pattern="\\d{4}" required />
+
+    <label for="billingAddress">Billing Address:</label>
+    <input type="text" id="billingAddress" placeholder="Street, City, State, ZIP" required />
+
+    <label>
+      <input type="checkbox" id="sameAsService" />
+      Same as service address
+    </label>
+
+    <label for="billingMethod">Billing Method:</label>
+    <select id="billingMethod" required>
+      <option value="stripe">Stripe (Secure Payment)</option>
+    </select>
+
+    <p class="legal">
+      By clicking “Submit Payment,” you authorize Legacy LaundryCare to place a temporary hold on your card for the estimated amount. Final charges will be confirmed after service completion.
+    </p>
+
+    <button type="submit">Submit Payment</button>
+  </form>
+
+  <script>
+    // Populate summary from localStorage
+    const fields = [
+      "clientName", "clientEmail", "clientPhone", "locationSelected",
+      "pickupAddress", "roomNumber", "serviceTier", "estimatedWeight",
+      "estimatedPrice", "pickupInstructions", "dropoffInstructions", "serviceNotes"
+    ];
+    fields.forEach(id => {
+      document.getElementById(id).textContent = localStorage.getItem(id) || "[Not provided]";
+    });
+
+    // Auto-fill billing address if checkbox is selected
+    document.getElementById("sameAsService").addEventListener("change", function () {
+      const billingField = document.getElementById("billingAddress");
+      if (this.checked) {
+        const serviceAddress = localStorage.getItem("pickupAddress") || "";
+        billingField.value = serviceAddress;
+      } else {
+        billingField.value = "";
+      }
+    });
+
+    function submitBilling() {
+      const cardName = document.getElementById("cardName").value;
+      const cardType = document.getElementById("cardType").value;
+      const last4 = document.getElementById("last4").value;
+      const billingAddress = document.getElementById("billingAddress").value;
+      const billingMethod = document.getElementById("billingMethod").value;
+
+      if (!cardName || !cardType || !last4 || !billingAddress || !billingMethod) {
+        alert("Please complete all billing fields.");
+        return false;
+      }
+
+      localStorage.setItem("cardName", cardName);
+      localStorage.setItem("cardType", cardType);
+      localStorage.setItem("last4", last4);
+      localStorage.setItem("billingAddress", billingAddress);
+      localStorage.setItem("billingMethod", billingMethod);
+
+      alert("Payment submitted. A hold has been placed on your card.");
+      window.location.href = "thank-you.html";
+      return false;
+    }
+  </script>
+
+</body>
+</html>
