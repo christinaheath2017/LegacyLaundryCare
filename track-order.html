@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Track Your Order – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    .status {
+      background-color: #e6ffe6;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #loginSection {
+      display: none;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Track Your Order</h1>
+
+  <div id="loginSection">
+    <h2>Re-Access Your Dashboard</h2>
+    <label for="loginOrderID">Order ID:</label>
+    <input type="text" id="loginOrderID" placeholder="e.g. CISW-MS-RM204/091625" />
+
+    <label for="loginName">Full Name:</label>
+    <input type="text" id="loginName" />
+
+    <label for="loginEmail">Email Address:</label>
+    <input type="email" id="loginEmail" />
+
+    <button onclick="verifyLogin()">Access Dashboard</button>
+  </div>
+
+  <div id="dashboardSection" style="display:none;">
+    <div class="summary">
+      <h2>Order Summary</h2>
+      <p><strong>Order ID:</strong> <span id="orderID"></span></p>
+      <p><strong>Name:</strong> <span id="clientName"></span></p>
+      <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+      <p><strong>Phone:</strong> <span id="clientPhone"></span></p>
+      <p><strong>Hotel/Motel:</strong> <span id="locationSelected"></span></p>
+      <p><strong>Room Number:</strong> <span id="roomNumber"></span></p>
+      <p><strong>Service Tier:</strong> <span id="serviceTier"></span></p>
+      <p><strong>Estimated Price:</strong> $<span id="estimatedPrice"></span></p>
+    </div>
+
+    <div class="status">
+      <h2>Order Status</h2>
+      <p id="orderStatus">🟡 Awaiting Pickup</p>
+    </div>
+
+    <label for="clientMessage">Send a Message to Your Provider:</label>
+    <textarea id="clientMessage" rows="4" placeholder="Need to update instructions or ask a question?"></textarea>
+    <button onclick="sendMessage()">Send Message</button>
+  </div>
+
+  <script>
+    const storedOrderID = localStorage.getItem("orderID");
+    const storedName = localStorage.getItem("clientName");
+    const storedEmail = localStorage.getItem("clientEmail");
+
+    if (storedOrderID && storedName && storedEmail) {
+      showDashboard();
+    } else {
+      document.getElementById("loginSection").style.display = "block";
+    }
+
+    function showDashboard() {
+      const fields = [
+        "orderID", "clientName", "clientEmail", "clientPhone",
+        "locationSelected", "roomNumber", "serviceTier", "estimatedPrice"
+      ];
+      fields.forEach(id => {
+        document.getElementById(id).textContent = localStorage.getItem(id) || "[Not provided]";
+      });
+
+      document.getElementById("dashboardSection").style.display = "block";
+    }
+
+    function verifyLogin() {
+      const inputID = document.getElementById("loginOrderID").value.trim();
+      const inputName = document.getElementById("loginName").value.trim();
+      const inputEmail = document.getElementById("loginEmail").value.trim();
+
+      if (
+        inputID === localStorage.getItem("orderID") &&
+        inputName.toLowerCase() === localStorage.getItem("clientName")?.toLowerCase() &&
+        inputEmail.toLowerCase() === localStorage.getItem("clientEmail")?.toLowerCase()
+      ) {
+        showDashboard();
+        document.getElementById("loginSection").style.display = "none";
+      } else {
+        alert("We couldn’t verify your info. Please double-check and try again.");
+      }
+    }
+
+    function sendMessage() {
+      const message = document.getElementById("clientMessage").value.trim();
+      if (message) {
+        localStorage.setItem("clientMessage", message);
+        alert("Message sent! We’ll follow up shortly.");
+        document.getElementById("clientMessage").value = "";
+      } else {
+        alert("Please enter a message before sending.");
+      }
+    }
+  </script>
+
+</body>
+</html>
