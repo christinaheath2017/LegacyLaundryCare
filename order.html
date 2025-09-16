@@ -1,20 +1,3 @@
-Absolutely, Christina. I’ve taken your full `order.html` code and embedded the enhancements you requested—without removing or disrupting anything. This version includes:
-
----
-
-### ✅ Embedded Enhancements
-
-- **Add-on pricing logic**: $0.10/lb per selected category (premium detergent, softener, dryer sheets, scent booster).
-- **Whitening logic**: Applies only to small bags marked for whitening.
-- **Free detergent disabling**: Arm & Hammer options are disabled when any premium detergent is selected.
-
----
-
-### 🧼 Full Updated `order.html` Code
-
-Here’s your complete page, top to bottom, with all enhancements embedded:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,6 +114,20 @@ Here’s your complete page, top to bottom, with all enhancements embedded:
     <label><input type="checkbox" name="sortOption" value="delicates"> Delicates</label>
     <label><input type="checkbox" name="sortOption" value="hangDry"> Hang Dry (Standard only)</label>
     <label><input type="checkbox" name="sortOption" value="whitening"> Whitening</label>
+    <div id="whiteningBagDetails" style="display:none;">
+      <label for="whiteningBagSize">Which bag size needs whitening?</label>
+      <select id="whiteningBagSize">
+        <option value="">-- Select Size --</option>
+        <option value="xs">Extra Small (~10 lbs)</option>
+        <option value="sm">Small (~25 lbs)</option>
+        <option value="md">Medium (~60 lbs)</option>
+        <option value="lg">Large (~90 lbs)</option>
+        <option value="xl">Extra Large (~120 lbs)</option>
+      </select>
+
+      <label for="whiteningBagCount">How many of that size?</label>
+      <input type="number" id="whiteningBagCount" min="0" placeholder="e.g. 1 or 2" />
+    </div>
     <label><input type="checkbox" name="sortOption" value="hangers"> Return on Hangers (client provides hangers)</label>
 
     <h2>Product Preferences</h2>
@@ -180,7 +177,7 @@ Here’s your complete page, top to bottom, with all enhancements embedded:
       <option value="OxiClean White">OxiClean White</option>
     </select>
 
-       <h3>Color Additives</h3>
+    <h3>Color Additives</h3>
     <select id="colorAdditives" multiple>
       <option value="OxiClean Color">OxiClean Color</option>
       <option value="Color-Safe Bleach">Color-Safe Bleach</option>
@@ -232,81 +229,98 @@ Here’s your complete page, top to bottom, with all enhancements embedded:
 
       addonCategories.forEach(id => {
         const selected = Array.from(document.getElementById(id).selectedOptions);
-        if (selected.length > 0) addonCount += 1;
-      });
+              if (selected.length > 0) addonCount += 1;
+    });
 
-      let addonPrice = addonCount * 0.10 * totalWeight;
+    let addonPrice = addonCount * 0.10 * totalWeight;
 
-      // Whitening logic: only applies to small bags
-      const whiteningSelected = Array.from(document.querySelectorAll('input[name="sortOption"][value="whitening"]')).some(opt => opt.checked);
-      let whiteningWeight = 0;
-      if (whiteningSelected) {
-        const smCount = parseInt(document.getElementById("smCount")?.value || "0");
-        whiteningWeight = smCount * 25;
+    // Whitening logic: uses selected bag size and count
+    const whiteningSelected = document.querySelector('input[name="sortOption"][value="whitening"]')?.checked;
+    let whiteningWeight = 0;
+    if (whiteningSelected) {
+      const size = document.getElementById("whiteningBagSize")?.value;
+      const count = parseInt(document.getElementById("whiteningBagCount")?.value || "0");
+      if (size && count > 0) {
+        whiteningWeight = count * bagWeights[size];
         addonPrice += 0.10 * whiteningWeight;
       }
-
-      return addonPrice;
     }
 
-    function calculateEstimate() {
-      let totalWeight = 0;
-      ["xs", "sm", "md", "lg", "xl"].forEach(size => {
-        const countInput = document.getElementById(size + "Count");
-        if (countInput && countInput.style.display !== "none") {
-          const count = parseInt(countInput.value || "0");
-          totalWeight += count * bagWeights[size];
-        }
-      });
+    return addonPrice;
+}
+    return addonPrice;
+  }
 
-      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
-      const rate = tierRates[tier] || 0;
-      const addonPrice = calculateAddOnPrice(totalWeight);
-      const estimatedPrice = totalWeight * rate + addonPrice;
-
-      document.getElementById("estimatedWeight").textContent = totalWeight;
-      document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
-
-      localStorage.setItem("estimatedWeight", totalWeight);
-      localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
-    }
-
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-      input.addEventListener("input", calculateEstimate);
+  function calculateEstimate() {
+    let totalWeight = 0;
+    ["xs", "sm", "md", "lg", "xl"].forEach(size => {
+      const countInput = document.getElementById(size + "Count");
+      if (countInput && countInput.style.display !== "none") {
+        const count = parseInt(countInput.value || "0");
+        totalWeight += count * bagWeights[size];
+      }
     });
 
-    document.querySelectorAll('input[name="serviceTier"]').forEach(radio => {
-      radio.addEventListener("change", calculateEstimate);
+    const tier = document.querySelector('input[name="serviceTier"]:checked')?.value;
+    const rate = tierRates[tier] || 0;
+    const addonPrice = calculateAddOnPrice(totalWeight);
+    const estimatedPrice = totalWeight * rate + addonPrice;
+
+    document.getElementById("estimatedWeight").textContent = totalWeight;
+    document.getElementById("estimatedPrice").textContent = estimatedPrice.toFixed(2);
+
+    localStorage.setItem("estimatedWeight", totalWeight);
+    localStorage.setItem("estimatedPrice", estimatedPrice.toFixed(2));
+  }
+
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener("input", calculateEstimate);
+  });
+
+  document.querySelectorAll('input[name="serviceTier"]').forEach(radio => {
+    radio.addEventListener("change", calculateEstimate);
+  });
+
+  document.getElementById("premiumDetergents").addEventListener("change", () => {
+    const premiumSelected = Array.from(document.getElementById("premiumDetergents").selectedOptions).length > 0;
+    document.querySelectorAll('input[name="freeDetergent"]').forEach(radio => {
+      radio.disabled = premiumSelected;
+      if (premiumSelected) radio.checked = false;
     });
+  });
 
-    document.getElementById("premiumDetergents").addEventListener("change", () => {
-      const premiumSelected = Array.from(document.getElementById("premiumDetergents").selectedOptions).length > 0;
-      document.querySelectorAll('input[name="freeDetergent"]').forEach(radio => {
-        radio.disabled = premiumSelected;
-        if (premiumSelected) radio.checked = false;
-      });
-    });
-
-    function saveOrderDetails() {
-      const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
-      localStorage.setItem("serviceTier", tier);
-      localStorage.setItem("freeDetergent", document.querySelector('input[name="freeDetergent"]:checked')?.value || "");
-      localStorage.setItem("premiumDetergents", getMultiSelectValues("premiumDetergents"));
-      localStorage.setItem("liquidSofteners", getMultiSelectValues("liquidSofteners"));
-      localStorage.setItem("dryerSheets", getMultiSelectValues("dryerSheets"));
-      localStorage.setItem("scentBoosters", getMultiSelectValues("scentBoosters"));
-      localStorage.setItem("whiteningAgents", getMultiSelectValues("whiteningAgents"));
-      localStorage.setItem("colorAdditives", getMultiSelectValues("colorAdditives"));
-      localStorage.setItem("stainCount", document.getElementById("stainCount").value || "0");
-      localStorage.setItem("hangDry", document.querySelector('input[name="hangDry"]')?.checked || false);
-      localStorage.setItem("returnHangers", document.querySelector('input[name="returnHangers"]')?.checked || false);
+  document.querySelector('input[name="sortOption"][value="whitening"]').addEventListener("change", (e) => {
+    const show = e.target.checked;
+    document.getElementById("whiteningBagDetails").style.display = show ? "block" : "none";
+    if (!show) {
+      document.getElementById("whiteningBagSize").value = "";
+      document.getElementById("whiteningBagCount").value = "";
     }
+    calculateEstimate();
+  });
 
-    function getMultiSelectValues(id) {
-      const select = document.getElementById(id);
-      return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
-    }
-  </script>
+  function saveOrderDetails() {
+    const tier = document.querySelector('input[name="serviceTier"]:checked')?.value || "";
+    localStorage.setItem("serviceTier", tier);
+    localStorage.setItem("freeDetergent", document.querySelector('input[name="freeDetergent"]:checked')?.value || "");
+    localStorage.setItem("premiumDetergents", getMultiSelectValues("premiumDetergents"));
+    localStorage.setItem("liquidSofteners", getMultiSelectValues("liquidSofteners"));
+    localStorage.setItem("dryerSheets", getMultiSelectValues("dryerSheets"));
+    localStorage.setItem("scentBoosters", getMultiSelectValues("scentBoosters"));
+    localStorage.setItem("whiteningAgents", getMultiSelectValues("whiteningAgents"));
+    localStorage.setItem("colorAdditives", getMultiSelectValues("colorAdditives"));
+    localStorage.setItem("stainCount", document.getElementById("stainCount").value || "0");
+    localStorage.setItem("hangDry", document.querySelector('input[name="hangDry"]')?.checked || false);
+    localStorage.setItem("returnHangers", document.querySelector('input[name="returnHangers"]')?.checked || false);
+    localStorage.setItem("whiteningBagSize", document.getElementById("whiteningBagSize").value || "");
+    localStorage.setItem("whiteningBagCount", document.getElementById("whiteningBagCount").value || "0");
+  }
+
+  function getMultiSelectValues(id) {
+    const select = document.getElementById(id);
+    return Array.from(select.selectedOptions).map(opt => opt.value).join(",");
+  }
+</script>
 
 </body>
 </html>
