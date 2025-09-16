@@ -115,7 +115,7 @@
     <label><input type="checkbox" name="sortOption" value="hangDry"> Hang Dry (Standard only)</label>
     <label><input type="checkbox" name="sortOption" value="whitening"> Whitening</label>
     <div id="whiteningBagDetails" style="display:none;">
-      <label for="whiteningBagSize">Which bag size needs whitening?</label>
+      <label for="whiteningBagSize">Which of your selected bag sizes needs whitening?</label>
       <select id="whiteningBagSize">
         <option value="">-- Select Size --</option>
         <option value="xs">Extra Small (~10 lbs)</option>
@@ -125,8 +125,8 @@
         <option value="xl">Extra Large (~120 lbs)</option>
       </select>
 
-      <label for="whiteningBagCount">How many of that size?</label>
-      <input type="number" id="whiteningBagCount" min="0" placeholder="e.g. 1 or 2" />
+      <label for="whiteningBagCount">How many of that size need whitening?</label>
+      <input type="number" id="whiteningBagCount" min="0" placeholder="Must be ≤ total count of that size" />
     </div>
     <label><input type="checkbox" name="sortOption" value="hangers"> Return on Hangers (client provides hangers)</label>
 
@@ -158,7 +158,7 @@
       <option value="Bounce Hypoallergenic">Bounce Hypoallergenic</option>
       <option value="Gain Original">Gain Original</option>
       <option value="Downy April Fresh">Downy April Fresh</option>
-          <option value="All Free Clear">All Free Clear</option>
+      <option value="All Free Clear">All Free Clear</option>
     </select>
 
     <h3>Scent Boosters ($0.10/lb)</h3>
@@ -168,7 +168,8 @@
       <option value="Gain Fireworks Original">Gain Fireworks Original</option>
     </select>
 
-    <h3>Whitening Agents (Bag Required)</h3>
+    <h3>Whitening Agents (Optional)</h3>
+    <p class="note">Used only if you've selected whitening above and flagged which bags need treatment.</p>
     <select id="whiteningAgents" multiple>
       <option value="Iron Out">Iron Out</option>
       <option value="Bleach">Bleach</option>
@@ -240,7 +241,9 @@
       if (whiteningSelected) {
         const size = document.getElementById("whiteningBagSize")?.value;
         const count = parseInt(document.getElementById("whiteningBagCount")?.value || "0");
-        if (size && count > 0) {
+        const totalCount = parseInt(document.getElementById(size + "Count")?.value || "0");
+
+        if (size && count > 0 && count <= totalCount) {
           const whiteningWeight = count * bagWeights[size];
           addonPrice += 0.10 * whiteningWeight;
         }
@@ -320,3 +323,5 @@
 
 </body>
 </html>
+
+      
