@@ -63,6 +63,14 @@
     <li>Registered users may save payment methods via Stripe and authorize holds per booking.</li>
     <li>Final charges are based on weight, service tier, and selected add-ons.</li>
   </ul>
+  
+<h2>Payment Failure & Escalation</h2>
+<ul>
+  <li>Final charges are captured after service completion. If payment fails, clients will be notified immediately and prompted to update billing information.</li>
+  <li>Orders with failed payment will not be delivered. Status will be marked as <strong>“Payment Failed”</strong>.</li>
+  <li>After 24 hours, a holding fee of $10/day begins. After 5 days, the order enters <strong>“Donation Status”</strong> and fees increase to $15/day plus a 15% service fee.</li>
+  <li>If payment is not resolved within 10 days, the order is considered abandoned. Items may be donated, repurposed, or sold to recover service costs. The client’s account will be permanently closed and blacklisted.</li>
+</ul>
 
   <h2>Privacy & Data</h2>
   <ul>
