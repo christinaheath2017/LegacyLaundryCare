@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="card">
+    <h1 id="greeting">Welcome!</h1>
+    <p style="text-align:center;">This is your Legacy LaundryCare dashboard. Everything you need is right here.</p>
+
+    <div id="policyAlert" class="message" style="display:none; color:#b33; font-weight:bold; text-align:center;">
+      We've updated our policies. Please take a moment to read through and agree to them.
+      <br />
+      <a href="termconditions.html" target="_blank" style="color:#6c9bcf;">View Updated Terms</a>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:1rem; margin-top:2rem;">
+      <a href="change-password.html" class="button">🔐 Change Password</a>
+      <a href="update-info.html" class="button">👤 Update Personal Info</a>
+      <a href="update-payment.html" class="button">💳 Update Payment Info</a>
+      <a href="preferences.html" class="button">✨ Set Add-On Preferences</a>
+      <a href="place-order.html" class="button">🧺 Place a New Order</a>
+      <a href="track-order.html" class="button">📦 Track Orders & Messaging</a>
+    </div>
+  </div>
+
+  <script>
+    const name = localStorage.getItem("clientName");
+    const greeting = document.getElementById("greeting");
+    if (name) {
+      greeting.textContent = `Hey ${name}, welcome to your Legacy Dashboard`;
+    }
+
+    const agreedTerms = localStorage.getItem("agreedTerms");
+    const currentTermsVersion = 2; // Update this when terms change
+    const storedTermsVersion = localStorage.getItem("termsVersion");
+
+    if (!agreedTerms || parseInt(storedTermsVersion) < currentTermsVersion) {
+      document.getElementById("policyAlert").style.display = "block";
+    }
+  </script>
+</body>
+</html>
