@@ -92,34 +92,6 @@
     <label>Allergies or Sensitivities:</label>
     <textarea name="allergies" rows="2" placeholder="e.g. fragrance-free only"></textarea>
 
-    <label>Product Source:</label>
-    <select name="product_source" required>
-      <option value="">Select</option>
-      <option value="Client Provided">Client Provided</option>
-      <option value="LaundryCare Provided">LaundryCare Provided</option>
-    </select>
-
-    <label>Preferred Detergent (select from available options):</label>
-    <select name="preferred_detergent" required>
-      <option value="">Select</option>
-      <option value="Tide">Tide</option>
-      <option value="Gain">Gain</option>
-      <option value="Arm & Hammer">Arm & Hammer</option>
-      <option value="All Free & Clear">All Free & Clear</option>
-    </select>
-
-    <label>Preferred Softener (select from available options):</label>
-    <select name="preferred_softener" required>
-      <option value="">Select</option>
-      <option value="Downy">Downy</option>
-      <option value="Snuggle">Snuggle</option>
-      <option value="None">None</option>
-    </select>
-
-    <p class="disclaimer">
-      If you prefer a product or scent not listed above, you must supply it yourself. Legacy LaundryCare does not purchase custom or specialty items.
-    </p>
-
     <label>
       <input type="checkbox" name="agree_terms" required />
       I agree to the <a href="termsconditions.html" target="_blank">Terms & Conditions</a> and <a href="rules.html" target="_blank">Service Rules</a>.
@@ -151,11 +123,6 @@
         household_female: formData.get("household_female"),
         household_ages: formData.get("household_ages"),
         allergies: formData.get("allergies"),
-        product_source: formData.get("product_source"),
-        preferences: {
-          detergent: formData.get("preferred_detergent"),
-          softener: formData.get("preferred_softener")
-        },
         agreed_terms: true,
         terms_version: 1
       };
