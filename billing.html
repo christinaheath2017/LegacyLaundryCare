@@ -17,44 +17,34 @@
       text-align: center;
       margin-bottom: 1rem;
     }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
     .summary {
       padding: 1rem;
       border-radius: 5px;
       margin-bottom: 2rem;
       background-color: var(--summary-bg, #f0f8ff);
     }
-    button {
+    .button {
       margin-top: 2rem;
       padding: 0.75rem 1.5rem;
-      background-color: #28a745;
+      background-color: #6c9bcf;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 1rem;
     }
-    button:hover {
-      background-color: #218838;
+    .button:hover {
+      background-color: #4a7bbd;
     }
     .legal {
       font-size: 0.85rem;
       color: #555;
       margin-top: 1rem;
+      text-align: center;
     }
     @media print {
-      button, .legal, form {
+      .button, .legal {
         display: none;
       }
     }
@@ -82,41 +72,12 @@
     <p><strong>Estimated Amount to Be Held:</strong> $<span id="estimatedPriceHold"></span></p>
   </div>
 
-  <form onsubmit="return submitBilling();">
-    <label for="cardName">Cardholder Name:</label>
-    <input type="text" id="cardName" required />
-
-    <label for="cardType">Card Type:</label>
-    <select id="cardType" required>
-      <option value="">-- Select --</option>
-      <option value="visa">Visa</option>
-      <option value="mastercard">MasterCard</option>
-      <option value="amex">American Express</option>
-      <option value="discover">Discover</option>
-    </select>
-
-    <label for="last4">Last 4 Digits of Card:</label>
-    <input type="tel" id="last4" maxlength="4" pattern="\d{4}" required />
-
-    <label for="billingAddress">Billing Address:</label>
-    <input type="text" id="billingAddress" placeholder="Street, City, State, ZIP" required />
-
-    <label>
-      <input type="checkbox" id="sameAsService" />
-      Same as service address
-    </label>
-
-    <label for="billingMethod">Billing Method:</label>
-    <select id="billingMethod" required>
-      <option value="stripe">Stripe (Secure Payment)</option>
-    </select>
-
+  <div style="text-align:center;">
+    <button onclick="redirectToStripe()" class="button">💳 Proceed to Secure Payment</button>
     <p class="legal">
-      By clicking “Submit Payment,” you authorize Legacy LaundryCare to place a temporary hold on your card for the estimated amount shown above. Final charges will be confirmed after service completion.
+      You’ll be redirected to our secure Stripe-hosted payment page. A temporary hold will be placed for the estimated amount. Final charges will be confirmed after service completion.
     </p>
-
-    <button type="submit">Submit Payment</button>
-  </form>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -156,16 +117,6 @@
         document.querySelector(".summary").style.backgroundColor = bgColor;
       }
 
-      document.getElementById("sameAsService").addEventListener("change", function () {
-        const billingField = document.getElementById("billingAddress");
-        if (this.checked) {
-          const serviceAddress = localStorage.getItem("pickupAddress") || "";
-          billingField.value = serviceAddress;
-        } else {
-          billingField.value = "";
-        }
-      });
-
       const orderID = generateOrderID();
       document.getElementById("orderID").textContent = orderID;
       localStorage.setItem("orderID", orderID);
@@ -200,28 +151,10 @@
       return name.split(" ").map(part => part[0].toUpperCase()).join("").slice(0,2);
     }
 
-   function submitBilling() {
-  const cardName = document.getElementById("cardName").value;
-  const cardType = document.getElementById("cardType").value;
-  const last4 = document.getElementById("last4").value;
-  const billingAddress = document.getElementById("billingAddress").value;
-  const billingMethod = document.getElementById("billingMethod").value;
-
-  if (!cardName || !cardType || !last4 || !billingAddress || !billingMethod) {
-    alert("Please complete all billing fields.");
-    return false;
-  }
-
-  localStorage.setItem("cardName", cardName);
-  localStorage.setItem("cardType", cardType);
-  localStorage.setItem("last4", last4);
-  localStorage.setItem("billingAddress", billingAddress);
-  localStorage.setItem("billingMethod", billingMethod);
-
-  alert("Payment submitted. A hold has been placed on your card.");
-  window.location.href = "track-order.html";
-  return false;
-}
-</script>
+    function redirectToStripe() {
+      window.location.href = "https://buy.stripe.com/aFa9AV2WJ4bs30zgEI3sI00";
+    }
+  </script>
 </body>
 </html>
+
