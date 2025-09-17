@@ -4,7 +4,7 @@ body {
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
   color: #333;
-  background: linear-gradient(135deg, #fdf6f0, #e8f0ff, #f3f9f6);
+  background: linear-gradient(135deg, #fff8f2, #f0f4e8, #e6f0ff);
   background-size: 400% 400%;
   animation: gentleFlow 60s ease infinite;
   overflow-x: hidden;
@@ -17,9 +17,9 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* === Content Card Styling === */
+/* === Content Card Styling (Secondary Background) === */
 .card, .form-section {
-  background: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(to bottom right, rgba(255,255,255,0.9), rgba(250,250,250,0.85));
   backdrop-filter: blur(6px);
   padding: 2rem;
   border-radius: 12px;
@@ -105,13 +105,18 @@ input, select, textarea {
     padding: 0.5rem 1rem;
   }
 }
+
+/* === Link Styling === */
 a {
   color: #6c9bcf;
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: underline;
 }
+
+/* === Footer Styling === */
 footer {
   text-align: center;
   padding: 1rem;
