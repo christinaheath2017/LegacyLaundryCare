@@ -5,65 +5,12 @@
   <title>Client Registration – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-      color: #333;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    form {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    label {
-      font-weight: bold;
-    }
-    input, select, textarea {
-      padding: 0.75rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      padding: 0.75rem;
-      font-size: 1rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .message {
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: red;
-    }
-    .disclaimer {
-      font-size: 0.9rem;
-      color: #555;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <h2>Register as a Legacy LaundryCare Client</h2>
 
-  <form id="registerForm">
+  <form id="registerForm" class="form-section">
     <label>Full Name:</label>
     <input type="text" name="name" required />
 
@@ -94,7 +41,8 @@
 
     <label>
       <input type="checkbox" name="agree_terms" required />
-      I agree to the <a href="termsconditions.html" target="_blank">Terms & Conditions</a> and <a href="rules.html" target="_blank">Service Rules</a>.
+      I agree to the <a href="termconditions.html" target="_blank">Terms & Conditions</a> and 
+      <a href="rules.html" target="_blank">Service Rules</a>.
     </label>
 
     <button type="submit">Register</button>
@@ -123,7 +71,7 @@
         household_female: formData.get("household_female"),
         household_ages: formData.get("household_ages"),
         allergies: formData.get("allergies"),
-        agreed_terms: true,
+        agreed_terms: formData.get("agree_terms") === "on",
         terms_version: 1
       };
 
@@ -133,6 +81,7 @@
 
       if (error) {
         message.textContent = "Registration failed: " + error.message;
+        message.style.color = "red";
       } else {
         message.style.color = "green";
         message.textContent = "Registration successful! Redirecting...";
