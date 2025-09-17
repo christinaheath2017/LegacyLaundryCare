@@ -9,14 +9,12 @@ body {
   overflow-x: hidden;
 }
 
-/* === Soft Gradient Motion === */
 @keyframes gentleFlow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* === Content Card Styling (Secondary Background) === */
 .card, .form-section {
   background: linear-gradient(to bottom right, rgba(255,255,255,0.9), rgba(250,250,250,0.85));
   backdrop-filter: blur(6px);
@@ -27,7 +25,6 @@ body {
   margin: 2rem auto;
 }
 
-/* === Headers === */
 h1, h2 {
   font-weight: 600;
   color: #4a4a4a;
@@ -35,7 +32,6 @@ h1, h2 {
   margin-bottom: 1rem;
 }
 
-/* === Form Elements === */
 form {
   display: flex;
   flex-direction: column;
@@ -56,7 +52,6 @@ input, select, textarea {
   color: #333;
 }
 
-/* === Buttons === */
 .button, button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
@@ -75,7 +70,6 @@ input, select, textarea {
   background-color: #4a7bbd;
 }
 
-/* === Messages and Alerts === */
 .message {
   text-align: center;
   margin-top: 1rem;
@@ -89,7 +83,6 @@ input, select, textarea {
   text-align: center;
 }
 
-/* === Responsive === */
 @media screen and (max-width: 600px) {
   .card, .form-section {
     padding: 1rem;
@@ -105,7 +98,6 @@ input, select, textarea {
   }
 }
 
-/* === Link Styling === */
 a {
   color: #6c9bcf;
   text-decoration: none;
@@ -115,7 +107,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* === Footer Styling === */
 footer {
   text-align: center;
   padding: 1rem;
