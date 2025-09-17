@@ -9,9 +9,9 @@
 <body>
   <div class="card">
     <h1>🧠 Forgot Login Info?</h1>
-    <p style="text-align:center;">No worries. We’ll help you recover your account. Just share what you remember.</p>
+    <p style="text-align:center;">We’ll help you recover your account. Just share what you remember.</p>
 
-    <form action="https://formspree.io/f/your-form-id" method="POST" class="form-section">
+    <form id="recoveryForm" class="form-section">
       <label>Full Name:</label>
       <input type="text" name="name" required />
 
@@ -25,7 +25,20 @@
       <input type="text" name="notes" />
 
       <button type="submit">Submit Recovery Request</button>
+      <div class="message" id="recoveryMessage"></div>
     </form>
   </div>
+
+  <script>
+    // Placeholder for Supabase logic later
+    document.getElementById("recoveryForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = document.getElementById("recoveryMessage");
+      message.textContent = "Request submitted! We’ll follow up shortly.";
+      message.style.color = "green";
+      e.target.reset();
+    });
+  </script>
 </body>
 </html>
+
