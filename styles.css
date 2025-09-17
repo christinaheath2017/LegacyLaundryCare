@@ -10,14 +10,13 @@ body {
   overflow-x: hidden;
 }
 
-/* === Soft Gradient Motion === */
 @keyframes gentleFlow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* === Content Card Styling (Secondary Background) === */
+/* === Content Card Styling === */
 .card, .form-section {
   background: linear-gradient(to bottom right, rgba(255,255,255,0.9), rgba(250,250,250,0.85));
   backdrop-filter: blur(6px);
@@ -28,7 +27,7 @@ body {
   margin: 2rem auto;
 }
 
-/* === Headers with Soft Accent === */
+/* === Headers === */
 h1, h2 {
   font-weight: 600;
   color: #4a4a4a;
