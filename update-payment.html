@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Update Payment Info – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>💳 Update Payment Info</h1>
+    <p style="text-align:center;">Securely update your card or billing details below.</p>
+
+    <form id="paymentForm" class="form-section">
+      <label>Cardholder Name:</label>
+      <input type="text" name="cardName" required />
+
+      <label>Card Number:</label>
+      <input type="text" name="cardNumber" required />
+
+      <label>Expiration Date (MM/YY):</label>
+      <input type="text" name="expDate" required />
+
+      <label>CVV:</label>
+      <input type="text" name="cvv" required />
+
+      <label>Billing Zip Code:</label>
+      <input type="text" name="zip" required />
+
+      <button type="submit">Save Payment Info</button>
+      <div class="message" id="paymentMessage"></div>
+    </form>
+  </div>
+
+  <script>
+    // Placeholder for Stripe or Supabase logic
+    document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = document.getElementById("paymentMessage");
+      message.textContent = "Payment info submitted! We’ll update your billing profile shortly.";
+      message.style.color = "green";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
