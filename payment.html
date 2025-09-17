@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Payment – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff8f2, #f0f4e8, #e6f0ff);
+      margin: 0;
+      padding: 0;
+    }
+    .card {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    h1 {
+      color: #4a4a4a;
+    }
+    p {
+      margin: 1rem 0;
+      color: #333;
+    }
+    .summary {
+      background-color: #f0f8ff;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: left;
+    }
+    .button {
+      margin-top: 2rem;
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .button:hover {
+      background-color: #4a7bbd;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>💳 Secure Payment</h1>
+    <p>You're almost done! Please review your order summary and proceed to payment.</p>
+
+    <div class="summary">
+      <p><strong>Order ID:</strong> <span id="orderID">[Generating...]</span></p>
+      <p><strong>Service Tier:</strong> <span id="serviceTier">[Not set]</span></p>
+      <p><strong>Estimated Weight:</strong> <span id="estimatedWeight">0</span> lbs</p>
+      <p><strong>Estimated Price:</strong> $<span id="estimatedPrice">0.00</span></p>
+    </div>
+
+    <button onclick="redirectToStripe()" class="button">💳 Proceed to Payment</button>
+
+    <p class="note">
+      You’ll be redirected to our secure Stripe-hosted payment page. Final charges may adjust after service completion based on actual weight and bag labeling.
+    </p>
+    <p class="note">
+      Your order follows the <a href="termconditions.html" style="color:#6c9bcf; font-weight:bold;">Terms & Conditions</a> agreed to during registration.
+    </p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tier = localStorage.getItem("serviceTier") || "[Not set]";
+      const weight = localStorage.getItem("estimatedWeight") || "0";
+      const price = localStorage.getItem("estimatedPrice") || "0.00";
+
+      const orderID = generateOrderID();
+      document.getElementById("orderID").textContent = orderID;
+      document.getElementById("serviceTier").textContent = tier;
+      document.getElementById("estimatedWeight").textContent = weight;
+      document.getElementById("estimatedPrice").textContent = price;
+
+      localStorage.setItem("orderID", orderID);
+    });
+
+    function generateOrderID() {
+      const initials = (localStorage.getItem("clientName") || "XX")
+        .split(" ")
+        .map(n => n[0]?.toUpperCase())
+        .join("")
+        .slice(0, 2);
+      const today = new Date();
+      const dateCode = `${today.getMonth()+1}${today.getDate()}${String(today.getFullYear()).slice(-2)}`;
+      return `ORD-${initials}-${dateCode}`;
+    }
+
+    function redirectToStripe() {
+      window.location.href = "https://buy.stripe.com/aFa9AV2WJ4bs30zgEI3sI00"; // Replace with your live link
+    }
+  </script>
+</body>
+</html>
