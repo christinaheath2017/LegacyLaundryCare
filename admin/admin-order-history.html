@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Order History – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .filters, .summary, .tax-section {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    select, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      margin-right: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.6rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th {
+      background-color: #f0f8ff;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>📋 Admin Order History</h1>
+
+  <div class="filters">
+    <h2>Filter Orders</h2>
+    <label for="yearSelect">Year:</label>
+    <select id="yearSelect">
+      <option value="2025">2025</option>
+      <option value="2024">2024</option>
+      <option value="2023">2023</option>
+    </select>
+
+    <label for="tierFilter">Tier:</label>
+    <select id="tierFilter">
+      <option value="">All</option>
+      <option value="Standard">Standard</option>
+      <option value="Express">Express</option>
+      <option value="Rapid">Rapid</option>
+    </select>
+
+    <label for="addonFilter">Add-On:</label>
+    <select id="addonFilter">
+      <option value="">All</option>
+      <option value="Whitening">Whitening</option>
+      <option value="Hang Dry">Hang Dry</option>
+      <option value="Stain Treatment">Stain Treatment</option>
+    </select>
+
+    <label for="productFilter">Product:</label>
+    <select id="productFilter">
+      <option value="">All</option>
+      <option value="Detergent">Detergent</option>
+      <option value="Softener">Softener</option>
+      <option value="Dryer Sheets">Dryer Sheets</option>
+      <option value="Scent Booster">Scent Booster</option>
+    </select>
+
+    <label for="clientTypeFilter">Client Type:</label>
+    <select id="clientTypeFilter">
+      <option value="">All</option>
+      <option value="Registered">Registered</option>
+      <option value="Guest">Guest</option>
+    </select>
+  </div>
+
+  <div class="summary">
+    <h2>📊 Yearly Summary</h2>
+    <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
+    <p><strongTotal Weight:</strong> <span id="totalWeight">0</span> lbs</p>
+    <p><strong>Total Stain Treatments:</strong> <span id="totalStains">0</span></p>
+    <p><strongTotal Spent:</strong> $<span id="totalSpent">0.00</span></p>
+    <p><strongTotal Tips:</strong> $<span id="totalTips">0.00</span></p>
+  </div>
+
+  <div class="tax-section">
+    <h2>📄 Business Tax Summary</h2>
+    <p>Generate a downloadable summary for business clients.</p>
+    <button onclick="downloadTaxSummary()">📥 Export Tax Summary</button>
+    <p class="note">Includes total spend, weight, service dates, and category breakdowns.</p>
+  </div>
+
+  <div class="summary">
+    <h2>📋 Full Order Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date Placed</th>
+          <th>Date Returned</th>
+          <th>Client Name</th>
+          <th>Email</th>
+          <th>Tier</th>
+          <th>Add-Ons</th>
+          <th>Product Preferences</th>
+          <th>Bags Picked Up</th>
+          <th>Bags Returned</th>
+          <th>Total Weight</th>
+          <th>Stain Treatment Items</th>
+          <th>Cost</th>
+          <th>Tip</th>
+          <th>Grand Total</th>
+          <th>Client Type</th>
+          <th>Hotel/Motel</th>
+        </tr>
+      </thead>
+      <tbody id="orderTableBody">
+        <!-- Rows injected here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const orders = [
+      {
+        placed: "2025-01-12",
+        returned: "2025-01-14",
+        name: "Jane Doe",
+        email: "jane@example.com",
+        tier: "Express",
+        addons: ["Whitening", "Hang Dry"],
+        products: ["Detergent", "Softener"],
+        bagsPicked: "3 (sm, md, lg)",
+        bagsReturned: "3",
+        weight: 65,
+        stains: 4,
+        cost: 130.00,
+        tip: 10.00,
+        type: "Registered",
+        hotel: "Comfort Inn"
+      },
+      {
+        placed: "2025-03-05",
+        returned: "2025-03-07",
+        name: "Guest Client",
+        email: "guest@nomail.com",
+        tier: "Standard",
+        addons: ["Stain Treatment"],
+        products: ["Detergent", "Dryer Sheets"],
+        bagsPicked: "2 (xs, sm)",
+        bagsReturned: "2",
+        weight: 35,
+        stains: 2,
+        cost: 70.00,
+        tip: 5.00,
+        type: "Guest",
+        hotel: "Motel 6"
+      }
+    ];
+
+    function renderOrders() {
+      const tbody = document.getElementById("orderTableBody");
+      tbody.innerHTML = "";
+
+      let totalOrders = 0, totalWeight = 0, totalStains = 0, totalSpent = 0, totalTips = 0;
+
+      orders.forEach(order => {
+        totalOrders++;
+        totalWeight += order.weight;
+        totalStains += order.stains;
+        totalSpent += order.cost;
+        totalTips += order.tip;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.placed}</td>
+          <td>${order.returned}</td>
+          <td>${order.name}</td>
+          <td>${order.email}</td>
+          <td>${order.tier}</td>
+          <td>${order.addons.join(", ")}</td>
+          <td>${order.products.join(", ")}</td>
+          <td>${order.bagsPicked}</td>
+          <td>${order.bagsReturned}</td>
+          <td>${order.weight} lbs</td>
+          <td>${order.stains}</td>
+          <td>$${order.cost.toFixed(2)}</td>
+          <td>$${order.tip.toFixed(2)}</td>
+          <td>$${(order.cost + order.tip).toFixed(2)}</td>
+          <td>${order.type}</td>
+          <td>${order.hotel}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("totalOrders").textContent = totalOrders;
+      document.getElementById("totalWeight").textContent = totalWeight;
+      document.getElementById("totalStains").textContent = totalStains;
+      document.getElementById("totalSpent").textContent = totalSpent.toFixed(2);
+      document.getElementById("totalTips").textContent = totalTips.toFixed(2);
+    }
+
+    function downloadTaxSummary() {
+      alert("Tax summary export coming soon. Will include total spend, weight, and service dates.");
+    }
+
+    document.addEventListener("DOMContentLoaded", renderOrders);
+  </
+        document.addEventListener("DOMContentLoaded", renderOrders);
+  </script>
+</body>
+</html>
