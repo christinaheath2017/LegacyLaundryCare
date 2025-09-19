@@ -61,6 +61,39 @@
       font-size: 0.95rem;
       margin-top: 0.3rem;
     }
+    img {
+      max-width: 100%;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+    }
+    .gps {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.3rem;
+    }
+    .tracker-link {
+      margin-top: 0.5rem;
+      display: inline-block;
+      font-size: 0.9rem;
+      color: #007bff;
+      text-decoration: underline;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+    .paid {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .unpaid {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
   </style>
 </head>
 <body>
@@ -94,7 +127,7 @@
       if (error) {
         alert("Failed to update status: " + error.message);
       } else {
-        loadBookings(); // Refresh dashboard
+        loadBookings();
       }
     }
 
@@ -132,14 +165,32 @@
         const entry = document.createElement("div");
         entry.className = "booking-entry " + (booking.emergency_flag ? "emergency" : "standard");
 
+        const total = (booking.weight * booking.final_rate).toFixed(2);
+        const photoHTML = booking.pickup_photo_url
+          ? `<img src="${booking.pickup_photo_url}" alt="Pickup Photo" />`
+          : "";
+        const gpsHTML = booking.pickup_location
+          ? `<p class="gps">📍 GPS: ${booking.pickup_location}</p>`
+          : "";
+        const paymentBadge = booking.payment_status === "paid"
+          ? `<span class="badge paid">Paid</span>`
+          : `<span class="badge unpaid">Unpaid</span>`;
+        const trackerLink = `<a href="track-client-order.html?orderID=${booking.id}" class="tracker-link" target="_blank">View Full Tracker</a>`;
+
         entry.innerHTML = `
           <strong>${booking.name}</strong> (${booking.email})<br>
           📞 ${booking.phone}<br>
           🧺 Weight: ${booking.weight} lbs<br>
           💲 Rate: $${booking.final_rate.toFixed(2)}/lb<br>
-          💰 Estimated Total: $${(booking.weight * booking.final_rate).toFixed(2)}<br>
+          💰 Estimated Total: $${total}<br>
+          ${paymentBadge}
           ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied (50% off)</p>" : ""}
           ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
+          ${photoHTML}
+          ${gpsHTML}
+          <p>🕒 Placed: ${booking.placed_time || "[Not set]"}</p>
+          <p>🚚 Picked Up: ${booking.pickup_time || "[Pending]"}</p>
+          <p>✅ Completed: ${booking.completed_time || "[Pending]"}</p>
           <div class="status">
             <label for="status-${booking.id}"><strong>Status:</strong></label>
             <select id="status-${booking.id}" onchange="updateStatus('${booking.id}', this.value)">
@@ -148,6 +199,7 @@
               <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
             </select>
           </div>
+          ${trackerLink}
         `;
 
         container.appendChild(entry);
