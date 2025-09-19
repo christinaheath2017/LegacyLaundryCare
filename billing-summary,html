@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Billing Summary – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    .paid {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .failed {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .button {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+    ul {
+      margin-top: 0.5rem;
+      padding-left: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>💳 Billing Summary</h1>
+
+  <div class="card">
+    <p><strong>Order ID:</strong> <span id="orderID">[Generating...]</span></p>
+    <p><strong>Service Tier:</strong> <span id="serviceTier">[Not set]</span></p>
+    <p><strong>Estimated Weight:</strong> <span id="estimatedWeight">0</span> lbs</p>
+    <p><strong>Base Rate:</strong> $<span id="baseRate">2.00</span>/lb</p>
+
+    <p><strong>Add-Ons Selected:</strong></p>
+    <ul id="addonsList"></ul>
+
+    <p><strong>Product Preferences:</strong></p>
+    <ul id="productList"></ul>
+
+    <p><strong>Stain Treatment Items:</strong> <span id="stainItems">0</span></p>
+
+    <p><strong>Subtotal:</strong> $<span id="subtotal">0.00</span></p>
+    <p><strong>Tip:</strong> $<span id="tipAmount">0.00</span></p>
+    <p><strong>Grand Total:</strong> $<span id="grandTotal">0.00</span></p>
+
+    <p><strong>Payment Status:</strong> <span id="paymentStatusBadge" class="badge pending">Pending</span></p>
+    <p><strong>Payment Timestamp:</strong> <span id="paymentTime">[Pending]</span></p>
+
+    <a href="update-payment.html" class="button" id="updatePaymentBtn" style="display:none;">🔄 Update Payment Method</a>
+    <a href="order-tracking.html" class="button">📦 Track Your Order</a>
+
+    <p class="note">
+      This order follows the <a href="termconditions.html" style="color:#6c9bcf; font-weight:bold;">Terms & Conditions</a> agreed to during registration.
+    </p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const orderID = generateOrderID();
+      const tier = localStorage.getItem("serviceTier") || "Standard";
+      const weight = parseFloat(localStorage.getItem("estimatedWeight")) || 0;
+      const baseRate = 2.00;
+      const addons = JSON.parse(localStorage.getItem("selectedAddons") || "[]");
+      const products = JSON.parse(localStorage.getItem("productPreferences") || "[]");
+      const stains = parseInt(localStorage.getItem("stainItems")) || 0;
+      const tip = parseFloat(localStorage.getItem("tipAmount")) || 0;
+      const paymentStatus = localStorage.getItem("paymentStatus") || "pending";
+      const paymentTime = localStorage.getItem("paymentTime") || "[Pending]";
+
+      const addonCost = addons.length * 5;
+      const productCost = products.length * 2;
+      const stainCost = stains * 1.5;
+      const subtotal = (weight * baseRate) + addonCost + productCost + stainCost;
+      const grandTotal = subtotal + tip;
+
+      document.getElementById("orderID").textContent = orderID;
+      document.getElementById("serviceTier").textContent = tier;
+      document.getElementById("estimatedWeight").textContent = weight;
+      document.getElementById("baseRate").textContent = baseRate.toFixed(2);
+      document.getElementById("stainItems").textContent = stains;
+      document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+      document.getElementById("tipAmount").textContent = tip.toFixed(2);
+      document.getElementById("grandTotal").textContent = grandTotal.toFixed(2);
+      document.getElementById("paymentTime").textContent = paymentTime;
+
+      const badge = document.getElementById("paymentStatusBadge");
+      badge.textContent = paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1);
+      badge.className = "badge " + (paymentStatus === "paid" ? "paid" : paymentStatus === "failed" ? "failed" : "pending");
+
+      if (paymentStatus === "failed") {
+        document.getElementById("updatePaymentBtn").style.display = "inline-block";
+      }
+
+      const addonsList = document.getElementById("addonsList");
+      addons.forEach(addon => {
+        const li = document.createElement("li");
+        li.textContent = addon;
+        addonsList.appendChild(li);
+      });
+
+      const productList = document.getElementById("productList");
+      products.forEach(prod => {
+        const li = document.createElement("li");
+        li.textContent = prod;
+        productList.appendChild(li);
+      });
+
+      localStorage.setItem("orderID", orderID);
+    });
+
+    function generateOrderID() {
+      const initials = (localStorage.getItem("clientName") || "XX")
+        .split(" ")
+        .map(n => n[0]?.toUpperCase())
+        .join("")
+        .slice(0, 2);
+      const today = new Date();
+      const dateCode = `${today.getMonth()+1}${today.getDate()}${String(today.getFullYear()).slice(-2)}`;
+      return `ORD-${initials}-${dateCode}`;
+    }
+  </script>
+</body>
+</html>
