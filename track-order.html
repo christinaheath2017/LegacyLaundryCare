@@ -61,6 +61,16 @@
       display: none;
       margin-top: 2rem;
     }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -94,6 +104,16 @@
       <h2>Order Status</h2>
       <p id="orderStatus">🟡 Awaiting Pickup</p>
       <div id="feeDetails" style="margin-top:1rem;"></div>
+    </div>
+
+    <!-- 📸 + 📍 Pickup Confirmation Module -->
+    <div class="summary">
+      <h2>📸 Confirm Your Pickup Setup</h2>
+      <p>Please take a photo of your laundry in its pickup location, clearly showing all bags. This helps us verify and protect your order.</p>
+      <input type="file" accept="image/*" capture="environment" id="pickupPhoto" />
+      <div id="photoPreview" style="margin-top:1rem;"></div>
+      <button onclick="captureLocation()">📍 Drop GPS Pin</button>
+      <p id="locationStatus" class="note"></p>
     </div>
 
     <label for="clientMessage">Send a Message to Your Provider:</label>
@@ -188,17 +208,33 @@
         alert("We couldn’t verify your info. Please double-check and try again.");
       }
     }
+document.getElementById("pickupPhoto").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      localStorage.setItem("pickupPhoto", evt.target.result);
+      document.getElementById("photoPreview").innerHTML = `<img src="${evt.target.result}" alt="Pickup Photo" style="max-width:100%; border-radius:8px;" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
-    function sendMessage() {
-      const message = document.getElementById("clientMessage").value.trim();
-      if (message) {
-        localStorage.setItem("clientMessage", message);
-        alert("Message sent! We’ll follow up shortly.");
-        document.getElementById("clientMessage").value = "";
-      } else {
-        alert("Please enter a message before sending.");
-      }
-    }
-  </script>
+function captureLocation() {
+  if (!navigator.geolocation) {
+    document.getElementById("locationStatus").textContent = "Geolocation not supported on this device.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition((position) => {
+    const { latitude, longitude } = position.coords;
+    localStorage.setItem("pickupLocation", `${latitude},${longitude}`);
+    document.getElementById("locationStatus").textContent = `📍 Location saved: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+  }, () => {
+    document.getElementById("locationStatus").textContent = "Unable to retrieve location.";
+  });
+}
+</script>
 </body>
 </html>
+
