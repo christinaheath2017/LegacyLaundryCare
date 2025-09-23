@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quarterly Tax Estimator – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .section {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .button {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.5rem;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>📆 Quarterly Tax Estimator</h1>
+
+  <div class="section">
+    <h2>💸 Estimated Quarterly Payments</h2>
+    <button class="button" onclick="calculateQuarterlyTaxes()">Calculate Quarterly Taxes</button>
+    <p class="note" id="quarterlySummary"></p>
+  </div>
+
+  <script>
+    function calculateQuarterlyTaxes() {
+      const gross = parseFloat(localStorage.getItem("grossProfit")) || 0;
+      const tips = parseFloat(localStorage.getItem("tipsReceived")) || 0;
+      const exemptTips = parseFloat(localStorage.getItem("nonTaxableTips")) || 0;
+      const expenses = parseFloat(localStorage.getItem("totalBusinessExpenses")) || 0;
+
+      const taxableIncome = gross + (tips - exemptTips) - expenses;
+
+      const federalRate = 0.10;
+      const stateRate = 0.0323;
+      const countyRate = 0.0175;
+      const medicareRate = 0.0145;
+      const socialSecurityRate = 0.062;
+      const businessTaxRate = 0.03;
+
+      const totalTax = taxableIncome * (federalRate + stateRate + countyRate + medicareRate + socialSecurityRate + businessTaxRate);
+      const quarterlyTax = totalTax / 4;
+
+      const summary = `
+Taxable Income: $${taxableIncome.toFixed(2)}
+Total Estimated Tax: $${totalTax.toFixed(2)}
+
+Quarterly Breakdown:
+• Q1 (Apr 15): $${quarterlyTax.toFixed(2)}
+• Q2 (Jun 15): $${quarterlyTax.toFixed(2)}
+• Q3 (Sep 15): $${quarterlyTax.toFixed(2)}
+• Q4 (Jan 15): $${quarterlyTax.toFixed(2)}
+`;
+
+      document.getElementById("quarterlySummary").textContent = summary;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!localStorage.getItem("grossProfit")) localStorage.setItem("grossProfit", "1200");
+      if (!localStorage.getItem("tipsReceived")) localStorage.setItem("tipsReceived", "150");
+      if (!localStorage.getItem("nonTaxableTips")) localStorage.setItem("nonTaxableTips", "100");
+      if (!localStorage.getItem("totalBusinessExpenses")) localStorage.setItem("totalBusinessExpenses", "300");
+    });
+  </script>
+</body>
+</html>
