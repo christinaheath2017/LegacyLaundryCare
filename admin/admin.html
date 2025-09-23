@@ -27,6 +27,24 @@
     #filters label {
       font-size: 0.95rem;
     }
+    .section {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .button {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
     .booking-entry {
       border: 1px solid #ccc;
       padding: 15px;
@@ -102,9 +120,15 @@
   <div id="filters">
     <input type="text" id="searchInput" placeholder="Search by name, email, or phone" />
     <label>
-      <input type="checkbox" id="emergencyOnly" />
-      Show emergencies only
+      <input type="checkbox" id="emergencyOnly" /> Show emergencies only
     </label>
+  </div>
+
+  <!-- ✅ New Section: Quarterly Tax Estimator -->
+  <div class="section">
+    <h2>📆 Quarterly Tax Estimator</h2>
+    <p>View your estimated tax breakdown by quarter, track payments, and export summaries.</p>
+    <a href="quarterly-tax.html" class="button">Open Tax Estimator</a>
   </div>
 
   <div id="bookingsContainer">Loading bookings...</div>
@@ -123,7 +147,6 @@
         .from("bookings")
         .update({ status: newStatus })
         .eq("id", id);
-
       if (error) {
         alert("Failed to update status: " + error.message);
       } else {
@@ -149,9 +172,10 @@
       const emergencyOnly = document.getElementById("emergencyOnly").checked;
 
       const filtered = data.filter(booking => {
-        const matchSearch = booking.name.toLowerCase().includes(searchTerm)
-          || booking.email.toLowerCase().includes(searchTerm)
-          || booking.phone.toLowerCase().includes(searchTerm);
+        const matchSearch =
+          booking.name.toLowerCase().includes(searchTerm) ||
+          booking.email.toLowerCase().includes(searchTerm) ||
+          booking.phone.toLowerCase().includes(searchTerm);
         const matchEmergency = emergencyOnly ? booking.emergency_flag : true;
         return matchSearch && matchEmergency;
       });
@@ -172,9 +196,10 @@
         const gpsHTML = booking.pickup_location
           ? `<p class="gps">📍 GPS: ${booking.pickup_location}</p>`
           : "";
-        const paymentBadge = booking.payment_status === "paid"
-          ? `<span class="badge paid">Paid</span>`
-          : `<span class="badge unpaid">Unpaid</span>`;
+        const paymentBadge =
+          booking.payment_status === "paid"
+            ? `<span class="badge paid">Paid</span>`
+            : `<span class="badge unpaid">Unpaid</span>`;
         const trackerLink = `<a href="track-client-order.html?orderID=${booking.id}" class="tracker-link" target="_blank">View Full Tracker</a>`;
 
         entry.innerHTML = `
@@ -195,18 +220,16 @@
             <label for="status-${booking.id}"><strong>Status:</strong></label>
             <select id="status-${booking.id}" onchange="updateStatus('${booking.id}', this.value)">
               <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="In Progress" ${booking.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-              <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+              <option value="Picked Up" ${booking.status === 'Picked Up' ? 'selected' : ''}>Picked Up</option>
+                          <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+              <option value="Canceled" ${booking.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
             </select>
           </div>
           ${trackerLink}
         `;
-
         container.appendChild(entry);
       });
     }
-
-    loadBookings();
   </script>
 </body>
 </html>
