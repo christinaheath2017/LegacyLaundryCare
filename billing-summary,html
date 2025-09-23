@@ -150,7 +150,12 @@
         productList.appendChild(li);
       });
 
+      // Sync to tax-withholding.html
       localStorage.setItem("orderID", orderID);
+      localStorage.setItem("tipsReceived", tip.toFixed(2));
+      localStorage.setItem("nonTaxableTips", "0.00"); // Update if you track exempt tips
+      localStorage.setItem("clientWeight", weight.toFixed(2));
+      localStorage.setItem("grandTotal", grandTotal.toFixed(2));
     });
 
     function generateOrderID() {
