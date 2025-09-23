@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inventory Tracker – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .category {
+      margin-top: 2rem;
+    }
+    .product-card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+    }
+    .low-stock {
+      border-left: 5px solid crimson;
+      background-color: #ffecec;
+    }
+    .button {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    input {
+      padding: 0.4rem;
+      margin: 0.3rem 0;
+      width: 100%;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 0.5rem;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.3rem;
+    }
+    .reorder-list {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Inventory Tracker</h1>
+
+  <div id="inventoryContainer"></div>
+
+  <div class="reorder-list">
+    <h2>🛒 Reorder List</h2>
+    <ul id="reorderList"></ul>
+  </div>
+
+  <script>
+    const products = [
+      { name: "Tide Original", category: "Detergents", usageRate: 0.1 },
+      { name: "Downy April Fresh", category: "Liquid Softeners", usageRate: 0.05 },
+      { name: "Bounce Dryer Sheets", category: "Dryer Sheets", usageRate: 0.1 },
+      { name: "Gain Scent Booster", category: "Scent Boosters", usageRate: 0.03 },
+      { name: "OxiClean White Revive", category: "Whitening Agents", usageRate: 0.075 },
+      { name: "OxiClean Max Force", category: "Stain Treatments", usageRate: 0.05 },
+      { name: "33 Gallon Bags", category: "Packaging Supplies", usageRate: 1 }
+    ];
+
+    const reorderList = [];
+
+    function renderInventory() {
+      const container = document.getElementById("inventoryContainer");
+      container.innerHTML = "";
+
+      const grouped = {};
+      products.forEach(p => {
+        if (!grouped[p.category]) grouped[p.category] = [];
+        grouped[p.category].push(p);
+      });
+
+      for (const category in grouped) {
+        const section = document.createElement("div");
+        section.className = "category";
+        section.innerHTML = `<h2>${category}</h2>`;
+
+        grouped[category].forEach(product => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+
+          card.innerHTML = `
+            <label>${product.name}</label>
+            <input type="number" placeholder="Unit Size (oz/sheets)" id="${product.name}-unitSize" />
+            <input type="number" placeholder="Units on Hand" id="${product.name}-units" />
+            <input type="number" placeholder="Prewash Weight (lbs)" id="${product.name}-weight" />
+            <button class="button" onclick="calculateUsage('${product.name}')">🧮 Calculate Usage</button>
+            <p class="note" id="${product.name}-usageNote"></p>
+            <button class="button" onclick="addToReorder('${product.name}')">➕ Add to Reorder List</button>
+          `;
+
+          section.appendChild(card);
+        });
+
+        container.appendChild(section);
+      }
+    }
+
+    function calculateUsage(name) {
+      const unitSize = parseFloat(document.getElementById(`${name}-unitSize`).value);
+      const units = parseInt(document.getElementById(`${name}-units`).value);
+      const weight = parseFloat(document.getElementById(`${name}-weight`).value);
+      const product = products.find(p => p.name === name);
+
+      if (isNaN(unitSize) || isNaN(units) || isNaN(weight)) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const totalStock = unitSize * units;
+      const usage = weight * product.usageRate;
+      const remaining = totalStock - usage;
+      const threshold = totalStock * 0.5;
+
+      const note = document.getElementById(`${name}-usageNote`);
+      note.textContent = `Used ${usage.toFixed(2)} units. Remaining stock: ${remaining.toFixed(2)}.`;
+
+      if (remaining < threshold) {
+        note.textContent += ` ⚠️ Stock below 50%. Consider reordering.`;
+        document.querySelector(`#${name}-unitSize`).parentElement.classList.add("low-stock");
+      } else {
+        document.querySelector(`#${name}-unitSize`).parentElement.classList.remove("low-stock");
+      }
+    }
+
+    function addToReorder(name) {
+      if (!reorderList.includes(name)) {
+        reorderList.push(name);
+        const list = document.getElementById("reorderList");
+        const li = document.createElement("li");
+        li.textContent = name;
+        list.appendChild(li);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderInventory);
+  </script>
+</body>
+</html>
