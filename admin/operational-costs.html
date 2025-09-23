@@ -49,6 +49,7 @@
       font-size: 0.85rem;
       color: #555;
       margin-top: 0.5rem;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -56,24 +57,25 @@
   <h1>🧾 Operational Costs Tracker</h1>
 
   <div class="section">
-    <h2>🚗 Vehicle Mileage</h2>
+    <h2>🚗 Vehicle Mileage & Expenses</h2>
     <label>Master Odometer Reading:</label>
     <input type="number" id="masterOdometer" />
-
     <label>Trip A (Refuel Reset):</label>
     <input type="number" id="tripA" />
-
     <label>Trip B (Oil Change Reset):</label>
     <input type="number" id="tripB" />
-
-    <label>Pickup Mileage (Google Maps):</label>
+    <label>Pickup Mileage:</label>
     <input type="number" id="pickupMiles" />
-
-    <label>Dropoff Mileage (Google Maps):</label>
+    <label>Dropoff Mileage:</label>
     <input type="number" id="dropoffMiles" />
-
     <label>Supply Run Mileage:</label>
     <input type="number" id="supplyMiles" />
+    <label>Car Payment (monthly):</label>
+    <input type="number" id="carPayment" />
+    <label>Car Insurance (monthly):</label>
+    <input type="number" id="carInsurance" />
+    <label>Car Upkeep & Repairs:</label>
+    <input type="number" id="carUpkeep" />
   </div>
 
   <div class="section">
@@ -84,7 +86,6 @@
     <input type="number" id="washerSize" />
     <label>Washer Cost per Use:</label>
     <input type="number" id="washerCost" />
-
     <label>Dryer Count:</label>
     <input type="number" id="dryerCount" />
     <label>Dryer Size (lbs):</label>
@@ -107,21 +108,37 @@
     <h2>📦 Supply Costs</h2>
     <label>Client Name:</label>
     <input type="text" id="clientName" />
-
     <label>Prewash Weight (lbs):</label>
     <input type="number" id="clientWeight" />
-
     <label>Client Provided Products?</label>
     <select id="clientProvided">
       <option value="No">No</option>
       <option value="Yes">Yes</option>
     </select>
-
     <label>Preferred Products Used:</label>
     <input type="text" id="preferredProducts" placeholder="e.g. Tide, Downy, Bounce" />
-
     <label>Estimated Supply Cost per Pound:</label>
     <input type="number" id="supplyCostPerLb" />
+  </div>
+
+  <div class="section">
+    <h2>🏡 Home-Based Business Deductions</h2>
+    <label>Monthly Rent:</label>
+    <input type="number" id="rentAmount" />
+    <label>Home Office Size (sq ft):</label>
+    <input type="number" id="officeSize" value="100" />
+    <label>Washer/Dryer Space (sq ft):</label>
+    <input type="number" id="machineSpace" value="18" />
+    <label>Total Home Size (sq ft):</label>
+    <input type="number" id="homeSize" value="1000" />
+  </div>
+
+  <div class="section">
+    <h2>📡 Utilities</h2>
+    <label>Phone Bill (monthly):</label>
+    <input type="number" id="phoneBill" />
+    <label>Internet Bill (monthly):</label>
+    <input type="number" id="internetBill" />
   </div>
 
   <div class="section">
@@ -148,22 +165,14 @@
 
       const weight = parseFloat(document.getElementById("clientWeight").value) || 0;
       const supplyRate = parseFloat(document.getElementById("supplyCostPerLb").value) || 0;
-      const supplyTotal = weight * supplyRate;
+      const supplyTotal = document.getElementById("clientProvided").value === "Yes" ? 0 : weight * supplyRate;
 
-      const grandTotal = mileageTotal + laundromatTotal + machineTotal + supplyTotal;
+      const carPayment = parseFloat(document.getElementById("carPayment").value) || 0;
+      const carInsurance = parseFloat(document.getElementById("carInsurance").value) || 0;
+      const carUpkeep = parseFloat(document.getElementById("carUpkeep").value) || 0;
+      const vehicleTotal = carPayment + carInsurance + carUpkeep;
 
-      const summary = `
-        Mileage Total: ${mileageTotal.toFixed(2)} miles  
-        Laundromat Cost: $${laundromatTotal.toFixed(2)}  
-        Personal Machine Cost: $${machineTotal.toFixed(2)}  
-        Supply Cost: $${supplyTotal.toFixed(2)}  
-        Grand Total: $${grandTotal.toFixed(2)}  
-        Client: ${document.getElementById("clientName").value}  
-        Products Used: ${document.getElementById("clientProvided").value === "Yes" ? "Client Provided" : document.getElementById("preferredProducts").value}
-      `;
-
-      document.getElementById("costSummary").textContent = summary;
-    }
-  </script>
-</body>
-</html>
+      const rent = parseFloat(document.getElementById("rentAmount").value) || 0;
+      const officeSize = parseFloat(document.getElementById("officeSize").value) || 0;
+      const machineSpace = parseFloat(document.getElementById("machineSpace").value) || 0;
+      const homeSize = parseFloat(document.get
