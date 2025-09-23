@@ -119,6 +119,8 @@
     <input type="text" id="preferredProducts" placeholder="e.g. Tide, Downy, Bounce" />
     <label>Estimated Supply Cost per Pound:</label>
     <input type="number" id="supplyCostPerLb" />
+    <label>Owner Draw (personal withdrawal):</label>
+    <input type="number" id="ownerDraw" />
   </div>
 
   <div class="section">
@@ -175,4 +177,42 @@
       const rent = parseFloat(document.getElementById("rentAmount").value) || 0;
       const officeSize = parseFloat(document.getElementById("officeSize").value) || 0;
       const machineSpace = parseFloat(document.getElementById("machineSpace").value) || 0;
-      const homeSize = parseFloat(document.get
+      const homeSize = parseFloat(document.getElementById("homeSize").value) || 1000;
+
+      const totalBusinessSqFt = officeSize + machineSpace
+      const businessUsePercent = totalBusinessSqFt / homeSize;
+const rentDeduction = rent * businessUsePercent;
+
+const phoneBill = parseFloat(document.getElementById("phoneBill").value) || 0;
+const internetBill = parseFloat(document.getElementById("internetBill").value) || 0;
+const utilityDeduction = phoneBill + internetBill;
+
+const grandTotal = mileageTotal + laundromatTotal + machineTotal + supplyTotal + vehicleTotal + rentDeduction + utilityDeduction;
+
+const summary = `
+Mileage Total: ${mileageTotal.toFixed(2)} miles  
+Laundromat Cost: $${laundromatTotal.toFixed(2)}  
+Personal Machine Cost: $${machineTotal.toFixed(2)}  
+Supply Cost: $${supplyTotal.toFixed(2)}  
+Vehicle Expenses: $${vehicleTotal.toFixed(2)}  
+Rent Deduction: $${rentDeduction.toFixed(2)}  
+Utilities Deduction: $${utilityDeduction.toFixed(2)}  
+Grand Total: $${grandTotal.toFixed(2)}  
+Client: ${document.getElementById("clientName").value}  
+Products Used: ${document.getElementById("clientProvided").value === "Yes" ? "Client Provided" : document.getElementById("preferredProducts").value}
+`;
+
+document.getElementById("costSummary").textContent = summary;
+
+// Wire to tax-withholding.html
+localStorage.setItem("grossProfit", grandTotal.toFixed(2));
+localStorage.setItem("totalBusinessExpenses", (laundromatTotal + machineTotal + vehicleTotal + rentDeduction + utilityDeduction).toFixed(2));
+
+const drawInput = document.getElementById("ownerDraw");
+if (drawInput) {
+  localStorage.setItem("ownerDraw", parseFloat(drawInput.value).toFixed(2));
+}
+}
+</script>
+</body>
+</html>
