@@ -139,6 +139,21 @@
   <script>
     const orders = JSON.parse(localStorage.getItem("adminOrderHistory") || "[]");
 
+    function syncToTaxPage() {
+      let totalTips = 0, totalWeight = 0, totalGross = 0;
+
+      orders.forEach(order => {
+        totalTips += order.tip || 0;
+        totalWeight += order.weight || 0;
+        totalGross += (order.cost || 0) + (order.tip || 0);
+      });
+
+      localStorage.setItem("tipsReceived", totalTips.toFixed(2));
+      localStorage.setItem("clientWeight", totalWeight.toFixed(2));
+      localStorage.setItem("grossProfit", totalGross.toFixed(2));
+      localStorage.setItem("nonTaxableTips", "0.00");
+    }
+
     function renderOrders() {
       const tbody = document.getElementById("orderTableBody");
       tbody.innerHTML = "";
@@ -184,7 +199,10 @@
       alert("Tax summary export coming soon. Will include total spend, weight, and service dates.");
     }
 
-    document.addEventListener("DOMContentLoaded", renderOrders);
+    document.addEventListener("DOMContentLoaded", () => {
+      renderOrders();
+      syncToTaxPage();
+    });
   </script>
 </body>
 </html>
