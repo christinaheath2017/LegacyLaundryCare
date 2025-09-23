@@ -75,13 +75,34 @@
 
   <script>
     const products = {
+      "Arm & Hammer Fresh Burst": 0.1,
+      "Arm & Hammer Sensitive": 0.1,
       "Tide Original": 0.1,
+      "Tide Free & Gentle": 0.1,
+      "Gain Original Detergent": 0.1,
+      "Persil Original": 0.1,
+      "All FreeClear Detergent": 0.1,
       "Downy April Fresh": 0.05,
-      "Bounce Dryer Sheets": 0.1,
+      "Gain Softener": 0.05,
+      "All FreeClear Softener": 0.05,
+      "Downy Dryer Sheets": 0.1,
+      "Gain Dryer Sheets": 0.1,
+      "Bounce Free & Gentle": 0.1,
+      "All FreeClear Dryer Sheets": 0.1,
+      "Arm & Hammer Scent Booster": 0.03,
+      "Downy Unstoppables": 0.03,
       "Gain Scent Booster": 0.03,
+      "Vinegar Rinse": 0.05,
       "OxiClean White Revive": 0.075,
-      "Shout": 0.05,
-      "Biz": 0.05
+      "Iron Out": 0.075,
+      "White Bright": 0.075,
+      "Bleach": 0.075,
+      "Hydrogen Peroxide & Baking Soda": 0.075,
+      "OxiClean": 0.05,
+      "Biz": 0.05,
+      "Color Safe Bleach": 0.05,
+      "OxiClean Max Force": 0.05,
+      "Shout": 0.05
     };
 
     let loadCount = 0;
@@ -131,7 +152,7 @@
           totalUsage[product] = (totalUsage[product] || 0) + used;
 
           // Deduct from inventory
-          const currentStock = parseFloat(localStorage.getItem(`stock-${product}`)) || 0;
+          const currentStock = parseFloat(localStorage.getItem(`stock-${product}`)) || 100;
           const newStock = currentStock - used;
           localStorage.setItem(`stock-${product}`, newStock.toFixed(2));
         });
