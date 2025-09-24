@@ -149,70 +149,86 @@
     <p class="note" id="costSummary"></p>
   </div>
 
-  <script>
-    function calculateCosts() {
-      const pickup = parseFloat(document.getElementById("pickupMiles").value) || 0;
-      const dropoff = parseFloat(document.getElementById("dropoffMiles").value) || 0;
-      const supply = parseFloat(document.getElementById("supplyMiles").value) || 0;
-      const mileageTotal = pickup + dropoff + supply;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    'https://ztcyemsqljopyjbzpqvq.supabase.co',
+    'YOUR_PUBLIC_ANON_KEY'
+  );
 
-      const washerTotal = (parseInt(document.getElementById("washerCount").value) || 0) * (parseFloat(document.getElementById("washerCost").value) || 0);
-      const dryerTotal = (parseInt(document.getElementById("dryerCount").value) || 0) * (parseFloat(document.getElementById("dryerCost").value) || 0);
-      const laundromatTotal = washerTotal + dryerTotal;
+  async function calculateCosts() {
+    const { data: expenses, error } = await supabase
+      .from("expenses")
+      .select("*");
 
-      const clientLoads = parseInt(document.getElementById("clientLoads").value) || 0;
-      const personalLoads = parseInt(document.getElementById("personalLoads").value) || 0;
-      const loadCost = parseFloat(document.getElementById("loadCost").value) || 0;
-      const machineTotal = (clientLoads + personalLoads) * loadCost;
+    if (error || !expenses) {
+      document.getElementById("costSummary").textContent = "Error loading expenses.";
+      return;
+    }
 
-      const weight = parseFloat(document.getElementById("clientWeight").value) || 0;
-      const supplyRate = parseFloat(document.getElementById("supplyCostPerLb").value) || 0;
-      const supplyTotal = document.getElementById("clientProvided").value === "Yes" ? 0 : weight * supplyRate;
+    const now = new Date();
+    let totals = {
+      fuel: 0,
+      laundry_mat: 0,
+      laundry_home: 0,
+      maintenance: 0,
+      supplies: 0,
+      bill: 0,
+      ownerDraw: parseFloat(document.getElementById("ownerDraw")?.value) || 0
+    };
 
-      const carPayment = parseFloat(document.getElementById("carPayment").value) || 0;
-      const carInsurance = parseFloat(document.getElementById("carInsurance").value) || 0;
-      const carUpkeep = parseFloat(document.getElementById("carUpkeep").value) || 0;
-      const vehicleTotal = carPayment + carInsurance + carUpkeep;
+    expenses.forEach(entry => {
+      const date = new Date(entry.date);
+      const cost = parseFloat(entry.cost) || 0;
+      if (date.getFullYear() === now.getFullYear()) {
+        if (totals.hasOwnProperty(entry.type)) {
+          totals[entry.type] += cost;
+        }
+      }
+    });
 
-      const rent = parseFloat(document.getElementById("rentAmount").value) || 0;
-      const officeSize = parseFloat(document.getElementById("officeSize").value) || 0;
-      const machineSpace = parseFloat(document.getElementById("machineSpace").value) || 0;
-      const homeSize = parseFloat(document.getElementById("homeSize").value) || 1000;
+    const rent = parseFloat(document.getElementById("rentAmount")?.value) || 0;
+    const officeSize = parseFloat(document.getElementById("officeSize")?.value) || 0;
+    const machineSpace = parseFloat(document.getElementById("machineSpace")?.value) || 0;
+    const homeSize = parseFloat(document.getElementById("homeSize")?.value) || 1000;
+    const businessSqFt = officeSize + machineSpace;
+    const rentDeduction = rent * (businessSqFt / homeSize);
 
-      const totalBusinessSqFt = officeSize + machineSpace
-      const businessUsePercent = totalBusinessSqFt / homeSize;
-const rentDeduction = rent * businessUsePercent;
+    const phoneBill = parseFloat(document.getElementById("phoneBill")?.value) || 0;
+    const internetBill = parseFloat(document.getElementById("internetBill")?.value) || 0;
+    const utilityDeduction = phoneBill + internetBill;
 
-const phoneBill = parseFloat(document.getElementById("phoneBill").value) || 0;
-const internetBill = parseFloat(document.getElementById("internetBill").value) || 0;
-const utilityDeduction = phoneBill + internetBill;
+    const grandTotal =
+      totals.fuel +
+      totals.laundry_mat +
+      totals.laundry_home +
+      totals.maintenance +
+      totals.supplies +
+      totals.bill +
+      totals.ownerDraw +
+      rentDeduction +
+      utilityDeduction;
 
-const grandTotal = mileageTotal + laundromatTotal + machineTotal + supplyTotal + vehicleTotal + rentDeduction + utilityDeduction;
+    const summary = `
+🚗 Fuel: $${totals.fuel.toFixed(2)}
+🧺 Laundromat: $${totals.laundry_mat.toFixed(2)}
+🧼 Personal Machines: $${totals.laundry_home.toFixed(2)}
+🛠 Maintenance: $${totals.maintenance.toFixed(2)}
+📦 Supplies: $${totals.supplies.toFixed(2)}
+💸 Bills: $${totals.bill.toFixed(2)}
+🏠 Rent Deduction: $${rentDeduction.toFixed(2)}
+📡 Utilities: $${utilityDeduction.toFixed(2)}
+💸 Owner Draw: $${totals.ownerDraw.toFixed(2)}
+📊 Grand Total: $${grandTotal.toFixed(2)}
+    `;
 
-const summary = `
-Mileage Total: ${mileageTotal.toFixed(2)} miles  
-Laundromat Cost: $${laundromatTotal.toFixed(2)}  
-Personal Machine Cost: $${machineTotal.toFixed(2)}  
-Supply Cost: $${supplyTotal.toFixed(2)}  
-Vehicle Expenses: $${vehicleTotal.toFixed(2)}  
-Rent Deduction: $${rentDeduction.toFixed(2)}  
-Utilities Deduction: $${utilityDeduction.toFixed(2)}  
-Grand Total: $${grandTotal.toFixed(2)}  
-Client: ${document.getElementById("clientName").value}  
-Products Used: ${document.getElementById("clientProvided").value === "Yes" ? "Client Provided" : document.getElementById("preferredProducts").value}
-`;
+    document.getElementById("costSummary").textContent = summary;
 
-document.getElementById("costSummary").textContent = summary;
-
-// Wire to tax-withholding.html
-localStorage.setItem("grossProfit", grandTotal.toFixed(2));
-localStorage.setItem("totalBusinessExpenses", (laundromatTotal + machineTotal + vehicleTotal + rentDeduction + utilityDeduction).toFixed(2));
-
-const drawInput = document.getElementById("ownerDraw");
-if (drawInput) {
-  localStorage.setItem("ownerDraw", parseFloat(drawInput.value).toFixed(2));
-}
-}
+    // Sync to tax pages
+    localStorage.setItem("totalBusinessExpenses", grandTotal.toFixed(2));
+    localStorage.setItem("ownerDraw", totals.ownerDraw.toFixed(2));
+  }
 </script>
+
 </body>
 </html>
