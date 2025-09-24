@@ -6,230 +6,479 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
+      margin: 0;
       background-color: #fff;
       color: #333;
+      display: flex;
+      flex-direction: column;
     }
-    h2 {
-      margin-bottom: 20px;
+    header {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
     }
-    #filters {
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+    }
+    nav {
+      width: 220px;
+      background-color: #f0f0f0;
+      padding: 1rem;
+      border-right: 1px solid #ccc;
+    }
+    nav h2 {
+      font-size: 1.2rem;
       margin-bottom: 1rem;
     }
-    #filters input[type="text"] {
+    nav a {
+      display: block;
+      margin-bottom: 0.5rem;
       padding: 0.5rem;
-      width: 60%;
-      font-size: 1rem;
-      margin-right: 1rem;
+      background-color: #6c9bcf;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
     }
-    #filters label {
-      font-size: 0.95rem;
+    main {
+      flex: 1;
+      padding: 1rem;
     }
-    .section {
-      background: #f9f9f9;
+    .metrics-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric {
+      flex: 1;
+      background-color: #f9f9f9;
       padding: 1rem;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
+      min-width: 140px;
     }
-    .button {
+    .metric h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+    }
+    .booking-card {
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .booking-card input, .booking-card select {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      width: 100%;
+      font-size: 1rem;
+    }
+    .booking-card button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
       background-color: #6c9bcf;
       color: white;
-      padding: 0.5rem 1rem;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      display: inline-block;
-      margin-top: 0.5rem;
     }
-    .booking-entry {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-    }
-    .emergency {
-      border-left: 5px solid crimson;
-      background-color: #ffecec;
-    }
-    .standard {
-      border-left: 5px solid #007bff;
-    }
-    .rate {
-      font-weight: bold;
-      margin-top: 0.5rem;
-    }
-    .notes {
-      font-style: italic;
-      margin-top: 0.5rem;
-    }
-    .flag {
-      color: red;
-      font-weight: bold;
-    }
-    .status {
-      margin-top: 0.5rem;
-    }
-    select {
-      padding: 0.4rem;
-      font-size: 0.95rem;
-      margin-top: 0.3rem;
-    }
-    img {
-      max-width: 100%;
-      margin-top: 0.5rem;
-      border-radius: 6px;
-    }
-    .gps {
-      font-size: 0.85rem;
-      color: #555;
-      margin-top: 0.3rem;
-    }
-    .tracker-link {
-      margin-top: 0.5rem;
-      display: inline-block;
-      font-size: 0.9rem;
-      color: #007bff;
-      text-decoration: underline;
-    }
-    .badge {
-      display: inline-block;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      margin-top: 0.3rem;
-    }
-    .paid {
-      background-color: #d4edda;
-      color: #155724;
-    }
-    .unpaid {
-      background-color: #f8d7da;
-      color: #721c24;
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      nav {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Admin Dashboard – Bookings</h2>
+  <header>🧺 Legacy LaundryCare – Admin Dashboard</header>
+  <div class="container">
+    <nav>
+      <h2>🧭 Admin Menu</h2>
+      <a href="admin-order-history.html">📋 Order History</a>
+      <a href="operational-costs.html">💰 Operational Costs</a>
+      <a href="tax-withholding.html">🧾 Tax Withholding</a>
+      <a href="inventory-tracker.html">📦 Inventory Tracker</a>
+      <a href="quarterly-tax.html">📆 Quarterly Tax Estimator</a>
+    </nav>
 
-  <div id="filters">
-    <input type="text" id="searchInput" placeholder="Search by name, email, or phone" />
-    <label>
-      <input type="checkbox" id="emergencyOnly" /> Show emergencies only
-    </label>
+    <main>
+      <h2>📊 Earnings Overview</h2>
+      <div class="metrics-bar">
+        <div class="metric"><h3>Today</h3>$<span id="dailyEarnings">0.00</span></div>
+        <div class="metric"><h3>This Week</h3>$<span id="weeklyEarnings">0.00</span></div>
+        <div class="metric"><h3>This Month</h3>$<span id="monthlyEarnings">0.00</span></div>
+        <div class="metric"><h3>Year to Date</h3>$<span id="yearlyEarnings">0.00</span></div>
+      </div>
+
+      <h2>💸 Operational Costs</h2>
+      <div class="metrics-bar">
+        <div class="metric"><h3>Today</h3>$<span id="dailyCosts">0.00</span></div>
+        <div class="metric"><h3>This Week</h3>$<span id="weeklyCosts">0.00</span></div>
+        <div class="metric"><h3>This Month</h3>$<span id="monthlyCosts">0.00</span></div>
+        <div class="metric"><h3>Year to Date</h3>$<span id="yearlyCosts">0.00</span></div>
+      </div>
+
+      <h2>🧺 New Bookings</h2>
+      <div id="bookingsContainer">Loading bookings...</div>
+    </main>
   </div>
-
-  <!-- ✅ New Section: Quarterly Tax Estimator -->
-  <div class="section">
-    <h2>📆 Quarterly Tax Estimator</h2>
-    <p>View your estimated tax breakdown by quarter, track payments, and export summaries.</p>
-    <a href="quarterly-tax.html" class="button">Open Tax Estimator</a>
-  </div>
-
-  <div id="bookingsContainer">Loading bookings...</div>
 
   <script>
     const supabase = supabase.createClient(
       'https://ztcyemsqljopyjbzpqvq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0Y3llbXNxbGpvcHlqYnpwcXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NDg5ODYsImV4cCI6MjA3MzEyNDk4Nn0.WN4AQxfSWUtuVdACmkSe5O13nuxkp8-6On0RAmDJrro'
+      'YOUR_PUBLIC_ANON_KEY'
     );
 
-    document.getElementById("searchInput").addEventListener("input", loadBookings);
-    document.getElementById("emergencyOnly").addEventListener("change", loadBookings);
-
-    async function updateStatus(id, newStatus) {
-      const { error } = await supabase
-        .from("bookings")
-        .update({ status: newStatus })
-        .eq("id", id);
-      if (error) {
-        alert("Failed to update status: " + error.message);
-      } else {
-        loadBookings();
-      }
-    }
-
     async function loadBookings() {
-      const { data, error } = await supabase
+      const { data: bookings, error: bookingError } = await supabase
         .from("bookings")
         .select("*")
         .order("created_at", { ascending: false });
 
+      const { data: expenses, error: expenseError } = await supabase
+        .from("expenses")
+        .select("*");
+
       const container = document.getElementById("bookingsContainer");
       container.innerHTML = "";
 
-      if (error) {
-        container.textContent = "Error loading bookings: " + error.message;
+      if (bookingError || expenseError) {
+        container.textContent = "Error loading data.";
         return;
       }
 
-      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-      const emergencyOnly = document.getElementById("emergencyOnly").checked;
+      const now = new Date();
+      let earnings = { day: 0, week: 0, month: 0, year: 0 };
+      let costs = { day: 0, week: 0, month: 0, year: 0 };
 
-      const filtered = data.filter(booking => {
-        const matchSearch =
-          booking.name.toLowerCase().includes(searchTerm) ||
-          booking.email.toLowerCase().includes(searchTerm) ||
-          booking.phone.toLowerCase().includes(searchTerm);
-        const matchEmergency = emergencyOnly ? booking.emergency_flag : true;
-        return matchSearch && matchEmergency;
-      });
+      bookings.forEach(booking => {
+        const placed = new Date(booking.created_at);
+        const total = booking.weight * booking.final_rate;
 
-      if (filtered.length === 0) {
-        container.textContent = "No bookings match your filters.";
-        return;
-      }
+        if (isSameDay(placed, now)) earnings.day += total;
+        if (isSameWeek(placed, now)) earnings.week += total;
+        if (isSameMonth(placed, now)) earnings.month += total;
+        if (placed.getFullYear() === now.getFullYear()) earnings.year += total;
 
-      filtered.forEach(booking => {
-        const entry = document.createElement("div");
-        entry.className = "booking-entry " + (booking.emergency_flag ? "emergency" : "standard");
-
-        const total = (booking.weight * booking.final_rate).toFixed(2);
-        const photoHTML = booking.pickup_photo_url
-          ? `<img src="${booking.pickup_photo_url}" alt="Pickup Photo" />`
-          : "";
-        const gpsHTML = booking.pickup_location
-          ? `<p class="gps">📍 GPS: ${booking.pickup_location}</p>`
-          : "";
-        const paymentBadge =
-          booking.payment_status === "paid"
-            ? `<span class="badge paid">Paid</span>`
-            : `<span class="badge unpaid">Unpaid</span>`;
-        const trackerLink = `<a href="track-client-order.html?orderID=${booking.id}" class="tracker-link" target="_blank">View Full Tracker</a>`;
-
-        entry.innerHTML = `
+        const card = document.createElement("div");
+        card.className = "booking-card";
+        card.innerHTML = `
           <strong>${booking.name}</strong> (${booking.email})<br>
           📞 ${booking.phone}<br>
-          🧺 Weight: ${booking.weight} lbs<br>
+          🧺 Weight: <input type="number" value="${booking.weight}" onchange="updateWeight('${booking.id}', this.value)" /><br>
           💲 Rate: $${booking.final_rate.toFixed(2)}/lb<br>
-          💰 Estimated Total: $${total}<br>
-          ${paymentBadge}
-          ${booking.emergency_rate_applied ? "<p class='flag'>Emergency Rate Applied (50% off)</p>" : ""}
-          ${booking.notes ? `<p class="notes">📝 ${booking.notes}</p>` : ""}
-          ${photoHTML}
-          ${gpsHTML}
-          <p>🕒 Placed: ${booking.placed_time || "[Not set]"}</p>
-          <p>🚚 Picked Up: ${booking.pickup_time || "[Pending]"}</p>
-          <p>✅ Completed: ${booking.completed_time || "[Pending]"}</p>
-          <div class="status">
-            <label for="status-${booking.id}"><strong>Status:</strong></label>
-            <select id="status-${booking.id}" onchange="updateStatus('${booking.id}', this.value)">
-              <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="Picked Up" ${booking.status === 'Picked Up' ? 'selected' : ''}>Picked Up</option>
-                          <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
-              <option value="Canceled" ${booking.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
-            </select>
-          </div>
-          ${trackerLink}
+          💰 Total: $${total.toFixed(2)}<br>
+          <label>Status:</label>
+          <select onchange="updateStatus('${booking.id}', this.value)">
+            <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Picked Up" ${booking.status === 'Picked Up' ? 'selected' : ''}>Picked Up</option>
+            <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            <option value="Canceled" ${booking.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
+          </select>
+          <button onclick="messageClient('${booking.email}')">📨 Message Client</button>
+          <a href="track-client-order.html?orderID=${booking.id}" target="_blank">🔍 View Tracker</a>
         `;
-        container.appendChild(entry);
+        container.appendChild(card);
       });
+
+     You got it, Christina. Below is your **fully rewritten `admin.html`**, designed to be:
+
+---
+
+### ✅ Feature-Complete and Mobile-Friendly
+
+| Section | Function |
+|--------|----------|
+| 📊 **Top Earnings Bar** | Shows current day/week/month earnings + YTD total  
+| 💸 **Operational Costs Bar** | Shows current day/week/month costs + YTD total  
+| 🧭 **Side Navigation Menu** | Links to all admin tools  
+| 🧺 **Centered Booking Cards** | Add bag weights, update status, message client, view tracker  
+| 📱 **Responsive Layout** | Adapts to mobile and desktop views  
+| 🔌 **Supabase Ready** | Pulls live data for bookings, earnings, and costs  
+
+---
+
+### ✅ Drop-in Ready `admin.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
     }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #fff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+    }
+    nav {
+      width: 220px;
+      background-color: #f0f0f0;
+      padding: 1rem;
+      border-right: 1px solid #ccc;
+    }
+    nav h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    nav a {
+      display: block;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #6c9bcf;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    main {
+      flex: 1;
+      padding: 1rem;
+    }
+    .metrics-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric {
+      flex: 1;
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      min-width: 140px;
+    }
+    .metric h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+    }
+    .booking-card {
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .booking-card input, .booking-card select {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      width: 100%;
+      font-size: 1rem;
+    }
+    .booking-card button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #6c9bcf;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      nav {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>🧺 Legacy LaundryCare – Admin Dashboard</header>
+  <div class="container">
+    <nav>
+      <h2>🧭 Admin Menu</h2>
+      <a href="admin-order-history.html">📋 Order History</a>
+      <a href="operational-costs.html">💰 Operational Costs</a>
+      <a href="tax-withholding.html">🧾 Tax Withholding</a>
+      <a href="inventory-tracker.html">📦 Inventory Tracker</a>
+      <a href="quarterly-tax.html">📆 Quarterly Tax Estimator</a>
+    </nav>
+
+    <main>
+      <h2>📊 Earnings Overview</h2>
+      <div class="metrics-bar">
+        <div class="metric"><h3>Today</h3>$<span id="dailyEarnings">0.00</span></div>
+        <div class="metric"><h3>This Week</h3>$<span id="weeklyEarnings">0.00</span></div>
+        <div class="metric"><h3>This Month</h3>$<span id="monthlyEarnings">0.00</span></div>
+        <div class="metric"><h3>Year to Date</h3>$<span id="yearlyEarnings">0.00</span></div>
+      </div>
+
+      <h2>💸 Operational Costs</h2>
+      <div class="metrics-bar">
+        <div class="metric"><h3>Today</h3>$<span id="dailyCosts">0.00</span></div>
+        <div class="metric"><h3>This Week</h3>$<span id="weeklyCosts">0.00</span></div>
+        <div class="metric"><h3>This Month</h3>$<span id="monthlyCosts">0.00</span></div>
+        <div class="metric"><h3>Year to Date</h3>$<span id="yearlyCosts">0.00</span></div>
+      </div>
+
+      <h2>🧺 New Bookings</h2>
+      <div id="bookingsContainer">Loading bookings...</div>
+    </main>
+  </div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'YOUR_PUBLIC_ANON_KEY'
+    );
+
+    async function loadBookings() {
+      const { data: bookings, error: bookingError } = await supabase
+        .from("bookings")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const { data: expenses, error: expenseError } = await supabase
+        .from("expenses")
+        .select("*");
+
+      const container = document.getElementById("bookingsContainer");
+      container.innerHTML = "";
+
+      if (bookingError || expenseError) {
+        container.textContent = "Error loading data.";
+        return;
+      }
+
+      const now = new Date();
+      let earnings = { day: 0, week: 0, month: 0, year: 0 };
+      let costs = { day: 0, week: 0, month: 0, year: 0 };
+
+      bookings.forEach(booking => {
+        const placed = new Date(booking.created_at);
+        const total = booking.weight * booking.final_rate;
+
+        if (isSameDay(placed, now)) earnings.day += total;
+        if (isSameWeek(placed, now)) earnings.week += total;
+        if (isSameMonth(placed, now)) earnings.month += total;
+        if (placed.getFullYear() === now.getFullYear()) earnings.year += total;
+
+        const card = document.createElement("div");
+        card.className = "booking-card";
+        card.innerHTML = `
+          <strong>${booking.name}</strong> (${booking.email})<br>
+          📞 ${booking.phone}<br>
+          🧺 Weight: <input type="number" value="${booking.weight}" onchange="updateWeight('${booking.id}', this.value)" /><br>
+          💲 Rate: $${booking.final_rate.toFixed(2)}/lb<br>
+          💰 Total: $${total.toFixed(2)}<br>
+          <label>Status:</label>
+          <select onchange="updateStatus('${booking.id}', this.value)">
+            <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Picked Up" ${booking.status === 'Picked Up' ? 'selected' : ''}>Picked Up</option>
+            <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+            <option value="Canceled" ${booking.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
+          </select>
+          <button onclick="messageClient('${booking.email}')">📨 Message Client</button>
+          <a href="track-client-order.html?orderID=${booking.id}" target="_blank">🔍 View Tracker</a>
+        `;
+        container.appendChild(card);
+      });
+
+            expenses.forEach(exp => {
+        const date = new Date(exp.date);
+        const amount = parseFloat(exp.amount);
+        if (isSameDay(date, now)) costs.day += amount;
+        if (isSameWeek(date, now)) costs.week += amount;
+        if (isSameMonth(date, now)) costs.month += amount;
+        if (date.getFullYear() === now.getFullYear()) costs.year += amount;
+      });
+
+      document.getElementById("dailyEarnings").textContent = earnings.day.toFixed(2);
+      document.getElementById("weeklyEarnings").textContent = earnings.week.toFixed(2);
+      document.getElementById("monthlyEarnings").textContent = earnings.month.toFixed(2);
+      document.getElementById("yearlyEarnings").textContent = earnings.year.toFixed(2);
+
+      document.getElementById("dailyCosts").textContent = costs.day.toFixed(2);
+      document.getElementById("weeklyCosts").textContent = costs.week.toFixed(2);
+      document.getElementById("monthlyCosts").textContent = costs.month.toFixed(2);
+      document.getElementById("yearlyCosts").textContent = costs.year.toFixed(2);
+    }
+
+    function isSameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
+
+    function isSameWeek(d1, d2) {
+      const oneJan = new Date(d1.getFullYear(), 0, 1);
+      const week1 = Math.floor(((d1 - oneJan) / 86400000 + oneJan.getDay() + 1) / 7);
+      const week2 = Math.floor(((d2 - oneJan) / 86400000 + oneJan.getDay() + 1) / 7);
+      return d1.getFullYear() === d2.getFullYear() && week1 === week2;
+    }
+
+    function isSameMonth(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth();
+    }
+
+    async function updateWeight(id, newWeight) {
+      await supabase.from("bookings").update({ weight: parseFloat(newWeight) }).eq("id", id);
+      loadBookings();
+    }
+
+    async function updateStatus(id, newStatus) {
+      await supabase.from("bookings").update({ status: newStatus }).eq("id", id);
+      loadBookings();
+    }
+
+    function messageClient(email) {
+      alert(`Messaging ${email}... (placeholder)`);
+    }
+
+    document.addEventListener("DOMContentLoaded", loadBookings);
   </script>
 </body>
 </html>
