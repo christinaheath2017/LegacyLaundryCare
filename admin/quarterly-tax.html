@@ -83,94 +83,87 @@
     <p class="note">Exports taxable income, total tax, quarterly breakdown, and payment status.</p>
   </div>
 
-  <script>
-    let latestSummary = {};
+<div class="section">
+  <h2>📊 Supabase-Connected Quarterly Summary</h2>
 
-    function calculateQuarterlyTaxes() {
-      const entity = document.getElementById("entityType").value;
-      const salary = parseFloat(document.getElementById("salaryAmount").value) || 0;
+  <label for="quarterSelect">Select Quarter:</label>
+  <select id="quarterSelect">
+    <option value="Q1">Q1 (Jan–Mar)</option>
+    <option value="Q2">Q2 (Apr–Jun)</option>
+    <option value="Q3">Q3 (Jul–Sep)</option>
+    <option value="Q4">Q4 (Oct–Dec)</option>
+  </select>
 
-      const gross = parseFloat(localStorage.getItem("grossProfit")) || 0;
-      const tips = parseFloat(localStorage.getItem("tipsReceived")) || 0;
-      const exemptTips = parseFloat(localStorage.getItem("nonTaxableTips")) || 0;
-      const expenses = parseFloat(localStorage.getItem("totalBusinessExpenses")) || 0;
+  <label for="entityTypeSupabase">Entity Type:</label>
+  <select id="entityTypeSupabase">
+    <option value="Sole Proprietor">Sole Proprietor</option>
+    <option value="S-Corp">S-Corp</option>
+  </select>
 
-      let taxableIncome = gross + (tips - exemptTips) - expenses;
+  <button class="button" onclick="calculateQuarterlyTax()">📤 Calculate Supabase Tax</button>
+  <pre id="taxSummary"></pre>
+</div>
+  
 
-      let salaryTaxable = taxableIncome;
-      let distribution = 0;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    'https://ztcyemsqljopyjbzpqvq.supabase.co',
+    'YOUR_PUBLIC_ANON_KEY'
+  );
 
-      if (entity === "scorp") {
-        salaryTaxable = salary;
-        distribution = taxableIncome - salary;
-      }
+  async function calculateQuarterlyTax() {
+    const selectedQuarter = document.getElementById("quarterSelect").value;
+    const entityType = document.getElementById("entityType").value;
+    const now = new Date();
+    const year = now.getFullYear();
 
-      const federalRate = 0.10;
-      const stateRate = 0.0323;
-      const countyRate = 0.0175;
-      const medicareRate = 0.0145;
-      const socialSecurityRate = 0.062;
-      const businessTaxRate = 0.03;
+    const quarterRanges = {
+      Q1: [new Date(`${year}-01-01`), new Date(`${year}-03-31`)],
+      Q2: [new Date(`${year}-04-01`), new Date(`${year}-06-30`)],
+      Q3: [new Date(`${year}-07-01`), new Date(`${year}-09-30`)],
+      Q4: [new Date(`${year}-10-01`), new Date(`${year}-12-31`)]
+    };
 
-      const totalTax = salaryTaxable * (federalRate + stateRate + countyRate + medicareRate + socialSecurityRate + businessTaxRate);
-      const quarterlyTax = totalTax / 4;
+    const [startDate, endDate] = quarterRanges[selectedQuarter];
 
-      latestSummary = {
-        entity: entity === "scorp" ? "S-Corp" : "Sole Proprietor",
-        taxableIncome: taxableIncome.toFixed(2),
-        salaryTaxable: salaryTaxable.toFixed(2),
-        distribution: distribution.toFixed(2),
-        totalTax: totalTax.toFixed(2),
-        quarterlyTax: quarterlyTax.toFixed(2),
-        q1Paid: document.getElementById("q1Paid").checked ? "Yes" : "No",
-        q2Paid: document.getElementById("q2Paid").checked ? "Yes" : "No",
-        q3Paid: document.getElementById("q3Paid").checked ? "Yes" : "No",
-        q4Paid: document.getElementById("q4Paid").checked ? "Yes" : "No"
-      };
+    const { data: expenses, error } = await supabase
+      .from("expenses")
+      .select("*");
 
-      const summary = `
-Entity Type: ${latestSummary.entity}
-Taxable Income: $${latestSummary.taxableIncome}
-S-Corp Salary Taxable: $${latestSummary.salaryTaxable}
-Distribution (not taxed): $${latestSummary.distribution}
-Total Estimated Tax: $${latestSummary.totalTax}
-
-Quarterly Breakdown:
-• Q1 (Apr 15): $${latestSummary.quarterlyTax} – Paid: ${latestSummary.q1Paid}
-• Q2 (Jun 15): $${latestSummary.quarterlyTax} – Paid: ${latestSummary.q2Paid}
-• Q3 (Sep 15): $${latestSummary.quarterlyTax} – Paid: ${latestSummary.q3Paid}
-• Q4 (Jan 15): $${latestSummary.quarterlyTax} – Paid: ${latestSummary.q4Paid}
-`;
-
-      document.getElementById("quarterlySummary").textContent = summary;
+    if (error || !expenses) {
+      document.getElementById("taxSummary").textContent = "Error loading expenses.";
+      return;
     }
 
-    function exportTaxSummary() {
-      if (!latestSummary.entity) {
-        alert("Please calculate taxes before exporting.");
-        return;
+    let totalExpenses = 0;
+    expenses.forEach(entry => {
+      const date = new Date(entry.date);
+      const cost = parseFloat(entry.cost) || 0;
+      if (date >= startDate && date <= endDate) {
+        totalExpenses += cost;
       }
-
-      const csvContent = `Entity Type,Taxable Income,Salary Taxable,Distribution,Total Tax,Q1 Paid,Q2 Paid,Q3 Paid,Q4 Paid
-${latestSummary.entity},${latestSummary.taxableIncome},${latestSummary.salaryTaxable},${latestSummary.distribution},${latestSummary.totalTax},${latestSummary.q1Paid},${latestSummary.q2Paid},${latestSummary.q3Paid},${latestSummary.q4Paid}`;
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.setAttribute("href", URL.createObjectURL(blob));
-      link.setAttribute("download", "quarterly-tax-summary.csv");
-      link.style.display = "none";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      if (!localStorage.getItem("grossProfit")) localStorage.setItem("grossProfit", "1200");
-      if (!localStorage.getItem("tipsReceived")) localStorage.setItem("tipsReceived", "150");
-      if (!localStorage.getItem("nonTaxableTips")) localStorage.setItem("nonTaxableTips", "100");
-      if (!localStorage.getItem("totalBusinessExpenses")) localStorage.setItem("totalBusinessExpenses", "300");
-      if (!localStorage.getItem("ownerDraw")) localStorage.setItem("ownerDraw", "400");
     });
-  </script>
+
+    const ownerDraw = parseFloat(localStorage.getItem("ownerDraw")) || 0;
+    const estimatedIncome = ownerDraw * 4; // Assuming quarterly draw
+    const taxableIncome = Math.max(estimatedIncome - totalExpenses, 0);
+
+    let taxRate = entityType === "S-Corp" ? 0.15 : 0.25;
+    const estimatedTax = taxableIncome * taxRate;
+
+    const summary = `
+📅 Quarter: ${selectedQuarter}
+🏢 Entity Type: ${entityType}
+💸 Estimated Income: $${estimatedIncome.toFixed(2)}
+📊 Deductible Expenses: $${totalExpenses.toFixed(2)}
+💰 Taxable Income: $${taxableIncome.toFixed(2)}
+🧾 Estimated Tax Due: $${estimatedTax.toFixed(2)}
+    `;
+
+    document.getElementById("taxSummary").textContent = summary;
+  }
+</script>
+
 </body>
 </html>
