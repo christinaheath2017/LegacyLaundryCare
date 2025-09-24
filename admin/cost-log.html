@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cost Log – Legacy LaundryCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #fff;
+      color: #333;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .section {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .button {
+      background-color: #6c9bcf;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .flex-row > div {
+      flex: 1;
+      min-width: 180px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧾 Cost Log</h1>
 
+  <!-- 🚗 Mileage Tracker -->
+  <div class="section">
+    <h2>🚗 Mileage Tracker</h2>
+    <label for="personalMiles">Personal Miles:</label>
+    <input type="number" id="personalMiles" />
+    <label for="businessMiles">Business Miles:</label>
+    <input type="number" id="businessMiles" />
+    <p id="mileageSummary"></p>
+  </div>
+
+  <!-- ⛽ Fuel Log -->
+  <div class="section">
+    <h2>⛽ Fuel Log</h2>
+    <label>Date:</label><input type="date" id="fuelDate" />
+    <label>Gallons:</label><input type="number" id="fuelGallons" />
+    <label>Cost:</label><input type="number" id="fuelCost" />
+    <label>Mileage:</label><input type="number" id="fuelMileage" />
+    <label>Receipt:</label><input type="file" id="fuelReceipt" />
+  </div>
+
+  <!-- 🧺 Laundromat Log -->
+  <div class="section">
+    <h2>🧺 Laundromat Log</h2>
+    <div id="washerList"></div>
+    <button class="button" onclick="addWasher()">➕ Add Washer</button>
+    <label>Dryer Cost:</label><input type="number" id="dryerCost" />
+    <label>Client (optional):</label><input type="text" id="laundryClient" />
+    <p id="laundryTotal"></p>
+  </div>
+
+  <!-- 🛠 Maintenance Log -->
+  <div class="section">
+    <h2>🛠 Maintenance Log</h2>
+    <label>Date:</label><input type="date" id="maintDate" />
+    <label>Type:</label><input type="text" id="maintType" />
+    <label>Cost:</label><input type="number" id="maintCost" />
+    <label>Receipt:</label><input type="file" id="maintReceipt" />
+  </div>
+
+  <!-- 📦 Supply Log -->
+  <div class="section">
+    <h2>📦 Supply Log</h2>
+    <label>Date:</label><input type="date" id="supplyDate" />
+    <label>Product:</label><input type="text" id="supplyProduct" />
+    <label>Client (optional):</label><input type="text" id="supplyClient" />
+    <label>Cost:</label><input type="number" id="supplyCost" />
+    <label>Receipt:</label><input type="file" id="supplyReceipt" />
+  </div>
+
+  <!-- 💸 Bill Payments -->
+  <div class="section">
+    <h2>💸 Bill Payments</h2>
+    <label>Date:</label><input type="date" id="billDate" />
+    <label>Category:</label><input type="text" id="billCategory" />
+    <label>Amount:</label><input type="number" id="billAmount" />
+    <label>Receipt:</label><input type="file" id="billReceipt" />
+  </div>
+
+  <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://ztcyemsqljopyjbzpqvq.supabase.co',
+      'YOUR_PUBLIC_ANON_KEY'
+    );
+
+    function addWasher() {
+      const washerList = document.getElementById("washerList");
+      const div = document.createElement("div");
+      div.className = "flex-row";
+      div.innerHTML = `
+        <div>
+          <label>Washer Size:</label>
+          <select>
+            <option value="Single">Single Loader</option>
+            <option value="Double">Double Loader</option>
+            <option value="Triple">Triple Loader</option>
+            <option value="Maxi">Maxi Loader</option>
+          </select>
+        </div>
+        <div>
+          <label>Cost:</label>
+          <input type="number" />
+        </div>
+      `;
+      washerList.appendChild(div);
+    }
+
+    function saveAll() {
+      const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
+      const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
+      const mileageRatio = businessMiles / (personalMiles + businessMiles);
+      document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+
+      // Example: Save fuel entry
+      const fuelEntry = {
+        type: "fuel",
+        date: document.getElementById("fuelDate").value,
+        gallons: parseFloat(document.getElementById("fuelGallons").value),
+        cost: parseFloat(document.getElementById("fuelCost").value),
+        mileage: parseFloat(document.getElementById("fuelMileage").value)
+      };
+      supabase.from("expenses").insert([fuelEntry]);
+
+      // Example: Save laundromat total
+      let laundryTotal = parseFloat(document.getElementById("dryerCost").value) || 0;
+      const washerRows = document.getElementById("washerList").querySelectorAll(".flex-row");
+      washerRows.forEach(row => {
+        const cost = parseFloat(row.querySelector("input").value) || 0;
+        laundryTotal += cost;
+      });
+      document.getElementById("laundryTotal").textContent = `Total Laundromat Cost: $${laundryTotal.toFixed(2)}`;
+      supabase.from("expenses").insert([{ type: "laundromat", cost: laundryTotal }]);
+
+      // Repeat similar logic for maintenance, supplies, bills...
+    }
+  </script>
+</body>
+</html>
