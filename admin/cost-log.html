@@ -127,7 +127,12 @@
     <button class="button" onclick="saveBills()">✅ Complete Bill Entry</button>
   </div>
 
-    <!-- Firebase SDK -->
+  <!-- ✅ Final Day Save -->
+  <div class="section">
+    <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
+  </div>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 
@@ -158,27 +163,9 @@
         const gallons = parseFloat(document.getElementById("fuelGallons").value);
         const cost = parseFloat(document.getElementById("fuelCost").value);
         const mileage = parseFloat(document.getElementById("fuelMileage").value);
-
-        if (!date || isNaN(gallons) || isNaN(cost)) {
-          alert("Please fill out date, gallons, and cost.");
-          return;
-        }
-
-        await db.collection("expenses").add({
-          type: "fuel",
-          date,
-          gallons,
-          cost,
-          mileage,
-          client: "Business",
-          notes: "Fuel purchase"
-        });
-
-        alert("✅ Fuel entry saved!");
-      } catch (error) {
-        console.error("❌ Error saving fuel entry:", error);
-        alert("Something went wrong while saving fuel.");
-      }
+        if (!date || isNaN(gallons) || isNaN(cost)) return;
+        await db.collection("expenses").add({ type: "fuel", date, gallons, cost, mileage, client: "Business", notes: "Fuel purchase" });
+      } catch (error) { console.error("Fuel error:", error); }
     }
 
     function addLaundryRow() {
@@ -193,6 +180,7 @@
           <option value="Washer - Maxi">Washer - Maxi Loader</option>
           <option value="Dryer">Dryer</option>
         </select></div>
+
         <div><label>Cost:</label><input type="number" /></div>
         <div><label>Client:</label><input type="text" /></div>
         <div><button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button></div>
@@ -207,7 +195,6 @@
           const type = row.querySelector("select").value;
           const cost = parseFloat(row.querySelector("input").value) || 0;
           const client = row.querySelectorAll("input")[1].value || "Unknown";
-
           await db.collection("expenses").add({
             type: "laundry_mat",
             machine: type,
@@ -216,10 +203,8 @@
             date: new Date().toISOString()
           });
         }
-        alert("✅ Laundromat entries saved!");
       } catch (error) {
-        console.error("❌ Error saving laundromat entries:", error);
-        alert("Something went wrong while saving laundromat entries.");
+        console.error("Laundromat error:", error);
       }
     }
 
@@ -258,7 +243,6 @@
           const machine = row.querySelectorAll("select")[1].value;
           const clientInput = row.querySelector(".client-info input");
           const client = loadType === "Client" ? clientInput.value || "Unknown" : "Personal";
-
           await db.collection("expenses").add({
             type: "laundry_home",
             machine,
@@ -266,10 +250,8 @@
             date: new Date().toISOString()
           });
         }
-        alert("✅ Personal laundry entries saved!");
       } catch (error) {
-        console.error("❌ Error saving personal laundry entries:", error);
-        alert("Something went wrong while saving personal laundry.");
+        console.error("Personal laundry error:", error);
       }
     }
 
@@ -278,12 +260,7 @@
         const date = document.getElementById("maintDate").value;
         const cost = parseFloat(document.getElementById("maintCost").value);
         const notes = document.getElementById("maintType").value;
-
-        if (!date || isNaN(cost)) {
-          alert("Please fill out date and cost.");
-          return;
-        }
-
+        if (!date || isNaN(cost)) return;
         await db.collection("expenses").add({
           type: "maintenance",
           date,
@@ -291,11 +268,8 @@
           client: "Business",
           notes
         });
-
-        alert("✅ Maintenance entry saved!");
       } catch (error) {
-        console.error("❌ Error saving maintenance entry:", error);
-        alert("Something went wrong while saving maintenance.");
+        console.error("Maintenance error:", error);
       }
     }
 
@@ -305,12 +279,7 @@
         const cost = parseFloat(document.getElementById("supplyCost").value);
         const client = document.getElementById("supplyClient").value || "General";
         const notes = document.getElementById("supplyProduct").value;
-
-        if (!date || isNaN(cost)) {
-          alert("Please fill out date and cost.");
-          return;
-        }
-
+        if (!date || isNaN(cost)) return;
         await db.collection("expenses").add({
           type: "supplies",
           date,
@@ -318,11 +287,8 @@
           client,
           notes
         });
-
-        alert("✅ Supplies entry saved!");
       } catch (error) {
-        console.error("❌ Error saving supplies entry:", error);
-        alert("Something went wrong while saving supplies.");
+        console.error("Supplies error:", error);
       }
     }
 
@@ -331,12 +297,7 @@
         const date = document.getElementById("billDate").value;
         const cost = parseFloat(document.getElementById("billAmount").value);
         const notes = document.getElementById("billCategory").value;
-
-        if (!date || isNaN(cost)) {
-          alert("Please fill out date and amount.");
-          return;
-        }
-
+        if (!date || isNaN(cost)) return;
         await db.collection("expenses").add({
           type: "bill",
           date,
@@ -344,13 +305,21 @@
           client: "Business",
           notes
         });
-
-        alert("✅ Bill entry saved!");
       } catch (error) {
-        console.error("❌ Error saving bill entry:", error
+        console.error("Bill error:", error);
+      }
+    }
 
+    async function saveAll() {
+      calculateMileage();
+      await saveFuel();
+      await saveLaundryMat();
+      await saveLaundryHome();
+      await saveMaintenance();
+      await saveSupplies();
+      await saveBills();
+      alert("✅ All entries for the day saved!");
+    }
   </script>
 </body>
 </html>
-
-                      
