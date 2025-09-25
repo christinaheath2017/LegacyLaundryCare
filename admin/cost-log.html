@@ -89,7 +89,7 @@
   <div class="section">
     <h2>🧼 Personal Washer/Dryer</h2>
     <div id="personalLaundryList"></div>
-    <button class="button" onclick="addPersonalLaundryRow()">➕ Add Personal Load</button>
+    <button class="button" onclick="addPersonalLaundryRow()">➕ Add Client Load</button>
     <p id="personalLaundryTotal"></p>
   </div>
 
@@ -142,31 +142,35 @@
   const db = firebase.firestore();
 
   function addLaundryRow() {
-    const container = document.getElementById("laundryList");
-    const div = document.createElement("div");
-    div.className = "flex-row";
-    div.innerHTML = `
-      <div>
-        <label>Machine Type:</label>
-        <select>
-          <option value="Washer - Single">Washer - Single Loader</option>
-          <option value="Washer - Double">Washer - Double Loader</option>
-          <option value="Washer - Triple">Washer - Triple Loader</option>
-          <option value="Washer - Maxi">Washer - Maxi Loader</option>
-          <option value="Dryer">Dryer</option>
-        </select>
-      </div>
-      <div>
-        <label>Cost:</label>
-        <input type="number" />
-      </div>
-      <div>
-        <label>Client:</label>
-        <input type="text" />
-      </div>
-    `;
-    container.appendChild(div);
-  }
+  const container = document.getElementById("laundryList");
+  const div = document.createElement("div");
+  div.className = "flex-row";
+  div.innerHTML = `
+    <div>
+      <label>Machine Type:</label>
+      <select>
+        <option value="Washer - Single">Washer - Single Loader</option>
+        <option value="Washer - Double">Washer - Double Loader</option>
+        <option value="Washer - Triple">Washer - Triple Loader</option>
+        <option value="Washer - Maxi">Washer - Maxi Loader</option>
+        <option value="Dryer">Dryer</option>
+      </select>
+    </div>
+    <div>
+      <label>Cost:</label>
+      <input type="number" />
+    </div>
+    <div>
+      <label>Client:</label>
+      <input type="text" />
+    </div>
+    <div>
+      <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
 
   function addPersonalLaundryRow() {
     const container = document.getElementById("personalLaundryList");
