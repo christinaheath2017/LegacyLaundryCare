@@ -48,95 +48,18 @@
       cursor: pointer;
       margin-top: 1rem;
     }
-    .flex-row {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-    .flex-row > div {
-      flex: 1;
-      min-width: 180px;
-    }
   </style>
 </head>
 <body>
   <h1>🧾 Cost Log</h1>
 
-  <!-- 🚗 Mileage Tracker -->
+  <!-- ✅ Final Day Save -->
   <div class="section">
-    <h2>🚗 Mileage Tracker</h2>
-    <label>Personal Miles:</label><input type="number" id="personalMiles" />
-    <label>Business Miles:</label><input type="number" id="businessMiles" />
-    <p id="mileageSummary"></p>
-    <button class="button" onclick="calculateMileage()">✅ Complete Mileage</button>
+    <button class="button" onclick="signIn()">🔐 Sign in with Google</button>
+    <p id="userStatus"></p>
+    <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
+    <button class="button" onclick="testWrite()">🧪 Test Firebase Write</button>
   </div>
-
-  <!-- ⛽ Fuel Log -->
-  <div class="section">
-    <h2>⛽ Fuel Log</h2>
-    <label>Date:</label><input type="date" id="fuelDate" />
-    <label>Gallons:</label><input type="number" id="fuelGallons" />
-    <label>Cost:</label><input type="number" id="fuelCost" />
-    <label>Mileage:</label><input type="number" id="fuelMileage" />
-    <label>Receipt:</label><input type="file" id="fuelReceipt" />
-    <button class="button" onclick="saveFuel()">✅ Complete Fuel Entry</button>
-  </div>
-
-  <!-- 🧺 Laundromat Log -->
-  <div class="section">
-    <h2>🧺 Laundromat Log</h2>
-    <div id="laundryList"></div>
-    <button class="button" onclick="addLaundryRow()">➕ Add Washer/Dryer</button>
-    <button class="button" onclick="saveLaundryMat()">✅ Complete Laundromat Entry</button>
-  </div>
-
-  <!-- 🧼 Personal Machine Log -->
-  <div class="section">
-    <h2>🧼 Personal Washer/Dryer</h2>
-    <div id="personalLaundryList"></div>
-    <button class="button" onclick="addPersonalLaundryRow()">➕ Add Load</button>
-    <button class="button" onclick="saveLaundryHome()">✅ Complete Personal Entry</button>
-  </div>
-
-  <!-- 🛠 Maintenance -->
-  <div class="section">
-    <h2>🛠 Maintenance</h2>
-    <label>Date:</label><input type="date" id="maintDate" />
-    <label>Type:</label><input type="text" id="maintType" />
-    <label>Cost:</label><input type="number" id="maintCost" />
-    <label>Receipt:</label><input type="file" id="maintReceipt" />
-    <button class="button" onclick="saveMaintenance()">✅ Complete Maintenance Entry</button>
-  </div>
-
-  <!-- 📦 Supplies -->
-  <div class="section">
-    <h2>📦 Supplies</h2>
-    <label>Date:</label><input type="date" id="supplyDate" />
-    <label>Product:</label><input type="text" id="supplyProduct" />
-    <label>Client (optional):</label><input type="text" id="supplyClient" />
-    <label>Cost:</label><input type="number" id="supplyCost" />
-    <label>Receipt:</label><input type="file" id="supplyReceipt" />
-    <button class="button" onclick="saveSupplies()">✅ Complete Supplies Entry</button>
-  </div>
-
-  <!-- 💸 Bills -->
-  <div class="section">
-    <h2>💸 Bill Payments</h2>
-    <label>Date:</label><input type="date" id="billDate" />
-    <label>Category:</label><input type="text" id="billCategory" />
-    <label>Amount:</label><input type="number" id="billAmount" />
-    <label>Receipt:</label><input type="file" id="billReceipt" />
-    <button class="button" onclick="saveBills()">✅ Complete Bill Entry</button>
-  </div>
-
-<!-- ✅ Final Day Save -->
-<div class="section">
-  <button class="button" onclick="signIn()">🔐 Sign in with Google</button>
-  <p id="userStatus"></p>
-  <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
-  <button class="button" onclick="testWrite()">🧪 Test Firebase Write</button>
-</div>
 
   <script>
     const firebaseConfig = {
@@ -180,16 +103,9 @@
       }
     }
 
-    function calculateMileage() {
-      const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
-      const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
-      const mileageRatio = businessMiles / (personalMiles + businessMiles);
-      document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+    function saveAll() {
+      alert("🛠 Placeholder: saveAll() logic not yet implemented.");
     }
-
-    // All other save functions (saveFuel, saveLaundryMat, etc.) go here...
-    // Let me know if you want me to regenerate those too, fully wired.
-
   </script>
 </body>
-</html
+</html>
