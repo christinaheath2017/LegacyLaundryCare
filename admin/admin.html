@@ -2,40 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Dashboard</title>
+  <title>Legacy LaundryCare Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #fff;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
     }
-    header {
-      background-color: #6c9bcf;
+    .sidebar {
+      width: 220px;
+      background-color: #2c3e50;
       color: white;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
+      position: fixed;
+      height: 100%;
+      padding-top: 20px;
     }
-    .container {
-      padding: 1rem;
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #34495e;
+    }
+    .main {
+      margin-left: 240px;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
+      margin-top: 20px;
+      background-color: white;
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 0.5rem;
+      padding: 10px;
       text-align: left;
     }
     th {
-      background-color: #f0f0f0;
+      background-color: #ecf0f1;
     }
     tr:nth-child(even) {
       background-color: #f9f9f9;
@@ -43,9 +56,21 @@
   </style>
 </head>
 <body>
-  <header>🧾 Legacy LaundryCare – Admin Dashboard</header>
-  <div class="container">
-    <h2>📊 Logged Expenses</h2>
+  <div class="sidebar">
+    <a href="admin-order-history.html">📋 Order History</a>
+    <a href="inventory-tracker.html">📦 Inventory Tracker</a>
+    <a href="operational-costs.html">💰 Operational Costs</a>
+    <a href="cost-log.html">🧾 Cost Log</a>
+    <a href="product-usage-calculator.html">🧮 Product Usage Calculator</a>
+    <a href="quarterly-tax.html">📆 Quarterly Tax Estimator</a>
+    <a href="tax-withholding.html">🧾 Tax Withholding</a>
+    <a href="track-client-order.html">🔍 Track Client Order</a>
+    <a href="dashboard.html">📊 Earnings Overview</a>
+    <a href="update-info.html">🔐 Account Settings</a>
+  </div>
+
+  <div class="main">
+    <h1>🧾 Logged Expenses</h1>
     <table id="expensesTable">
       <thead>
         <tr>
