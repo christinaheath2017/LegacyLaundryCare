@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Cost Log – Legacy LaundryCare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -123,218 +122,153 @@
   </div>
 
   <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
+  
+  <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 
-  <script>
-    const supabase = supabase.createClient(
-      'https://ztcyemsqljopyjbzpqvq.supabase.co',
-      'YOUR_PUBLIC_ANON_KEY'
-    );
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDgFbyh9dLw4r3e-92Q95_fFz3eZQmP2sY",
+    authDomain: "legacylaundrycare-3e295.firebaseapp.com",
+    projectId: "legacylaundrycare-3e295",
+    storageBucket: "legacylaundrycare-3e295.appspot.com",
+    messagingSenderId: "1062299490295",
+    appId: "1:1062299490295:web:4e8e3b9e7e9e3c9e3c9e3c",
+    measurementId: "G-6C2S994L9Q"
+  };
 
-    function addLaundryRow() {
-      const container = document.getElementById("laundryList");
-      const div = document.createElement("div");
-      div.className = "flex-row";
-      div.innerHTML = `
-        <div>
-          <label>Machine Type:</label>
-          <select>
-            <option value="Washer - Single">Washer - Single Loader</option>
-            <option value="Washer - Double">Washer - Double Loader</option>
-            <option value="Washer - Triple">Washer - Triple Loader</option>
-            <option value="Washer - Maxi">Washer - Maxi Loader</option>
-            <option value="Dryer">Dryer</option>
-          </select>
-        </div>
-        <div>
-          <label>Cost:</label>
-          <input type="number" />
-        </div>
-        <div>
-          <label>Client:</label>
-          <input type="text" />
-        </div>
-      `;
-      container.appendChild(div);
-    }
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    function addPersonalLaundryRow() {
-      const container = document.getElementById("personalLaundryList");
-      const div = document.createElement("div");
-      div.className = "flex-row";
-      div.innerHTML = `
-        <div>
-          <label>Machine:</label>
-          <select>
-            <option value="Washer">Washer</option>
-            <option value="Dryer">Dryer</option>
-          </select>
-        </div>
-        <div>
-          <label>Cost:</label>
-          <input type="number" />
-        </div>
-        <div>
-          <label>Client:</label>
-          <input type="text" placeholder="Personal or Client Name" />
-        </div>
-      `;
-      container.appendChild(div);
-    }
+  function addLaundryRow() {
+    const container = document.getElementById("laundryList");
+    const div = document.createElement("div");
+    div.className = "flex-row";
+    div.innerHTML = `
+      <div>
+        <label>Machine Type:</label>
+        <select>
+          <option value="Washer - Single">Washer - Single Loader</option>
+          <option value="Washer - Double">Washer - Double Loader</option>
+          <option value="Washer - Triple">Washer - Triple Loader</option>
+          <option value="Washer - Maxi">Washer - Maxi Loader</option>
+          <option value="Dryer">Dryer</option>
+        </select>
+      </div>
+      <div>
+        <label>Cost:</label>
+        <input type="number" />
+      </div>
+      <div>
+        <label>Client:</label>
+        <input type="text" />
+      </div>
+    `;
+    container.appendChild(div);
+  }
 
-    function saveAll() {
-      const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
-      const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
-      const mileageRatio = businessMiles / (personalMiles + businessMiles);
-      document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+  function addPersonalLaundryRow() {
+    const container = document.getElementById("personalLaundryList");
+    const div = document.createElement("div");
+    div.className = "flex-row";
+    div.innerHTML = `
+      <div>
+        <label>Machine:</label>
+        <select>
+          <option value="Washer">Washer</option>
+          <option value="Dryer">Dryer</option>
+        </select>
+      </div>
+      <div>
+        <label>Cost:</label>
+        <input type="number" />
+      </div>
+      <div>
+        <label>Client:</label>
+        <input type="text" placeholder="Personal or Client Name" />
+      </div>
+    `;
+    container.appendChild(div);
+  }
 
+  async function saveAll() {
+    const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
+    const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
+    const mileageRatio = businessMiles / (personalMiles + businessMiles);
+    document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+
+    try {
       const laundryRows = document.getElementById("laundryList").querySelectorAll(".flex-row");
-      laundryRows.forEach(row => {
+      for (const row of laundryRows) {
         const type = row.querySelector("select").value;
         const cost = parseFloat(row.querySelector("input").value) || 0;
         const client = row.querySelectorAll("input")[1].value || "Unknown";
-        supabase.from("expenses").insert([{ type: "laundry_mat", machine: type, cost, client, date: new Date().toISOString() }]);
-      });
+        await db.collection("expenses").add({
+          type: "laundry_mat",
+          machine: type,
+          cost,
+          client,
+          date: new Date().toISOString()
+        });
+      }
 
       const personalRows = document.getElementById("personalLaundryList").querySelectorAll(".flex-row");
-      personalRows.forEach(row => {
+      for (const row of personalRows) {
         const type = row.querySelector("select").value;
         const cost = parseFloat(row.querySelector("input").value) || 0;
         const client = row.querySelectorAll("input")[1].value || "Personal";
-        supabase.from("expenses").insert([{ type: "laundry_home", machine: type, cost, client, date: new Date().toISOString() }]);
+        await db.collection("expenses").add({
+          type: "laundry_home",
+          machine: type,
+          cost,
+          client,
+          date: new Date().toISOString()
+        });
+      }
+
+      await db.collection("expenses").add({
+        type: "fuel",
+        date: document.getElementById("fuelDate").value,
+        gallons: parseFloat(document.getElementById("fuelGallons").value),
+        cost: parseFloat(document.getElementById("fuelCost").value),
+        mileage: parseFloat(document.getElementById("fuelMileage").value),
+        client: "Business",
+        notes: "Fuel purchase"
       });
 
-      // Repeat similar logic for fuel, maintenance, supplies,
-
-          // Fuel
-      const fuelEntry = {
-        type: "fuel",
-        date: document.getElementById("fuelDate").value,
-        gallons: parseFloat(document.getElementById("fuelGallons").value),
-        cost: parseFloat(document.getElementById("fuelCost").value),
-        mileage: parseFloat(document.getElementById("fuelMileage").value),
-        client: "Business",
-        notes: "Fuel purchase"
-      };
-      supabase.from("expenses").insert([fuelEntry]);
-
-      // Maintenance
-      const maintEntry = {
+      await db.collection("expenses").add({
         type: "maintenance",
         date: document.getElementById("maintDate").value,
         cost: parseFloat(document.getElementById("maintCost").value),
         client: "Business",
         notes: document.getElementById("maintType").value
-      };
-      supabase.from("expenses").insert([maintEntry]);
+      });
 
-      // Supplies
-      const supplyEntry = {
+      await db.collection("expenses").add({
         type: "supplies",
         date: document.getElementById("supplyDate").value,
         cost: parseFloat(document.getElementById("supplyCost").value),
         client: document.getElementById("supplyClient").value || "General",
         notes: document.getElementById("supplyProduct").value
-      };
-      supabase.from("expenses").insert([supplyEntry]);
+      });
 
-      // Bills
-      const billEntry = {
+      await db.collection("expenses").add({
         type: "bill",
         date: document.getElementById("billDate").value,
         cost: parseFloat(document.getElementById("billAmount").value),
         client: "Business",
         notes: document.getElementById("billCategory").value
-      };
-      supabase.from("expenses").insert([billEntry]);
+      });
 
-      alert("✅ All entries saved to Supabase!");      // Fuel
-      const fuelEntry = {
-        type: "fuel",
-        date: document.getElementById("fuelDate").value,
-        gallons: parseFloat(document.getElementById("fuelGallons").value),
-        cost: parseFloat(document.getElementById("fuelCost").value),
-        mileage: parseFloat(document.getElementById("fuelMileage").value),
-        client: "Business",
-        notes: "Fuel purchase"
-      };
-      supabase.from("expenses").insert([fuelEntry]);
-
-      // Maintenance
-      const maintEntry = {
-        type: "maintenance",
-        date: document.getElementById("maintDate").value,
-        cost: parseFloat(document.getElementById("maintCost").value),
-        client: "Business",
-        notes: document.getElementById("maintType").value
-      };
-      supabase.from("expenses").insert([maintEntry]);
-
-      // Supplies
-      const supplyEntry = {
-        type: "supplies",
-        date: document.getElementById("supplyDate").value,
-        cost: parseFloat(document.getElementById("supplyCost").value),
-        client: document.getElementById("supplyClient").value || "General",
-        notes: document.getElementById("supplyProduct").value
-      };
-      supabase.from("expenses").insert([supplyEntry]);
-
-      // Bills
-      const billEntry = {
-        type: "bill",
-        date: document.getElementById("billDate").value,
-        cost: parseFloat(document.getElementById("billAmount").value),
-        client: "Business",
-        notes: document.getElementById("billCategory").value
-      };
-      supabase.from("expenses").insert([billEntry]);
-
-            // Fuel
-      const fuelEntry = {
-        type: "fuel",
-        date: document.getElementById("fuelDate").value,
-        gallons: parseFloat(document.getElementById("fuelGallons").value),
-        cost: parseFloat(document.getElementById("fuelCost").value),
-        mileage: parseFloat(document.getElementById("fuelMileage").value),
-        client: "Business",
-        notes: "Fuel purchase"
-      };
-      supabase.from("expenses").insert([fuelEntry]);
-
-      // Maintenance
-      const maintEntry = {
-        type: "maintenance",
-        date: document.getElementById("maintDate").value,
-        cost: parseFloat(document.getElementById("maintCost").value),
-        client: "Business",
-        notes: document.getElementById("maintType").value
-      };
-      supabase.from("expenses").insert([maintEntry]);
-
-      // Supplies
-      const supplyEntry = {
-        type: "supplies",
-        date: document.getElementById("supplyDate").value,
-        cost: parseFloat(document.getElementById("supplyCost").value),
-        client: document.getElementById("supplyClient").value || "General",
-        notes: document.getElementById("supplyProduct").value
-      };
-      supabase.from("expenses").insert([supplyEntry]);
-
-      // Bills
-      const billEntry = {
-        type: "bill",
-        date: document.getElementById("billDate").value,
-        cost: parseFloat(document.getElementById("billAmount").value),
-        client: "Business",
-        notes: document.getElementById("billCategory").value
-      };
-      supabase.from("expenses").insert([billEntry]);
-
-      alert("✅ All entries saved to Supabase!");
+      alert("✅ All entries saved to Firebase!");
+    } catch (error) {
+      console.error("❌ Error saving entries:", error);
+      alert("Something went wrong while saving.");
     }
-  </script>
-</body>
+  }
+</script>
+  </body>
 </html>
 
 
