@@ -66,6 +66,7 @@
     <label>Personal Miles:</label><input type="number" id="personalMiles" />
     <label>Business Miles:</label><input type="number" id="businessMiles" />
     <p id="mileageSummary"></p>
+    <button class="button" onclick="calculateMileage()">✅ Complete Mileage</button>
   </div>
 
   <!-- ⛽ Fuel Log -->
@@ -76,6 +77,7 @@
     <label>Cost:</label><input type="number" id="fuelCost" />
     <label>Mileage:</label><input type="number" id="fuelMileage" />
     <label>Receipt:</label><input type="file" id="fuelReceipt" />
+    <button class="button" onclick="saveFuel()">✅ Complete Fuel Entry</button>
   </div>
 
   <!-- 🧺 Laundromat Log -->
@@ -83,7 +85,7 @@
     <h2>🧺 Laundromat Log</h2>
     <div id="laundryList"></div>
     <button class="button" onclick="addLaundryRow()">➕ Add Washer/Dryer</button>
-    <p id="laundryTotal"></p>
+    <button class="button" onclick="saveLaundryMat()">✅ Complete Laundromat Entry</button>
   </div>
 
   <!-- 🧼 Personal Machine Log -->
@@ -91,7 +93,7 @@
     <h2>🧼 Personal Washer/Dryer</h2>
     <div id="personalLaundryList"></div>
     <button class="button" onclick="addPersonalLaundryRow()">➕ Add Load</button>
-    <p id="personalLaundryTotal"></p>
+    <button class="button" onclick="saveLaundryHome()">✅ Complete Personal Entry</button>
   </div>
 
   <!-- 🛠 Maintenance -->
@@ -101,6 +103,7 @@
     <label>Type:</label><input type="text" id="maintType" />
     <label>Cost:</label><input type="number" id="maintCost" />
     <label>Receipt:</label><input type="file" id="maintReceipt" />
+    <button class="button" onclick="saveMaintenance()">✅ Complete Maintenance Entry</button>
   </div>
 
   <!-- 📦 Supplies -->
@@ -111,6 +114,7 @@
     <label>Client (optional):</label><input type="text" id="supplyClient" />
     <label>Cost:</label><input type="number" id="supplyCost" />
     <label>Receipt:</label><input type="file" id="supplyReceipt" />
+    <button class="button" onclick="saveSupplies()">✅ Complete Supplies Entry</button>
   </div>
 
   <!-- 💸 Bills -->
@@ -120,11 +124,10 @@
     <label>Category:</label><input type="text" id="billCategory" />
     <label>Amount:</label><input type="number" id="billAmount" />
     <label>Receipt:</label><input type="file" id="billReceipt" />
+    <button class="button" onclick="saveBills()">✅ Complete Bill Entry</button>
   </div>
 
-  <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
-
-  <!-- Firebase SDK -->
+    <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 
@@ -142,34 +145,82 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    function calculateMileage() {
+      const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
+      const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
+      const mileageRatio = businessMiles / (personalMiles + businessMiles);
+      document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+    }
+
+    async function saveFuel() {
+      try {
+        const date = document.getElementById("fuelDate").value;
+        const gallons = parseFloat(document.getElementById("fuelGallons").value);
+        const cost = parseFloat(document.getElementById("fuelCost").value);
+        const mileage = parseFloat(document.getElementById("fuelMileage").value);
+
+        if (!date || isNaN(gallons) || isNaN(cost)) {
+          alert("Please fill out date, gallons, and cost.");
+          return;
+        }
+
+        await db.collection("expenses").add({
+          type: "fuel",
+          date,
+          gallons,
+          cost,
+          mileage,
+          client: "Business",
+          notes: "Fuel purchase"
+        });
+
+        alert("✅ Fuel entry saved!");
+      } catch (error) {
+        console.error("❌ Error saving fuel entry:", error);
+        alert("Something went wrong while saving fuel.");
+      }
+    }
+
     function addLaundryRow() {
       const container = document.getElementById("laundryList");
       const div = document.createElement("div");
       div.className = "flex-row";
       div.innerHTML = `
-        <div>
-          <label>Machine Type:</label>
-          <select>
-            <option value="Washer - Single">Washer - Single Loader</option>
-            <option value="Washer - Double">Washer - Double Loader</option>
-            <option value="Washer - Triple">Washer - Triple Loader</option>
-            <option value="Washer - Maxi">Washer - Maxi Loader</option>
-            <option value="Dryer">Dryer</option>
-          </select>
-        </div>
-        <div>
-          <label>Cost:</label>
-          <input type="number" />
-        </div>
-        <div>
-          <label>Client:</label>
-          <input type="text" />
-        </div>
-        <div>
-          <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
-        </div>
+        <div><label>Machine Type:</label><select>
+          <option value="Washer - Single">Washer - Single Loader</option>
+          <option value="Washer - Double">Washer - Double Loader</option>
+          <option value="Washer - Triple">Washer - Triple Loader</option>
+          <option value="Washer - Maxi">Washer - Maxi Loader</option>
+          <option value="Dryer">Dryer</option>
+        </select></div>
+        <div><label>Cost:</label><input type="number" /></div>
+        <div><label>Client:</label><input type="text" /></div>
+        <div><button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button></div>
       `;
       container.appendChild(div);
+    }
+
+    async function saveLaundryMat() {
+      try {
+        const rows = document.getElementById("laundryList").querySelectorAll(".flex-row");
+        for (const row of rows) {
+          const type = row.querySelector("select").value;
+          const cost = parseFloat(row.querySelector("input").value) || 0;
+          const client = row.querySelectorAll("input")[1].value || "Unknown";
+
+          await db.collection("expenses").add({
+            type: "laundry_mat",
+            machine: type,
+            cost,
+            client,
+            date: new Date().toISOString()
+          });
+        }
+        alert("✅ Laundromat entries saved!");
+      } catch (error) {
+        console.error("❌ Error saving laundromat entries:", error);
+        alert("Something went wrong while saving laundromat entries.");
+      }
     }
 
     function addPersonalLaundryRow() {
@@ -177,27 +228,18 @@
       const div = document.createElement("div");
       div.className = "flex-row";
       div.innerHTML = `
-        <div>
-          <label>Load Type:</label>
-          <select onchange="toggleClientField(this)">
-            <option value="Personal">Personal</option>
-            <option value="Client">Client</option>
-          </select>
-        </div>
-        <div>
-          <label>Machine:</label>
-          <select>
-            <option value="Washer">Washer</option>
-            <option value="Dryer">Dryer</option>
-          </select>
-        </div>
+        <div><label>Load Type:</label><select onchange="toggleClientField(this)">
+          <option value="Personal">Personal</option>
+          <option value="Client">Client</option>
+        </select></div>
+        <div><label>Machine:</label><select>
+          <option value="Washer">Washer</option>
+          <option value="Dryer">Dryer</option>
+        </select></div>
         <div class="client-info" style="display:none;">
-          <label>Client Name:</label>
-          <input type="text" placeholder="Client Name" />
+          <label>Client Name:</label><input type="text" placeholder="Client Name" />
         </div>
-        <div>
-          <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
-        </div>
+        <div><button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button></div>
       `;
       container.appendChild(div);
     }
@@ -208,88 +250,107 @@
       clientField.style.display = selectElement.value === "Client" ? "block" : "none";
     }
 
-    async function saveAll() {
-  const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
-  const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
-  const mileageRatio = businessMiles / (personalMiles + businessMiles);
-  document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+    async function saveLaundryHome() {
+      try {
+        const rows = document.getElementById("personalLaundryList").querySelectorAll(".flex-row");
+        for (const row of rows) {
+          const loadType = row.querySelector("select").value;
+          const machine = row.querySelectorAll("select")[1].value;
+          const clientInput = row.querySelector(".client-info input");
+          const client = loadType === "Client" ? clientInput.value || "Unknown" : "Personal";
 
-  try {
-    // 🧺 Laundromat Entries
-    const laundryRows = document.getElementById("laundryList").querySelectorAll(".flex-row");
-    for (const row of laundryRows) {
-      const type = row.querySelector("select").value;
-      const cost = parseFloat(row.querySelector("input").value) || 0;
-      const client = row.querySelectorAll("input")[1].value || "Unknown";
-      await db.collection("expenses").add({
-        type: "laundry_mat",
-        machine: type,
-        cost,
-        client,
-        date: new Date().toISOString()
-      });
+          await db.collection("expenses").add({
+            type: "laundry_home",
+            machine,
+            client,
+            date: new Date().toISOString()
+          });
+        }
+        alert("✅ Personal laundry entries saved!");
+      } catch (error) {
+        console.error("❌ Error saving personal laundry entries:", error);
+        alert("Something went wrong while saving personal laundry.");
+      }
     }
 
-    // 🧼 Personal Washer/Dryer Entries
-    const personalRows = document.getElementById("personalLaundryList").querySelectorAll(".flex-row");
-    for (const row of personalRows) {
-      const loadType = row.querySelector("select").value;
-      const machine = row.querySelectorAll("select")[1].value;
-      const clientInput = row.querySelector(".client-info input");
-      const client = loadType === "Client" ? clientInput.value || "Unknown" : "Personal";
+    async function saveMaintenance() {
+      try {
+        const date = document.getElementById("maintDate").value;
+        const cost = parseFloat(document.getElementById("maintCost").value);
+        const notes = document.getElementById("maintType").value;
 
-      await db.collection("expenses").add({
-        type: "laundry_home",
-        machine,
-        client,
-        date: new Date().toISOString()
-      });
+        if (!date || isNaN(cost)) {
+          alert("Please fill out date and cost.");
+          return;
+        }
+
+        await db.collection("expenses").add({
+          type: "maintenance",
+          date,
+          cost,
+          client: "Business",
+          notes
+        });
+
+        alert("✅ Maintenance entry saved!");
+      } catch (error) {
+        console.error("❌ Error saving maintenance entry:", error);
+        alert("Something went wrong while saving maintenance.");
+      }
     }
 
-    // ⛽ Fuel Entry
-    await db.collection("expenses").add({
-      type: "fuel",
-      date: document.getElementById("fuelDate").value,
-      gallons: parseFloat(document.getElementById("fuelGallons").value),
-      cost: parseFloat(document.getElementById("fuelCost").value),
-      mileage: parseFloat(document.getElementById("fuelMileage").value),
-      client: "Business",
-      notes: "Fuel purchase"
-    });
+    async function saveSupplies() {
+      try {
+        const date = document.getElementById("supplyDate").value;
+        const cost = parseFloat(document.getElementById("supplyCost").value);
+        const client = document.getElementById("supplyClient").value || "General";
+        const notes = document.getElementById("supplyProduct").value;
 
-    // 🛠 Maintenance Entry
-    await db.collection("expenses").add({
-      type: "maintenance",
-      date: document.getElementById("maintDate").value,
-      cost: parseFloat(document.getElementById("maintCost").value),
-      client: "Business",
-      notes: document.getElementById("maintType").value
-    });
+        if (!date || isNaN(cost)) {
+          alert("Please fill out date and cost.");
+          return;
+        }
 
-    // 📦 Supplies Entry
-    await db.collection("expenses").add({
-      type: "supplies",
-      date: document.getElementById("supplyDate").value,
-      cost: parseFloat(document.getElementById("supplyCost").value),
-      client: document.getElementById("supplyClient").value || "General",
-      notes: document.getElementById("supplyProduct").value
-    });
+        await db.collection("expenses").add({
+          type: "supplies",
+          date,
+          cost,
+          client,
+          notes
+        });
 
-    // 💸 Bills Entry
-    await db.collection("expenses").add({
-      type: "bill",
-      date: document.getElementById("billDate").value,
-      cost: parseFloat(document.getElementById("billAmount").value),
-      client: "Business",
-      notes: document.getElementById("billCategory").value
-    });
+        alert("✅ Supplies entry saved!");
+      } catch (error) {
+        console.error("❌ Error saving supplies entry:", error);
+        alert("Something went wrong while saving supplies.");
+      }
+    }
 
-    alert("✅ All entries saved to Firebase!");
-  } catch (error) {
-    console.error("❌ Error saving entries:", error);
-    alert("Something went wrong while saving.");
-  }
-}
-</script>
+    async function saveBills() {
+      try {
+        const date = document.getElementById("billDate").value;
+        const cost = parseFloat(document.getElementById("billAmount").value);
+        const notes = document.getElementById("billCategory").value;
+
+        if (!date || isNaN(cost)) {
+          alert("Please fill out date and amount.");
+          return;
+        }
+
+        await db.collection("expenses").add({
+          type: "bill",
+          date,
+          cost,
+          client: "Business",
+          notes
+        });
+
+        alert("✅ Bill entry saved!");
+      } catch (error) {
+        console.error("❌ Error saving bill entry:", error
+
+  </script>
 </body>
 </html>
+
+                      
