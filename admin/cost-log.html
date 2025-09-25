@@ -49,6 +49,7 @@
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
+      margin-top: 1rem;
     }
     .flex-row > div {
       flex: 1;
@@ -89,7 +90,7 @@
   <div class="section">
     <h2>🧼 Personal Washer/Dryer</h2>
     <div id="personalLaundryList"></div>
-    <button class="button" onclick="addPersonalLaundryRow()">➕ Add Client Load</button>
+    <button class="button" onclick="addPersonalLaundryRow()">➕ Add Load</button>
     <p id="personalLaundryTotal"></p>
   </div>
 
@@ -122,157 +123,173 @@
   </div>
 
   <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
-  
+
   <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDgFbyh9dLw4r3e-92Q95_fFz3eZQmP2sY",
-    authDomain: "legacylaundrycare-3e295.firebaseapp.com",
-    projectId: "legacylaundrycare-3e295",
-    storageBucket: "legacylaundrycare-3e295.appspot.com",
-    messagingSenderId: "1062299490295",
-    appId: "1:1062299490295:web:4e8e3b9e7e9e3c9e3c9e3c",
-    measurementId: "G-6C2S994L9Q"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgFbyh9dLw4r3e-92Q95_fFz3eZQmP2sY",
+      authDomain: "legacylaundrycare-3e295.firebaseapp.com",
+      projectId: "legacylaundrycare-3e295",
+      storageBucket: "legacylaundrycare-3e295.appspot.com",
+      messagingSenderId: "1062299490295",
+      appId: "1:1062299490295:web:4e8e3b9e7e9e3c9e3c9e3c",
+      measurementId: "G-6C2S994L9Q"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  function addLaundryRow() {
-  const container = document.getElementById("laundryList");
-  const div = document.createElement("div");
-  div.className = "flex-row";
-  div.innerHTML = `
-    <div>
-      <label>Machine Type:</label>
-      <select>
-        <option value="Washer - Single">Washer - Single Loader</option>
-        <option value="Washer - Double">Washer - Double Loader</option>
-        <option value="Washer - Triple">Washer - Triple Loader</option>
-        <option value="Washer - Maxi">Washer - Maxi Loader</option>
-        <option value="Dryer">Dryer</option>
-      </select>
-    </div>
-    <div>
-      <label>Cost:</label>
-      <input type="number" />
-    </div>
-    <div>
-      <label>Client:</label>
-      <input type="text" />
-    </div>
-    <div>
-      <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
-    </div>
-  `;
-  container.appendChild(div);
-}
-
-
-  function addPersonalLaundryRow() {
-    const container = document.getElementById("personalLaundryList");
-    const div = document.createElement("div");
-    div.className = "flex-row";
-    div.innerHTML = `
-      <div>
-        <label>Machine:</label>
-        <select>
-          <option value="Washer">Washer</option>
-          <option value="Dryer">Dryer</option>
-        </select>
-      </div>
-      <div>
-        <label>Cost:</label>
-        <input type="number" />
-      </div>
-      <div>
-        <label>Client:</label>
-        <input type="text" placeholder="Personal or Client Name" />
-      </div>
-    `;
-    container.appendChild(div);
-  }
-
-  async function saveAll() {
-    const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
-    const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
-    const mileageRatio = businessMiles / (personalMiles + businessMiles);
-    document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
-
-    try {
-      const laundryRows = document.getElementById("laundryList").querySelectorAll(".flex-row");
-      for (const row of laundryRows) {
-        const type = row.querySelector("select").value;
-        const cost = parseFloat(row.querySelector("input").value) || 0;
-        const client = row.querySelectorAll("input")[1].value || "Unknown";
-        await db.collection("expenses").add({
-          type: "laundry_mat",
-          machine: type,
-          cost,
-          client,
-          date: new Date().toISOString()
-        });
-      }
-
-      const personalRows = document.getElementById("personalLaundryList").querySelectorAll(".flex-row");
-      for (const row of personalRows) {
-        const type = row.querySelector("select").value;
-        const cost = parseFloat(row.querySelector("input").value) || 0;
-        const client = row.querySelectorAll("input")[1].value || "Personal";
-        await db.collection("expenses").add({
-          type: "laundry_home",
-          machine: type,
-          cost,
-          client,
-          date: new Date().toISOString()
-        });
-      }
-
-      await db.collection("expenses").add({
-        type: "fuel",
-        date: document.getElementById("fuelDate").value,
-        gallons: parseFloat(document.getElementById("fuelGallons").value),
-        cost: parseFloat(document.getElementById("fuelCost").value),
-        mileage: parseFloat(document.getElementById("fuelMileage").value),
-        client: "Business",
-        notes: "Fuel purchase"
-      });
-
-      await db.collection("expenses").add({
-        type: "maintenance",
-        date: document.getElementById("maintDate").value,
-        cost: parseFloat(document.getElementById("maintCost").value),
-        client: "Business",
-        notes: document.getElementById("maintType").value
-      });
-
-      await db.collection("expenses").add({
-        type: "supplies",
-        date: document.getElementById("supplyDate").value,
-        cost: parseFloat(document.getElementById("supplyCost").value),
-        client: document.getElementById("supplyClient").value || "General",
-        notes: document.getElementById("supplyProduct").value
-      });
-
-      await db.collection("expenses").add({
-        type: "bill",
-        date: document.getElementById("billDate").value,
-        cost: parseFloat(document.getElementById("billAmount").value),
-        client: "Business",
-        notes: document.getElementById("billCategory").value
-      });
-
-      alert("✅ All entries saved to Firebase!");
-    } catch (error) {
-      console.error("❌ Error saving entries:", error);
-      alert("Something went wrong while saving.");
+    function addLaundryRow() {
+      const container = document.getElementById("laundryList");
+      const div = document.createElement("div");
+      div.className = "flex-row";
+      div.innerHTML = `
+        <div>
+          <label>Machine Type:</label>
+          <select>
+            <option value="Washer - Single">Washer - Single Loader</option>
+            <option value="Washer - Double">Washer - Double Loader</option>
+            <option value="Washer - Triple">Washer - Triple Loader</option>
+            <option value="Washer - Maxi">Washer - Maxi Loader</option>
+            <option value="Dryer">Dryer</option>
+          </select>
+        </div>
+        <div>
+          <label>Cost:</label>
+          <input type="number" />
+        </div>
+        <div>
+          <label>Client:</label>
+          <input type="text" />
+        </div>
+        <div>
+          <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
+        </div>
+      `;
+      container.appendChild(div);
     }
+
+    function addPersonalLaundryRow() {
+      const container = document.getElementById("personalLaundryList");
+      const div = document.createElement("div");
+      div.className = "flex-row";
+      div.innerHTML = `
+        <div>
+          <label>Load Type:</label>
+          <select onchange="toggleClientField(this)">
+            <option value="Personal">Personal</option>
+            <option value="Client">Client</option>
+          </select>
+        </div>
+        <div>
+          <label>Machine:</label>
+          <select>
+            <option value="Washer">Washer</option>
+            <option value="Dryer">Dryer</option>
+          </select>
+        </div>
+        <div class="client-info" style="display:none;">
+          <label>Client Name:</label>
+          <input type="text" placeholder="Client Name" />
+        </div>
+        <div>
+          <button class="button" onclick="this.closest('.flex-row').remove()">🗑️ Remove</button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function toggleClientField(selectElement) {
+      const row = selectElement.closest(".flex-row");
+      const clientField = row.querySelector(".client-info");
+      clientField.style.display = selectElement.value === "Client" ? "block" : "none";
+    }
+
+    async function saveAll() {
+  const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
+  const businessMiles = parseFloat(document.getElementById("businessMiles").value) || 0;
+  const mileageRatio = businessMiles / (personalMiles + businessMiles);
+  document.getElementById("mileageSummary").textContent = `Business Use: ${(mileageRatio * 100).toFixed(1)}%`;
+
+  try {
+    // 🧺 Laundromat Entries
+    const laundryRows = document.getElementById("laundryList").querySelectorAll(".flex-row");
+    for (const row of laundryRows) {
+      const type = row.querySelector("select").value;
+      const cost = parseFloat(row.querySelector("input").value) || 0;
+      const client = row.querySelectorAll("input")[1].value || "Unknown";
+      await db.collection("expenses").add({
+        type: "laundry_mat",
+        machine: type,
+        cost,
+        client,
+        date: new Date().toISOString()
+      });
+    }
+
+    // 🧼 Personal Washer/Dryer Entries
+    const personalRows = document.getElementById("personalLaundryList").querySelectorAll(".flex-row");
+    for (const row of personalRows) {
+      const loadType = row.querySelector("select").value;
+      const machine = row.querySelectorAll("select")[1].value;
+      const clientInput = row.querySelector(".client-info input");
+      const client = loadType === "Client" ? clientInput.value || "Unknown" : "Personal";
+
+      await db.collection("expenses").add({
+        type: "laundry_home",
+        machine,
+        client,
+        date: new Date().toISOString()
+      });
+    }
+
+    // ⛽ Fuel Entry
+    await db.collection("expenses").add({
+      type: "fuel",
+      date: document.getElementById("fuelDate").value,
+      gallons: parseFloat(document.getElementById("fuelGallons").value),
+      cost: parseFloat(document.getElementById("fuelCost").value),
+      mileage: parseFloat(document.getElementById("fuelMileage").value),
+      client: "Business",
+      notes: "Fuel purchase"
+    });
+
+    // 🛠 Maintenance Entry
+    await db.collection("expenses").add({
+      type: "maintenance",
+      date: document.getElementById("maintDate").value,
+      cost: parseFloat(document.getElementById("maintCost").value),
+      client: "Business",
+      notes: document.getElementById("maintType").value
+    });
+
+    // 📦 Supplies Entry
+    await db.collection("expenses").add({
+      type: "supplies",
+      date: document.getElementById("supplyDate").value,
+      cost: parseFloat(document.getElementById("supplyCost").value),
+      client: document.getElementById("supplyClient").value || "General",
+      notes: document.getElementById("supplyProduct").value
+    });
+
+    // 💸 Bills Entry
+    await db.collection("expenses").add({
+      type: "bill",
+      date: document.getElementById("billDate").value,
+      cost: parseFloat(document.getElementById("billAmount").value),
+      client: "Business",
+      notes: document.getElementById("billCategory").value
+    });
+
+    alert("✅ All entries saved to Firebase!");
+  } catch (error) {
+    console.error("❌ Error saving entries:", error);
+    alert("Something went wrong while saving.");
   }
+}
 </script>
-  </body>
+</body>
 </html>
-
-
