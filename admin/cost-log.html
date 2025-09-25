@@ -130,6 +130,7 @@
   <!-- ✅ Final Day Save -->
   <div class="section">
     <button class="button" onclick="saveAll()">✅ Complete Day’s Service</button>
+    <button class="button" onclick="testWrite()">🧪 Test Firebase Write</button>
   </div>
 
   <!-- Firebase SDK -->
@@ -149,6 +150,20 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    async function testWrite() {
+  try {
+    await db.collection("expenses").add({
+      type: "test",
+      date: new Date().toISOString(),
+      notes: "Test entry from Christina"
+    });
+    alert("✅ Test write succeeded!");
+  } catch (error) {
+    console.error("❌ Test write failed:", error);
+    alert("Test write failed.");
+  }
+}
+
 
     function calculateMileage() {
       const personalMiles = parseFloat(document.getElementById("personalMiles").value) || 0;
