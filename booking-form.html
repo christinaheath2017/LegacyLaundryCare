@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Legacy LaundryCare – Guest Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: white;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      transition: background-color 0.5s ease;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      background-color: white;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="hotelName">Guest Laundry Booking</h1>
+
+  <label for="name">Your Name</label>
+  <input type="text" id="name" placeholder="First and last name" />
+
+  <label for="room">Room Number</label>
+  <input type="text" id="room" placeholder="Room or unit number" />
+
+  <label for="weight">Estimated Laundry Weight</label>
+  <input type="text" id="weight" placeholder="e.g. 15 lbs" />
+
+  <label for="tier">Service Tier</label>
+  <select id="tier">
+    <option value="">Select a tier</option>
+    <option value="standard">Standard – $40 minimum</option>
+    <option value="express">Express – $80 minimum</option>
+    <option value="rapid">Rapid Express – $120 minimum</option>
+  </select>
+
+  <label for="notes">Pickup Notes</label>
+  <textarea id="notes" rows="4" placeholder="Where to find your laundry, special instructions, etc."></textarea>
+
+  <button type="submit">Submit Booking</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const hotel = params.get("hotel");
+
+    const hotelMap = {
+      wyndham: { name: "Wyndham Garden Warsaw", color: "#00796b" },
+      hampton: { name: "Hampton Inn Warsaw", color: "#003366" },
+      tru: { name: "Tru by Hilton Warsaw", color: "#00bfff" },
+      comfort: { name: "Comfort Inn & Suites Warsaw", color: "#002d72" },
+      fairfield: { name: "Fairfield Inn & Suites Warsaw", color: "#5dade2" },
+      holiday: { name: "Holiday Inn Express Warsaw", color: "#2ecc71" },
+      bestwestern: { name: "Best Western Plus Warsaw", color: "#800000" },
+      daysinn: { name: "Days Inn Warsaw", color: "#f1c40f" },
+      super8: { name: "Super 8 Motel Warsaw", color: "#ff0000" },
+      deluxe: { name: "Deluxe Inn Warsaw", color: "#a1887f" },
+      economy: { name: "Economy Inn Warsaw", color: "#8d6e63" },
+      shamrock: { name: "Shamrock Motel Warsaw", color: "#388e3c" },
+      bluejay: { name: "Blue Jay Motel – Silver Lake", color: "#2196f3" },
+      pierceton: { name: "Pierceton Inn – Pierceton", color: "#6e4b3a" },
+      barbee: { name: "Barbee Hotel – Barbee Lake", color: "#000000" }
+    };
+
+    if (hotelMap[hotel]) {
+      document.body.style.backgroundColor = hotelMap[hotel].color;
+      document.getElementById("hotelName").textContent = hotelMap[hotel].name;
+    } else {
+      document.body.style.backgroundColor = "#333";
+      document.getElementById("hotelName").textContent = "Guest Laundry Booking";
+    }
+  </script>
+
+</body>
+</html>
